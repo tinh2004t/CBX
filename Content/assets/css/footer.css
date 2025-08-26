@@ -1,0 +1,345 @@
+.nav-holder .nav-footer {
+    display: block;
+}
+
+.nav-holder .nav-footer ul.nav>li {
+    display: inline-block;
+    padding: 2.43em 0;
+    position: relative;
+}
+
+.nav-holder .nav-footer ul.nav>li:hover a,
+.nav-holder .nav-footer ul.nav>li.active a {
+    color: #fab90a;
+    background-color: transparent;
+}
+
+.nav-holder .nav-footer ul.nav>li:last-child>a {
+    border: none;
+    padding-right: 0;
+}
+
+.nav-holder .nav-footer ul.nav>li>a {
+    padding: 0 1em;
+    display: block;
+    color: #fff;
+    text-transform: uppercase;
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    font: 600 1.0715em/1.5em "Raleway", sans-serif;
+    text-align: left;
+}
+
+.nav-holder .nav-footer ul.nav>li>ul.submenu {
+    top: 100%;
+    left: 0;
+}
+
+.nav-holder .nav-footer ul.nav>li>ul.submenu.align-right {
+    right: 0;
+    left: auto;
+}
+
+.nav-holder .nav-footer ul.nav>li:hover>ul.submenu {
+    visibility: visible;
+    opacity: 1;
+}
+
+.nav-holder .nav-footer ul.nav>li>ul.submenu>li>ul.submenu {
+    top: 0;
+    left: 100%;
+}
+
+.nav-holder .nav-footer ul.nav>li>ul.submenu>li>ul.submenu.align-right {
+    right: 100%;
+    left: auto;
+}
+
+.nav-holder .nav-footer ul.nav>li>ul.submenu>li:hover>ul.submenu {
+    visibility: visible;
+    opacity: 1;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu {
+    position: absolute;
+    width: 275px;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 99999;
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu li {
+    display: block;
+    padding: 0;
+    background: #0d1a41;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu li:last-child a {
+    border-bottom: 0;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu li:last-child a:after {
+    display: none;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu li:hover>a {
+    color: #fff;
+    background: #995F02;
+    ;
+}
+
+.nav-holder .nav-footer ul.nav>li ul.submenu li a {
+    color: #fff;
+    font: 600 1.0712em/1em 'Open Sans', sans-serif;
+    padding: 13px 25px 14px;
+    border-bottom: 1px solid #565f7a;
+    position: relative;
+    display: block;
+    font-weight: 500;
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    text-transform: uppercase;
+    text-align: left;
+}
+
+.nav-footer ul.nav li.has-submenu>a>button {
+    display: none;
+}
+
+.main-menu-wrapper.stricky-fixed {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    background: rgba(232, 162, 12, 0.8);
+    background: rgba(42, 42, 42, 0.8);
+    background: #1e1e1e;
+}
+
+.main-menu-wrapper-two.stricky-fixed {
+    position: fixed;
+    top: 0px;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    background: rgba(232, 162, 12, 0.8);
+    background: rgba(42, 42, 42, 0.8);
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.footer-wrapper {
+    position: relative;
+  background: #5c841d;
+}
+
+.footer-pad {
+    padding: 2em 0 1em;
+}
+
+.footer-b-pad {
+    padding-top: .8em;
+    padding-bottom: .8em;
+}
+
+.footer-top {
+    position: relative;
+    overflow: hidden;
+    font: 400 0.94m/1.5em "Open Sans", sans-serif;
+}
+
+.widget.about-us-widget p {
+    color: #797979;
+    margin-top: 2em;
+    font: 400 1.0715em/1.5em "Open Sans", sans-serif;
+    padding: 0;
+    margin-bottom: 1.5em;
+}
+
+.widget.about-us-widget a {
+    color: #995F02;
+    ;
+    margin-top: 1.4em;
+}
+
+.widget.about-us-widget a:hover {
+    color: #fff;
+}
+
+.widget.about-us-widget ul {
+    margin: 0;
+    padding: 0;
+}
+
+.widget.about-us-widget ul li:first-child {
+    padding-left: 0px;
+}
+
+.widget.about-us-widget ul li {
+    display: inline-block;
+    list-style: none;
+    padding: 10px 9px;
+}
+
+.widget.about-us-widget ul li a {
+    padding: 0;
+    color: #7c7c7c;
+    font-size: 1.5em;
+}
+
+.widget.about-us-widget ul li a:hover {
+    background: none;
+    color: #94C120;
+    ;
+}
+
+.widget-contact h4,
+.get-in-touch h4,
+.widget-links h4 {
+    font: 600 18px/17px "Open Sans", sans-serif;
+    color: #fff;
+    margin-top: 0px;
+    text-transform: uppercase;
+    margin-bottom: 0px;
+    font-style: italic;
+}
+
+.widget-contact h4:after,
+.get-in-touch h4:after,
+.widget-links h4:after {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #995F02;
+    ;
+    display: block;
+    margin-top: 13px;
+}
+
+.widget-contact-list ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.widget-contact-list p {
+    color: #797979;
+    text-transform: capitalize;
+    font: 400 1.0715em/2.3em "Open Sans", sans-serif;
+}
+
+.widget-contact-list ul li a:hover {
+    color: #94C120;
+    ;
+}
+
+.widget.get-in-touch ul {
+    padding: 0;
+    margin: 0;
+}
+
+.widget.get-in-touch ul li {
+    list-style: none;
+    display: table;
+    width: 100%;
+    padding-right: 11px;
+    line-height: 10px;
+}
+
+.widget.get-in-touch ul li i {
+    float: left;
+    font-size: 25px;
+    color: #7b7b7b;
+    width: 34px;
+    padding-top: 13px;
+    line-height: 18px;
+}
+
+.widget.get-in-touch ul li .fleft {
+    float: left;
+    color: #7b7b7b;
+    width: -webkit-calc(100% - 34px);
+    width: calc(100% - 34px);
+    font: 400 1.0715em/1.5em "Open Sans", sans-serif;
+    /* padding: 0.5em 0; */
+}
+
+.widget.get-in-touch ul li .fleft.location_address b {
+    text-transform: uppercase;
+}
+
+.widget.get-in-touch ul li i.fa-map-marker {
+    padding-top: 15px;
+}
+
+.widget.get-in-touch ul li i.fa-phone {
+    font-size: 21px;
+    line-height: 30px;
+}
+
+.widget.get-in-touch ul li i.fa-envelope-o {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.footer-copy {
+    position: relative;
+    border-top: 1px solid #f3f3f3a6;
+    padding: .6em 0 0;
+    overflow: hidden;
+}
+
+.footer-copy p {
+    font: 400 1.0715em/1.5em "Open Sans", sans-serif;
+    color: #383737;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-copy p a {
+    color: #545454;
+}
+
+.footer-copy p a:hover {
+    color: #fff;
+}
+
+img.img-fluid.img-fotter {
+    min-height: 80px;
+    max-height: 80px;
+}
+
+.widget_title {
+    font: 600 18px/17px "Open Sans", sans-serif;
+    color: #fff;
+    margin-top: 0px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.widget_title:after {
+    content: '';
+    width: 40px;
+    height: 2px;
+    background: #94C120;
+    display: block;
+    margin-top: 6px;
+}
+.icon-contact-footer i
+{
+	color:#FFF;
+	    font-size: 21px;
+    margin-right: 11px;
+    margin-top: 10px;
+    width: 35px;
+    height: 35px;
+    padding: 7px;
+    border: 1px solid;
+    text-align: center;
+    border-radius: 50%;
+}
+
+/* ==============================

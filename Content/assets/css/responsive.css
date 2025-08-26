@@ -1,0 +1,117 @@
+@media (max-width:1024px) {
+    .talking-about-img {
+        position: relative;
+        max-width: 100%;
+        max-height: 450px;
+        font-size: 14px;
+    }
+    .infor-content {
+        max-height: 400px;
+        min-height: 350px!important;
+        line-height: 1;
+        padding: 15px;
+        width: 60%;
+        letter-spacing: 0px;
+    }
+    nav.shift.navbar.navbar-expand-lg.navbar-inverse {
+        display: block!important;
+        margin: auto;
+    }
+}
+
+@media (max-width:767px) {
+    .talking-about-img {
+        position: relative;
+        max-width: 90%;
+        max-height: 450px;
+        font-size: 14px;
+    }
+    .infor-img {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    .infor-content {
+        position: absolute;
+        width: 60%;
+        min-height: 400px!important;
+    }
+    .single-overview .overview-days {
+        width: 10%;
+    }
+    .overview-days {
+        padding-right: 0;
+    }
+    .overview-days {
+        padding-right: 0px;
+    }
+    .single-overview {
+        flex-wrap: wrap;
+    }
+    .overview-days {
+        padding-right: 16px;
+    }
+    .single-overview .overview-days {
+        width: 30%;
+    }
+    .single-overview .overview-dewtails {
+        width: 70%;
+    }
+    .overview-dewtails {
+        padding-left: 0;
+        padding-right: 15px;
+    }
+    .single-overview .overview-thumd {
+        padding-left: 0;
+        width: 100%;
+        margin-top: 29px;
+    }
+    .single__overview .overview__dewtails {
+        width: 100%;
+        /* .overview__thumd {
+        padding-left: 0;
+        width: 100%;
+        /* margin-top: 29px; */
+    }
+    .single-overview::before {
+        display: none;
+    }
+    .tour-overview-inner::before {
+        /* background: #025599 none repeat scroll 0 0; */
+        content: "";
+        height: 0;
+        left: 100px;
+        position: absolute;
+        top: 0;
+        width: 2px;
+    }
+    .overview-days::before {
+        /* background: #025599 none repeat scroll 0 0; */
+        content: "";
+        height: 0;
+        left: 91px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        width: 20px;
+    }
+    .number-age {
+        margin-left: 20%;
+    }
+}
+
+@media (max-width:425px) {
+    .infor-img {
+        display: none;
+    }
+    .infor-content {
+        position: static;
+        width: 100%;
+        min-height: 400px!important;
+    }
+    img.img-fluid.margin-bottom.img-fotter {
+        margin-bottom: 0px;
+    }
+	iframe#player {
+    width: 100%;
+}
+}

@@ -1,0 +1,470 @@
+#maps {
+    height: auto;
+    background-image: url(https://www.vietnamautrement.com/assets/img/deco/fond1024-plain.jpg);
+    /* background-repeat: no-repeat; */
+    /* background-size: 100vh; */
+    margin: auto;
+    /* border: 20px solid #FFF; */
+    padding-top: 20px;
+    padding-bottom: 20px;
+    background-position: center;
+}
+	    
+.img-maps {
+    width: 100%;
+}
+.bbb {
+    /* background-image: url(../images/vn-l-c.png); */
+    /* padding-top: 20px; */
+    /* background-repeat: no-repeat; */
+    /* min-height: 1200px; */
+    /* position: relative; */
+    /* width: 100%; */
+    /* margin: auto; */
+    /* padding-top: 20px; */
+    /* background-repeat: no-repeat; */
+    /* position: relative; */
+    /* width: 100%; */
+    /* margin: auto; */
+  
+    background-repeat: no-repeat;
+    position: relative;
+    width: 100%;
+    margin: auto;
+	padding-top: 15px;
+}
+@media(max-width:425px)
+	{
+		padding-top: 8px;
+
+}
+.detail-maps-idx {
+    position: relative;
+}
+
+a.maps-ab:hover img {
+    /* display: block; */
+    z-index: 9;
+}
+
+.img-maps:hover {
+    filter: gray;
+    /* IE5+ */
+  
+    transform: scale(1.1);
+}
+
+.title-maps {
+    width: 300px;
+    margin: auto;
+    text-align: justify;
+    color: #333;
+    font-size: 13px;
+    background: linear-gradient(to right, #95bfe3, #eef2f3);
+    border-radius: 5px;
+    border: 1px solid #959595;
+    padding: 10px;
+    margin-bottom: 30px;
+}
+
+.name-province {
+    color: #A85D00;
+    font-size: 20px;
+}
+
+.infor-province {
+    margin-bottom: 10px;
+}
+
+li.list-destination h4 {
+    font-size: 20px;
+}
+
+.intro-place {
+    padding-left: 20px;
+    margin-bottom: 30px;
+}
+
+.list-place h2 {
+    padding-top: 10px;
+    font-size: 20px;
+    border-top: 1px solid #3333;
+}
+
+.general {
+    margin-bottom: 10px;
+}
+
+a.more-info {
+    text-align: center;
+    margin-left: 40%;
+    margin-top: 10px!important;
+    padding: 3px 13px;
+    border: 1px solid #A85D00;
+    border-radius: 5px;
+    color: #025599;
+}
+
+.mapsno {
+    position: absolute;
+}
+
+.maps-ab {
+    position: absolute;
+    /* display: none; */
+    opacity: 0;
+}
+
+.maps-ab:hover {
+    opacity: 1;
+}
+
+#dienbien {
+    left: 173px;
+    top: 91px;
+}
+
+#hanoi {
+    top: 182px;
+    left: 401px;
+}
+
+#laichau {
+    top: 68px;
+    left: 182px;
+}
+
+#laocai {
+    top: 67px;
+    left: 272px;
+}
+
+#hagiang {
+    left: 339px;
+    top: 23px;
+}
+
+#caobang {
+    left: 408px;
+    top: 38px;
+}
+
+#backan {
+    left: 413px;
+    top: 73px;
+}
+
+#tuyenquang {
+    left: 370px;
+    top: 80px;
+}
+
+#yenbai {
+    top: 106px;
+    left: 299px;
+}
+
+#sonla {
+    top: 135px;
+    left: 253px;
+}
+
+#phutho {
+    top: 155px;
+    left: 369px;
+}
+
+#vinhphuc {
+    left: 404px;
+    top: 169px;
+}
+
+#thainguyen {
+    top: 130px;
+    left: 416px;
+}
+
+#langson {
+    top: 92px;
+    right: 174px;
+}
+
+#haiphong {
+    right: 211px;
+    top: 211px;
+}
+
+#bacgiang {
+    top: 161px;
+    left: 448px;
+}
+
+#bacninh {
+    left: 442px;
+    top: 187px;
+}
+
+#quangninh {
+    left: 493px;
+    top: 160px;
+}
+
+#hanam {
+    top: 230px;
+    right: 265px;
+}
+
+#quangninh {
+    left: 493px;
+    top: 160px;
+}
+
+#hungyen {
+    left: 445px;
+    top: 210px;
+}
+
+#haiduong {
+    top: 191px;
+    left: 466px;
+}
+
+#ninhbinh {
+    top: 258px;
+    left: 417px;
+}
+
+#thaibinh {
+    top: 230px;
+    right: 231px;
+}
+
+#namdinh {
+    top: 250px;
+    right: 239px;
+}
+
+#hoabinh {
+    top: 205px;
+    right: 290px;
+}
+
+#thanhhoa {
+    top: 238px;
+    right: 269px;
+}
+
+#nghean {
+    top: 290px;
+    right: 291px;
+}
+
+#hatinh {
+    top: 400px;
+    right: 238px;
+}
+
+#quangbinh {
+    top: 446px;
+    right: 203px;
+}
+
+#quangtri {
+    top: 515px;
+    right: 169px;
+}
+
+#binhdinh {
+    bottom: 400px;
+    right: 20px;
+}
+
+#phuyen {
+    bottom: 350px;
+    right: 10px;
+}
+
+#kontum {
+    bottom: 443px;
+    right: 80px;
+}
+
+#khanhhoa {
+    bottom: 270px;
+    right: 16px;
+}
+
+#quangngai {
+    bottom: 500px;
+    right: 40px;
+}
+
+#binhdinh {
+    bottom: 400px;
+    right: 20px;
+}
+
+#ninhthuan {
+    bottom: 232px;
+    right: 25px;
+}
+
+#binhthuan {
+    bottom: 169px;
+    right: 50px;
+}
+
+#hue {
+    top: 553px;
+    right: 103px;
+}
+
+#quangnam {
+    top: 600px;
+    right: 67px;
+}
+
+#lamdong {
+    bottom: 225px;
+    right: 63px;
+}
+
+#kiengiang {
+    bottom: 80px;
+    right: 319px;
+}
+
+#camau {
+    left: 352px;
+    bottom: 4px;
+}
+
+#baclieu {
+    bottom: 50px;
+    right: 288px;
+}
+
+#cantho {
+    bottom: 120px;
+    right: 290px;
+}
+
+#haugiang {
+    right: 285px;
+    bottom: 92px;
+}
+
+#longan {
+    bottom: 158px;
+    right: 223px;
+}
+
+#travinh {
+    bottom: 86px;
+    right: 230px;
+}
+
+#dongthap {
+    bottom: 138px;
+    right: 281px;
+}
+
+#longan {
+    bottom: 158px;
+    right: 223px;
+}
+
+#bentre {
+    right: 217px;
+    bottom: 111px;
+}
+
+#gialai {
+    bottom: 367px;
+    right: 50px;
+}
+
+#tayninh {
+    bottom: 200px;
+    right: 234px;
+}
+
+#dongnai {
+    bottom: 170px;
+    right: 152px;
+}
+
+#binhduong {
+    bottom: 196px;
+    right: 202px;
+}
+
+#angiang {
+    bottom: 143px;
+    right: 310px;
+}
+
+#dacklak {
+    bottom: 299px;
+    right: 45px;
+}
+
+#binhphuoc {
+    bottom: 226px;
+    right: 167px;
+}
+
+#daknong {
+    bottom: 268px;
+    right: 116px;
+}
+
+#HCM {
+    bottom: 156px;
+    right: 207px;
+}
+
+#phuyen {
+    bottom: 350px;
+    right: 10px;
+}
+
+#soctrang {
+    bottom: 63px;
+    right: 261px;
+}
+
+#vinhlong {
+    bottom: 112px;
+    right: 254px;
+}
+
+#tiengiang {
+    bottom: 142px;
+    right: 215px;
+}
+
+#vungtau {
+    bottom: 153px;
+    right: 152px;
+}
+
+#luangprabang {
+    top: 185px;
+    left: 118px;
+}
+
+#vientiane {
+    top: 325px;
+    left: 166px;
+}
+
+#sá»‰emreap {
+    bottom: 386px;
+    left: 243px;
+}
+
+#phnompenh {
+    bottom: 221px;
+    left: 281px;
+}
