@@ -1,3 +1,131 @@
 {
+  "tim_kiem": "Tìm kiếm tour, địa điểm...",
+  "trang_chu" : "Trang chủ",
+  "tour_noi_dia": "Tour nội địa",
+  "tour_quoc_te": "Tour quốc tế",
+  "mien_bac": "Miền Bắc",
+  "mien_trung": "Miền Trung",
+  "mien_nam": "Miền Nam",
+  "chau_a": "Châu Á",
+  "chau_au": "Châu Âu",
+  "chau_mi": "Châu Mỹ",
+  "chau_phi": "Châu Phi",
+  "combo_voucher": "Combo & Voucher",
+  "ve_may_bay": "Vé máy bay",
+  "khach_san_resort": "Khách sạn & Resort",
+  "homestay": "Homestay & Villa",
+  "teambuilding": "Teambuilding & Gala Dinner",
+  "mice": "MICE",
+  "dich_vu_van_tai": "Dịch vụ vận tải",
+  "blog_du_lich": "Blog du lịch",
+  "kham_pha": "Khám phá và viết câu chuyện của riêng bạn...",
+  "kham_pha1":"Nhấp vào bản đồ để khám phá các hoạt động và chỗ ở tại từng tỉnh!",
+  
+  "province_kon_tum": "Kon Tum",
+  "introduce_province_kon_tum": "Kon Tum là một tỉnh miền núi thuộc Tây Nguyên Việt Nam, nổi tiếng với nền văn hóa đa dạng của nhiều dân tộc, cảnh quan thiên nhiên hùng vĩ và kiến trúc truyền thống độc đáo.",
 
+  "province_hanoi": "Hà Nội",
+  "introduce_province_hanoi": "Hà Nội có kiến trúc độc đáo kết hợp giữa phong cách phương Đông và phương Tây: là thủ đô của Việt Nam và một thành phố có truyền thống, lịch sử và văn hóa lâu đời.",
+
+  "province_quang_binh": "Quảng Bình",
+  "introduce_province_quang_binh": "Quảng Bình nổi tiếng với Vườn quốc gia Phong Nha - Kẻ Bàng, Di sản thiên nhiên thế giới, với Hang Sơn Đoòng - hang động lớn nhất thế giới, cùng những bãi biển tuyệt đẹp và thiên nhiên hoang sơ.",
+
+  "province_da_nang": "Đà Nẵng",
+  "introduce_province_da_nang": "Đà Nẵng là thành phố ven biển hiện đại ở miền Trung Việt Nam, nổi tiếng với các bãi biển đẹp như Mỹ Khê, những cây cầu độc đáo như cầu Rồng, và gần các di sản văn hóa như Hội An và Huế.",
+
+  "province_quang_nam": "Quảng Nam",
+  "introduce_province_quang_nam": "Quảng Nam là nơi có Phố cổ Hội An và Thánh địa Mỹ Sơn, đều là Di sản văn hóa thế giới, lưu giữ nền văn hóa và kiến trúc lâu đời của Việt Nam.",
+
+  "province_thua_thien_hue": "Thừa Thiên Huế",
+  "introduce_province_thua_thien_hue": "Huế từng là kinh đô của Việt Nam, nổi tiếng với quần thể di tích hoàng cung, chùa cổ và dòng sông Hương thơ mộng.",
+
+  "province_quang_ngai": "Quảng Ngãi",
+  "introduce_province_quang_ngai": "Quảng Ngãi được biết đến với bờ biển đẹp, đảo Lý Sơn với cánh đồng tỏi, cảnh quan núi lửa và lịch sử hào hùng của người dân Quảng Ngãi.",
+
+  "province_quang_tri": "Quảng Trị",
+  "introduce_province_quang_tri": "Quảng Trị là vùng đất với nhiều di tích lịch sử từ thời chiến tranh Việt Nam, như cầu Hiền Lương, địa đạo Vịnh Mốc, biểu tượng cho ý chí kiên cường của dân tộc.",
+
+  "province_vieng_chan": "Viêng Chăn",
+  "introduce_province_vieng_chan": "Viêng Chăn, thủ đô của Lào, là điểm du lịch hấp dẫn, yên bình với nhiều thắng cảnh, di tích lịch sử và công trình kiến trúc nổi tiếng.",
+
+  "province_luang_prabang": "Luang Prabang",
+  "introduce_province_luang_prabang": "Luang Prabang là thành phố phía bắc Lào và hiện là thủ phủ tỉnh Luang Prabang. Đây từng là kinh đô của Vương quốc Lan Xang từ thế kỷ 14 cho đến năm 1946. Sau khi tách thành Vương quốc Luang Prabang và Vương quốc Viêng Chăn năm 1707, hai thành phố cùng tranh giành danh hiệu kinh đô của Lan Xang.",
+
+  "province_ho_chi_minh": "TP. Hồ Chí Minh",
+  "introduce_province_ho_chi_minh": "TP. Hồ Chí Minh (thường gọi là Sài Gòn) là thành phố lớn ở miền Nam Việt Nam, nổi tiếng với vai trò quan trọng trong chiến tranh Việt Nam. Nơi đây còn được biết đến với các công trình kiến trúc Pháp như Nhà thờ Đức Bà, Bưu điện Trung tâm. Các quán ăn đường phố tấp nập đặc biệt quanh chợ Bến Thành.",
+
+  "province_chau_doc": "Châu Đốc",
+  "introduce_province_chau_doc": "Châu Đốc là thị trấn nhỏ thuộc tỉnh An Giang, vùng đồng bằng sông Cửu Long. Giáp Campuchia, thị trấn nằm gần sông Hậu.",
+
+  "province_can_tho": "Cần Thơ",
+  "introduce_province_can_tho": "Cần Thơ là thành phố lớn ở Việt Nam, dân số khoảng 1,2 triệu (2010). Nằm trên sông Hậu, là thành phố lớn nhất vùng đồng bằng sông Cửu Long và là thủ phủ cùng tên. Từng là nơi diễn ra nhiều trận chiến ác liệt trong chiến tranh Việt Nam.",
+
+  "province_cai_be": "Cái Bè",
+  "introduce_province_cai_be": "Cái Bè là huyện thuộc tỉnh Tiền Giang, vùng đồng bằng sông Cửu Long. Nổi tiếng với chợ nổi, bến tàu và là cửa ngõ đi Vĩnh Long. Dân số năm 2003 là 290.457 người, diện tích 421 km².",
+
+  "province_ben_tre": "Bến Tre",
+  "introduce_province_ben_tre": "Bến Tre là tỉnh lớn ở vùng đồng bằng sông Cửu Long. Thủ phủ là TP. Bến Tre. Diện tích 2.247 km², dân số khoảng 1,26 triệu người.",
+
+  "province_thanh_hoa": "Thanh Hóa",
+  "introduce_province_thanh_hoa": "Thanh Hóa là thành phố miền Trung Việt Nam, thủ phủ tỉnh Thanh Hóa. Nằm phía nam đồng bằng sông Hồng, cách Hà Nội 137 km. Bị tàn phá nặng nề bởi chiến tranh nhưng sau đó được tái thiết. Dân số khoảng 200.000 người.",
+
+  "province_hue": "Huế",
+  "introduce_province_hue": "Huế là kinh đô cũ của Việt Nam (1802–1945). Nằm ở miền Trung, gần vĩ tuyến 17. Sông Hương chảy qua thành phố, chia thành phố cổ ở phía bắc và khu hiện đại phía nam.",
+
+  "province_yen_bai": "Yên Bái",
+  "introduce_province_yen_bai": "Yên Bái nằm hai bên bờ sông Hồng, cách Hà Nội 160 km. Từng là trung tâm khởi nghĩa Nguyễn Thái Học chống Pháp. Có khoảng 30 dân tộc sinh sống, nổi bật với hồ Thác Bà, thung lũng Mường Lò, suối khoáng Nghĩa Lộ, ruộng bậc thang Mù Cang Chải và chợ đá quý Lục Yên.",
+
+  "province_ninh_binh": "Ninh Bình",
+  "introduce_province_ninh_binh": "Ninh Bình nằm cách Hà Nội 93 km về phía nam, là thủ phủ tỉnh Ninh Bình. Dân số khoảng 130.517. Nổi tiếng là cửa ngõ đến 'Hạ Long trên cạn' với cảnh quan núi đá vôi xen lẫn ruộng lúa.",
+
+  "province_lao_cai": "Lào Cai",
+  "introduce_province_lao_cai": "Lào Cai là tỉnh miền núi phía Bắc, giáp Trung Quốc, cách Hà Nội 330 km. Có 11 dân tộc sinh sống, nổi bật là H'Mông, Dao, Tày, Giáy, Nùng, Thái. Nổi tiếng với cảnh quan núi non hùng vĩ và văn hóa đa dạng.",
+
+  "province_hoa_binh": "Hòa Bình",
+  "introduce_province_hoa_binh": "Hòa Bình là tỉnh thuộc Tây Bắc Việt Nam, diện tích 4.608,7 km², dân số khoảng 806.100.",
+
+  "province_hai_phong": "Hải Phòng",
+  "introduce_province_hai_phong": "Hải Phòng là thành phố cảng lớn của Việt Nam, dân số hơn một triệu, từng là căn cứ hải quân chính của Pháp tại Đông Dương, còn được gọi là 'Venice của Bắc Kỳ'.",
+
+  "province_ha_long": "Hạ Long",
+  "introduce_province_ha_long": "Hạ Long là thành phố ở Quảng Ninh, nằm ven vịnh Bái Tử Long, một phần vịnh Hạ Long nổi tiếng. Dân số năm 2019 là 300.267.",
+
+  "province_ha_giang": "Hà Giang",
+  "introduce_province_ha_giang": "Hà Giang là tỉnh miền núi phía đông bắc Việt Nam, giáp Vân Nam (Trung Quốc). Địa hình hiểm trở, kinh tế còn khó khăn nhưng du lịch đang phát triển mạnh nhờ cảnh quan hùng vĩ.",
+
+  "province_cao_bang": "Cao Bằng",
+  "introduce_province_cao_bang": "Cao Bằng là một trong những tỉnh đẹp nhất Việt Nam, cách Hà Nội 272 km, giáp Trung Quốc. Khí hậu nhiệt đới gió mùa ôn hòa, có 4 mùa rõ rệt.",
+
+  "province_bac_kan": "Bắc Kạn",
+  "introduce_province_bac_kan": "Bắc Kạn là tỉnh đông bắc Việt Nam, gồm TP. Bắc Kạn và 7 huyện: Ba Bể, Bạch Thông, Chợ Đồn, Chợ Mới, Na Rì, Ngân Sơn, Pác Nặm.",
+
+  "province_siem_reap": "Siem Reap",
+  "introduce_province_siem_reap": "Hướng dẫn du lịch này chia sẻ mọi thông tin cần biết khi đến Siem Reap, Campuchia. Bao gồm cách di chuyển, nơi ở, thời gian nên đi, món ăn và các điểm tham quan. Đây là cửa ngõ đến Angkor Wat nên Siem Reap là điểm đến được ghé thăm nhiều nhất Campuchia.",
+
+  "province_phnom_penh": "Phnom Penh",
+  "introduce_province_phnom_penh": "Phnom Penh là thủ đô và thành phố lớn nhất Campuchia. Từng được gọi là 'Hòn ngọc châu Á', thành phố này có nhiều công trình kiến trúc Pháp và kiến trúc Khmer đặc sắc. Nằm ở trung tâm phía nam Campuchia, tại ngã ba sông Mekong và hồ Tonle Sap.",
+
+  "more_info": "Xem thêm",
+  "tour_ban_chay":"Bán chạy nhất",
+  "tour_danh_gia":"Được đánh giá cao",
+  "more":"Xem thêm >>",
+  "khoi_hanh_tu_viet_tri":"Khởi hành từ Việt Trì >>",
+  "thao_nguyen_mong_co":"Thảo nguyên Mông Cổ",
+  "gia_1_khach":"Giá 1 khách",
+  "chuong_trinh_7_ngay_6_dem":"Chương trình 7 ngày 6 đêm",
+  "hang_hang_khong_air_china":"Air China",
+  "khoi_hanh_28_12_6_2":"Khởi hành: 28/12, 6/2",
+  "ha_noi_can_tho_soc_trang": "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
+  "lo_trinh_4_ngay_3_dem": "Lộ trình: 4 ngày 3 đêm",
+  "khoi_hanh_tu_ha_noi": "Khởi hành từ: Hà Nội",
+  "diem_den_can_tho": "Điểm đến: Cần Thơ",
+  "lich_khoi_hanh_thu_5_hang_tuan": "Lịch khởi hành: Thứ 5 hàng tuần",
+  "chi_tiet": "Chi tiết",
+  "tin_tuc_du_lich":"Tin tức du lịch",
+  "ho_noi_gi_ve_chung_toi":"Họ nói gì về chúng tôi?",
+  "review":"Đây là chuyến đi tuyệt nhất tôi từng có đến Việt Nam. Hướng dẫn viên Boo đã làm rất tốt khi giới thiệu lịch sử và văn hóa Việt Nam. Tôi đã có cơ hội tham quan chợ đen và các khu dân cư trong thành phố. Tôi rất thích!",
+  "review1":"Đây là chuyến đi tuyệt nhất tôi từng có đến Việt Nam. Hướng dẫn viên Boo đã làm rất tốt khi giới thiệu lịch sử và văn hóa Việt Nam. Tôi đã đi phà qua sông Hồng, trò chuyện với người dân về cuộc sống hằng ngày và tham quan vùng ngoại ô Hà Nội.",
+  "doc_het_danh_gia":"Xem tất cả đánh giá",
+  "lien_lac_voi_chung_toi":"Liên hệ với chúng tôi",
+  "thong_tin_lien_he":"Thông tin liên hệ"
 }

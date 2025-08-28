@@ -247,47 +247,54 @@
 
                         <!-- Tour nội địa -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-key="tour_noi_dia" role="button"
+                                data-bs-toggle="dropdown">
                                 Tour nội địa
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Miền Bắc</a></li>
-                                <li><a class="dropdown-item" href="#">Miền Trung</a></li>
-                                <li><a class="dropdown-item" href="#">Miền Nam</a></li>
+                                <li><a class="dropdown-item" data-key="mien_bac" href="#">Miền Bắc</a></li>
+                                <li><a class="dropdown-item" data-key="mien_trung" href="#">Miền Trung</a></li>
+                                <li><a class="dropdown-item" data-key="mien_nam" href="#">Miền Nam</a></li>
                             </ul>
                         </li>
 
                         <!-- Tour quốc tế -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-key="tour_quoc_te" role="button"
+                                data-bs-toggle="dropdown">
                                 Tour quốc tế
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Châu Á</a></li>
-                                <li><a class="dropdown-item" href="#">Châu Âu</a></li>
-                                <li><a class="dropdown-item" href="#">Châu Phi</a></li>
-                                <li><a class="dropdown-item" href="#">Châu Mỹ</a></li>
+                                <li><a class="dropdown-item" data-key="chau_a" href="#">Châu Á</a></li>
+                                <li><a class="dropdown-item" data-key="chau_au" href="#">Châu Âu</a></li>
+                                <li><a class="dropdown-item" data-key="chau_phi" href="#">Châu Phi</a></li>
+                                <li><a class="dropdown-item" data-key="chau_my" href="#">Châu Mỹ</a></li>
                             </ul>
                         </li>
 
                         <!-- Combo & Voucher -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-key="combo_voucher" role="button"
+                                data-bs-toggle="dropdown">
                                 Combo & Voucher
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Vé máy bay</a></li>
-                                <li><a class="dropdown-item" href="#">Khách sạn & Resort</a></li>
-                                <li><a class="dropdown-item" href="#">Homestay & Villa</a></li>
-                                <li><a class="dropdown-item" href="#">Teambuilding & Gala Dinner</a></li>
-                                <li><a class="dropdown-item" href="#">MICE</a></li>
-                                <li><a class="dropdown-item" href="#">Dịch vụ vận tải</a></li>
+                                <li><a class="dropdown-item" data-key="ve_may_bay" href="#">Vé máy bay</a></li>
+                                <li><a class="dropdown-item" data-key="khach_san_resort" href="#">Khách sạn & Resort</a>
+                                </li>
+                                <li><a class="dropdown-item" data-key="homestay_villa" href="#">Homestay & Villa</a>
+                                </li>
+                                <li><a class="dropdown-item" data-key="teambuilding_gala_dinner" href="#">Teambuilding &
+                                        Gala Dinner</a></li>
+                                <li><a class="dropdown-item" data-key="mice" href="#">MICE</a></li>
+                                <li><a class="dropdown-item" data-key="dich_vu_van_tai" href="#">Dịch vụ vận tải</a>
+                                </li>
                             </ul>
                         </li>
 
                         <!-- Blog du lịch -->
                         <li class="nav-item">
-                            <a class="nav-link" href="/blog">Blog du lịch</a>
+                            <a class="nav-link" data-key="blog_du_lich" href="/blog">Blog du lịch</a>
                         </li>
                     </ul>
                 </div>
@@ -403,10 +410,9 @@
 
                         <div class="row justufy-content-center margin-0">
                             <div class="col">
-                                <h2 class="text-center">Découvrez et écrirez votre propre histoire ...</h2>
-                                <p class="text-center">
-                                    Cliquez sur la carte pour découvrir les activités et les hébergements de chaque
-                                    province!
+                                <h2 class="text-center" data-key="kham_pha"></h2>
+                                <p class="text-center" data-key="kham_pha1">
+
                                 </p>
                             </div>
 
@@ -485,8 +491,8 @@
                                                     $(this).append(
                                                         "<div class='title-maps'>" +
                                                         " <div class='general'>" +
-                                                        "<h2 class='name-province' data-key='province_luangprabang'></h2>" +
-                                                        " <div class='introduce-province' data-key='introduce_province_luangprabang'></div>" +
+                                                        "<h2 class='name-province' data-key='province_luang_prabang'></h2>" +
+                                                        " <div class='introduce-province' data-key='introduce_province_luang_prabang'></div>" +
                                                         "</div>" +
                                                         "<a class='more-info' href='laos/luangprabang' data-key='more_info'></a>" +
                                                         "</div>"
@@ -748,7 +754,7 @@
                                                 }
                                             );
                                         </script>
-                                        <a class="maps-ab" id="1466" href="/viet-nam/lao-cai" style="top: 5%;
+                                        <a class="maps-ab" id="1466" href="/viet-nam/lao-cai.html" style="top: 5%;
     left: 37%;
     width: 11%;">
                                             <img class="img-maps" src="/files/images/vietnam/laocai(1).png" alt="">
@@ -763,7 +769,7 @@
                                                         "<h2 class='name-province' data-key='province_lao_cai'></h2>" +
                                                         " <div class='introduce-province' data-key='introduce_province_lao_cai'></div>" +
                                                         "</div>" +
-                                                        "<a class='more-info' href='viet-nam/lao-cai' data-key='more_info'></a>" +
+                                                        "<a class='more-info' href='viet-nam/lao-cai.html' data-key='more_info'></a>" +
                                                         "</div>"
                                                     );
                                                     loadLanguage(currentLang);
@@ -848,7 +854,7 @@
                                                 }
                                             );
                                         </script>
-                                        <a class="maps-ab" id="1470" href="/viet-nam/ha-giang" style="width: 12%;
+                                        <a class="maps-ab" id="1470" href="/viet-nam/ha-giang.html" style="width: 12%;
     left: 46%;
     top: 1.5%;">
                                             <img class="img-maps" src="/files/images/vietnam/hagiang(1).png" alt="">
@@ -873,7 +879,7 @@
                                                 }
                                             );
                                         </script>
-                                        <a class="maps-ab" id="1471" href="/viet-nam/cao-bang" style="width: 14%;
+                                        <a class="maps-ab" id="1471" href="/viet-nam/cao-bang.html" style="width: 14%;
     right: 30%;
     top: 3.3%;">
                                             <img class="img-maps" src="/files/images/vietnam/caobang(1).png" alt="">
@@ -888,7 +894,7 @@
                                                         "<h2 class='name-province' data-key='province_cao_bang'></h2>" +
                                                         " <div class='introduce-province' data-key='introduce_province_cao_bang'></div>" +
                                                         "</div>" +
-                                                        "<a class='more-info' href='viet-nam/cao-bang' data-key='more_info'></a>" +
+                                                        "<a class='more-info' href='viet-nam/ha-giang' data-key='more_info'></a>" +
                                                         "</div>"
                                                     );
                                                     loadLanguage(currentLang);
@@ -905,15 +911,15 @@
                                         </a>
                                         <script>
 
-                                            $("a.maps-ab#1471").hover(
+                                            $("a.maps-ab#1472").hover(
                                                 function () {
                                                     $(this).append(
                                                         "<div class='title-maps'>" +
                                                         " <div class='general'>" +
-                                                        "<h2 class='name-province' data-key='province_cao_bang'></h2>" +
-                                                        " <div class='introduce-province' data-key='introduce_province_cao_bang'></div>" +
+                                                        "<h2 class='name-province' data-key='province_bac_kan'></h2>" +
+                                                        " <div class='introduce-province' data-key='introduce_province_bac_kan'></div>" +
                                                         "</div>" +
-                                                        "<a class='more-info' href='viet-nam/cao-bang' data-key='more_info'></a>" +
+                                                        "<a class='more-info' href='viet-nam/ha-giang' data-key='more_info'></a>" +
                                                         "</div>"
                                                     );
                                                     loadLanguage(currentLang);
@@ -929,13 +935,13 @@
                                         </a>
                                         <script>
 
-                                            $("a.maps-ab#1472").hover(
+                                            $("a.maps-ab#1473").hover(
                                                 function () {
                                                     $(this).append(
                                                         "<div class='title-maps'>" +
                                                         " <div class='general'>" +
-                                                        "<h2 class='name-province' data-key='province_backan'></h2>" +
-                                                        " <div class='introduce-province' data-key='introduce_province_backan'></div>" +
+                                                        "<h2 class='name-province' data-key='province_siem_reap'></h2>" +
+                                                        " <div class='introduce-province' data-key='introduce_province_siem_reap'></div>" +
                                                         "</div>" +
                                                         "<a class='more-info' href='viet-nam/bac-kan' data-key='more_info'></a>" +
                                                         "</div>"
@@ -956,18 +962,18 @@
                                             $("a.maps-ab#1474").hover(
                                                 function () {
                                                     $(this).append(
-                                                        "<div class=title-maps>" +
-                                                        " <div class=general>" +
-                                                        "<h2 class=name-province>" + " Phnom Penh " + "</h2>" +
-                                                        " <div class=introduce-province>" + "Phnom Penh (ភ្នំពេញ) est la ville la plus grande, la plus peupl&eacute;e et la capitale du Royaume du Cambodge. Autrefois connue sous le nom de &laquo;Perle d&#39;Asie&raquo; dans les ann&eacute;es 1920, c&#39;est une ville qui attire les touristes nationaux et internationaux du Cambodge. Cette ville poss&egrave;de de nombreuses &oelig;uvres architecturales influenc&eacute;es par l&#39;architecture fran&ccedil;aise et de nombreuses &oelig;uvres uniques de l&#39;architecture khm&egrave;re. Population: plus d&#39;un million de personnes. Phnom Penh est situ&eacute;e dans le centre sud du Cambodge, au confluent du lac Tonl&eacute; Sap et du M&eacute;kong." + " </div> " +
+                                                        "<div class='title-maps'>" +
+                                                        " <div class='general'>" +
+                                                        "<h2 class='name-province' data-key='province_phnom_penh'></h2>" +
+                                                        " <div class='introduce-province' data-key='introduce_province_phnom_penh'></div>" +
                                                         "</div>" +
-                                                        "<a class=more-info href=" + "cambodia/phnom-penh" + " >More info </a>" +
+                                                        "<a class='more-info' href='viet-nam/ha-giang' data-key='more_info'></a>" +
                                                         "</div>"
                                                     );
-
+                                                    loadLanguage(currentLang);
                                                 },
                                                 function () {
-                                                    $(this).find(".title-maps").last().remove();
+                                                    $(this).find('.title-maps').last().remove();
                                                 }
                                             );
                                         </script>
@@ -994,125 +1000,131 @@
                         <!-- TOUR BÁN CHẠY NHẤT -->
                         <section class="tour-section">
                             <div class="section-header">
-                                <h2 class="section-title">TOUR BÁN CHẠY NHẤT</h2>
-                                <a href="xem-them.html" class="view-more">Xem thêm >></a>
+                                <h2 class="section-title" data-key="tour_ban_chay">TOUR BÁN CHẠY NHẤT</h2>
+                                <a href="xem-them.html" data-key="more" class="view-more">Xem thêm >></a>
                             </div>
                             <div class="card-container">
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <div class="card-image">
                                         <img src="files/images/1.jpg" alt="Thảo nguyên Mông Cổ">
-                                        <div class="tag">Khởi hành từ VIỆT TRÌ >></div>
+                                        <div class="tag" data-key="khoi_hanh_tu_viet_tri">Khởi hành từ VIỆT TRÌ >></div>
                                     </div>
                                     <div class="card-content">
-                                        <h3 class="card-title">THẢO NGUYÊN MÔNG CỔ</h3>
+                                        <h3 class="card-title" data-key="thao_nguyen_mong_co">THẢO NGUYÊN MÔNG CỔ</h3>
                                         <div class="card-details">
-                                            <p class="duration">Giá 1 khách</p>
+                                            <p class="duration" data-key="gia_1_khach">Giá 1 khách</p>
                                             <p class="price">34.980.000 đ</p>
                                             <div class="program-info">
-                                                <p>Chương trình 7 ngày 6 đêm</p>
-                                                <p>Hãng hàng không Air China</p>
-                                                <p>Khởi hành: 28/12, 6/2 <span class="note">Xem Thêm</span></p>
+                                                <p data-key="chuong_trinh_7_ngay_6_dem">Chương trình 7 ngày 6 đêm</p>
+                                                <p data-key="hang_hang_khong_air_china">Hãng hàng không Air China</p>
+                                                <p><span data-key="khoi_hanh_28_12_6_2"></span> <span class="note"
+                                                        data-key="more_info"></span></p>
                                             </div>
                                         </div>
-                                        <button class="btn-view-more">XEM THÊM</button>
+                                        <button class="btn-view-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
@@ -1122,50 +1134,61 @@
                         <!-- COMBO & VOUCHER -->
                         <section class="tour-section">
                             <div class="section-header">
-                                <h2 class="section-title">COMBO & VOUCHER</h2>
-                                <a href="xem-them.html" class="view-more">Xem thêm >></a>
+                                <h2 class="section-title" data-key="combo_voucher">COMBO & VOUCHER</h2>
+                                <a href="xem-them.html" class="view-more" data-key="more">Xem thêm >></a>
                             </div>
                             <div class="card-container">
 
                                 <div class="card">
                                     <img src="files/images/1.jpg" alt="Hà Nội - Cần Thơ">
                                     <div class="card-content">
-                                        <h3>HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
-                                        <p><i class="fa-solid fa-clock  "></i> Lộ trình: 4 ngày 3 đêm<br>
-                                            <i class="fa-solid fa-plane"></i> Khởi hành từ: Hà Nội<br>
-                                            <i class="fa-solid fa-location-dot"></i> Điểm đến: Cần Thơ<br>
-                                            <i class="fa-solid fa-calendar-days"></i> Lịch khởi hành: Thứ 5 hàng tuần
+                                        <h3 data-key="ha_noi_can_tho_soc_trang">HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
+                                        <p><i class="fa-solid fa-clock  "></i> <span
+                                                data-key="lo_trinh_4_ngay_3_dem"></span><br>
+                                            <i class="fa-solid fa-plane"></i> <span
+                                                data-key="khoi_hanh_tu_ha_noi"></span><br>
+                                            <i class="fa-solid fa-location-dot"></i> <span
+                                                data-key="diem_den_can_tho"></span><br>
+                                            <i class="fa-solid fa-calendar-days"></i> <span
+                                                data-key="lich_khoi_hanh_thu_5_hang_tuan"></span><br>
                                         </p>
                                         <p class="price">6.990.000 đ</p>
-                                        <a href="#" class="btn orange">Chi tiết</a>
+                                        <a href="#" class="btn orange" data-key="chi_tiet">Chi tiết</a>
                                     </div>
                                 </div>
 
                                 <div class="card">
                                     <img src="files/images/1.jpg" alt="Hà Nội - Cần Thơ">
                                     <div class="card-content">
-                                        <h3>HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
-                                        <p><i class="fa-solid fa-clock  "></i> Lộ trình: 4 ngày 3 đêm<br>
-                                            <i class="fa-solid fa-plane"></i> Khởi hành từ: Hà Nội<br>
-                                            <i class="fa-solid fa-location-dot"></i> Điểm đến: Cần Thơ<br>
-                                            <i class="fa-solid fa-calendar-days"></i> Lịch khởi hành: Thứ 5 hàng tuần
+                                        <h3 data-key="ha_noi_can_tho_soc_trang">HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
+                                        <p><i class="fa-solid fa-clock  "></i> <span
+                                                data-key="lo_trinh_4_ngay_3_dem"></span><br>
+                                            <i class="fa-solid fa-plane"></i> <span
+                                                data-key="khoi_hanh_tu_ha_noi"></span><br>
+                                            <i class="fa-solid fa-location-dot"></i> <span
+                                                data-key="diem_den_can_tho"></span><br>
+                                            <i class="fa-solid fa-calendar-days"></i> <span
+                                                data-key="lich_khoi_hanh_thu_5_hang_tuan"></span><br>
                                         </p>
                                         <p class="price">6.990.000 đ</p>
-                                        <a href="#" class="btn orange">Chi tiết</a>
+                                        <a href="#" class="btn orange" data-key="chi_tiet">Chi tiết</a>
                                     </div>
                                 </div>
-
                                 <div class="card">
                                     <img src="files/images/1.jpg" alt="Hà Nội - Cần Thơ">
                                     <div class="card-content">
-                                        <h3>HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
-                                        <p><i class="fa-solid fa-clock  "></i> Lộ trình: 4 ngày 3 đêm<br>
-                                            <i class="fa-solid fa-plane"></i> Khởi hành từ: Hà Nội<br>
-                                            <i class="fa-solid fa-location-dot"></i> Điểm đến: Cần Thơ<br>
-                                            <i class="fa-solid fa-calendar-days"></i> Lịch khởi hành: Thứ 5 hàng tuần
+                                        <h3 data-key="ha_noi_can_tho_soc_trang">HÀ NỘI - CẦN THƠ - SÓC TRĂNG...</h3>
+                                        <p><i class="fa-solid fa-clock  "></i> <span
+                                                data-key="lo_trinh_4_ngay_3_dem"></span><br>
+                                            <i class="fa-solid fa-plane"></i> <span
+                                                data-key="khoi_hanh_tu_ha_noi"></span><br>
+                                            <i class="fa-solid fa-location-dot"></i> <span
+                                                data-key="diem_den_can_tho"></span><br>
+                                            <i class="fa-solid fa-calendar-days"></i> <span
+                                                data-key="lich_khoi_hanh_thu_5_hang_tuan"></span><br>
                                         </p>
                                         <p class="price">6.990.000 đ</p>
-                                        <a href="#" class="btn orange">Chi tiết</a>
+                                        <a href="#" class="btn orange" data-key="chi_tiet">Chi tiết</a>
                                     </div>
                                 </div>
 
@@ -1227,7 +1250,7 @@
                     <!-- News Section -->
                     <section class="news-section">
                         <div class="container">
-                            <h2 class="section-title">TIN TỨC DU LỊCH</h2>
+                            <h2 class="section-title" data-key="tin_tuc_du_lich">TIN TỨC DU LỊCH</h2>
                             <div class="news-grid">
                                 <div class="news-item">
                                     <div class="news-image">
@@ -1238,7 +1261,7 @@
                                         <h3 class="news-title">ẨM THỰC HÀN QUỐC - TỰ LỊCH SỰ TẠO NÊN BẢN SẮC</h3>
                                         <p class="news-excerpt">Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những
                                             món ăn truyền thống...</p>
-                                        <button class="btn-read-more">XEM THÊM</button>
+                                        <button class="btn-read-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
@@ -1252,7 +1275,7 @@
                                         </h3>
                                         <p class="news-excerpt">Quy trình xin visa du lịch Hàn Quốc từ A-Z, những giấy
                                             tờ cần thiết và lưu ý...</p>
-                                        <button class="btn-read-more">XEM THÊM</button>
+                                        <button class="btn-read-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
@@ -1265,7 +1288,7 @@
                                         <h3 class="news-title">10 QUY TẮC TRÊN BÀN ĂN CỦA NGƯỜI HÀN</h3>
                                         <p class="news-excerpt">Tìm hiểu về những quy tắc ăn uống và văn hóa bàn ăn độc
                                             đáo của người Hàn Quốc...</p>
-                                        <button class="btn-read-more">XEM THÊM</button>
+                                        <button class="btn-read-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
 
@@ -1278,7 +1301,7 @@
                                         <h3 class="news-title">ẨM THỰC HÀN QUỐC - TỰ LỊCH SỰ TẠO NÊN BẢN SẮC</h3>
                                         <p class="news-excerpt">Khám phá những món ăn đặc trưng và văn hóa ẩm thực phong
                                             phú của xứ sở kim chi...</p>
-                                        <button class="btn-read-more">XEM THÊM</button>
+                                        <button class="btn-read-more" data-key="more_info">XEM THÊM</button>
                                     </div>
                                 </div>
                             </div>
@@ -1483,14 +1506,12 @@
                             <div class="infor-content">
                                 <i class="icon-talking-about margin-right fab fa-tripadvisor">
 
-                                </i> <span class="font-h1 border-botton-70 text-center margin-bottom">
-                                    Que disent-ils de nous?
+                                </i> <span class="font-h1 border-botton-70 text-center margin-bottom"
+                                    data-key="ho_noi_gi_ve_chung_toi">
+
                                 </span>
-                                <p class="text-content margin-top text-align-justify">
-                                    Ce fut le meilleur voyage pour moi au Vietnam, l'instructeur Boo a fait un excellent
-                                    travail en expliquant l'histoire et la culture du peuple vietnamien. J'ai eu
-                                    l'occasion d'aller au marché noir et dans les quartiers résidentiels de la ville.
-                                    J'ai aimé !
+                                <p class="text-content margin-top text-align-justify" data-key="review">
+
 
                                 </p>
                                 <div class="row">
@@ -1521,7 +1542,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="seemore-about font-18-600">
-                                        <a href="#">Lire tous les commentaires</a>
+                                        <a href="#" data-key="doc_het_danh_gia"></a>
                                     </div>
                                 </div>
                             </div>
@@ -1538,19 +1559,11 @@
                             <div class="infor-content">
                                 <i class="icon-talking-about margin-right fab fa-tripadvisor">
 
-                                </i> <span class="font-h1 border-botton-70 text-center margin-bottom">
-                                    Que disent-ils de nous?
+                                </i> <span class="font-h1 border-botton-70 text-center margin-bottom"
+                                    data-key="ho_noi_gi_ve_chung_toi">
                                 </span>
-                                <p class="text-content margin-top text-align-justify">
-                                    Ce fut le meilleur voyage pour moi au Vietnam, l'instructeur Boo a fait un excellent
-                                    travail en expliquant l'histoire et la culture du peuple vietnamien. J'ai eu
-                                    l'occasion d'aller au marché noir et dans les quartiers résidentiels de la ville.
-                                    J'ai aimé prendre le ferry pour traverser la rivière Rouge. J'ai eu l'occasion de
-                                    parler aux habitants de leurs activités quotidiennes. Visiter la ville rurale de
-                                    Hanoi.
-
-
-
+                                <p class="text-content margin-top text-align-justify" data-key="review1">
+                                    
                                 </p>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 col-5">
@@ -1578,7 +1591,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="seemore-about font-18-600">
-                                        <a href="#">Lire tous les commentaires</a>
+                                        <a href="#" data-key="doc_het_danh_gia"></a>
                                     </div>
                                 </div>
                             </div>
@@ -1614,8 +1627,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="javascript:location.href='/bookdes'">Get
-                        location advice</button>
+                    <button type="button" class="btn btn-primary" onclick="javascript:location.href='/bookdes'">jahahahaha</button>
                 </div>
             </div>
         </div>
@@ -1684,7 +1696,7 @@
                     </div>
 
                     <div class="col-md-7 widget about-us-widget">
-                        <h4 class="widget_title">
+                        <h4 class="widget_title" data-key="lien_lac_voi_chung_toi">
                             Entrer en contact
 
                         </h4>
@@ -1721,13 +1733,11 @@
                                         Email:
                                     </b>
                                 </span>
-                                <br> vietnamimpressiontravel@gmail.com
+                                <br> asdadsd@gmail.com
                             </div>
                             <div class="col-md-12 color-fff">
 
-                                <p style="margin-top:10px; margin-bottom:0; color:#FFF"> Numéro de licence commerciale
-                                    01-882/2016/TCDL-GPLHQT délivré par le Ministère de la Culture, des Sports et du
-                                    Tourisme.</p>
+                                <p style="margin-top:10px; margin-bottom:0; color:#FFF">Commercial license number 01-882/2016/TCDL-GPLHQT issued by the Ministry of Culture, Sports and Tourism.</p>
                             </div>
                         </div>
 
@@ -1757,9 +1767,9 @@
                     <div class="footer-copy">
                         <div class="pull-left fo-txt text-center">
                             <p>
-                                Copyright © Viet Nam Impresstion Travel. All rights reserved.
+                                Copyright © ajsdnadnskk
                                 <span>Power by: <a class="text-transform" style="color: #94C120;"
-                                        href="https://webtravel.vn/">Webtravel.vn</a></span>
+                                        href="#">kjaskda.casj</a></span>
                             </p>
                         </div>
 
