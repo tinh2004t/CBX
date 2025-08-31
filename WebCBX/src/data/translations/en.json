@@ -1,0 +1,127 @@
+{
+    "tim_kiem": "Search for tours, locations...",
+    "trang_chu" : "Home",
+    "tour_noi_dia": "Domestic Tours",
+    "tour_quoc_te": "International Tours",
+    "mien_bac": "North",
+    "mien_trung": "Central",
+    "mien_nam": "South",
+    "chau_a": "Asia",
+    "chau_au": "Europe",
+    "chau_mi": "America",
+    "chau_phi": "Africa",
+    "combo_voucher": "Combo & Voucher",
+    "ve_may_bay": "Flight Ticket",
+    "khach_san_resort": "Hotel & Resort",
+    "homestay": "Homestay & Villa",
+    "teambuilding": "Teambuilding & Gala Dinner",
+    "mice": "MICE",
+    "dich_vu_van_tai": "Transportation Services",
+    "blog_du_lich": "Travel Blog",
+    "kham_pha": "Discover and write your own story...",
+    "kham_pha1":"Click on the map to discover activities and accommodations in each province!",
+    "province_kon_tum": "Kon Tum",
+  "introduce_province_kon_tum": "Kon Tum is a mountainous province in the Central Highlands of Vietnam, known for its diverse cultures of many ethnic groups, majestic natural landscapes, and unique traditional architecture.",
+  
+  "province_hanoi": "Ha Noi",
+  "introduce_province_hanoi": "Hanoi has a unique architecture that combines Western and Eastern styles: it is the capital of Vietnam and a city with a long tradition, history, and culture.",
+  
+  "province_quang_binh": "Quang Binh",
+  "introduce_province_quang_binh": "Quang Binh is famous for Phong Nha - Ke Bang National Park, a UNESCO World Heritage Site, with Son Doong Cave - the largest cave in the world, along with beautiful beaches and pristine nature.",
+  
+  "province_da_nang": "Da Nang",
+  "introduce_province_da_nang": "Da Nang is a modern coastal city in Central Vietnam, famous for its beautiful beaches such as My Khe, unique bridges like Dragon Bridge, and its proximity to cultural heritage sites such as Hoi An and Hue.",
+  
+  "province_quang_nam": "Quang Nam",
+  "introduce_province_quang_nam": "Quang Nam is home to Hoi An Ancient Town and My Son Sanctuary, both UNESCO World Heritage Sites, preserving the long-standing culture and architecture of Vietnam.",
+  
+  "province_thua_thien_hue": "Thua Thien Hue",
+  "introduce_province_thua_thien_hue": "Hue was once the imperial capital of Vietnam, famous for its complex of royal monuments, ancient temples, and the romantic Perfume River.",
+  
+  "province_quang_ngai": "Quang Ngai",
+  "introduce_province_quang_ngai": "Quang Ngai is known for its beautiful coastline, Ly Son Island with garlic fields, volcanic landscapes, and the heroic history of the Quang Ngai people.",
+  
+  "province_quang_tri": "Quang Tri",
+  "introduce_province_quang_tri": "Quang Tri is a land with many historical relics from the Vietnam War, including the Hien Luong Bridge and Vinh Moc Tunnels, symbolizing the resilience of the Vietnamese people.",
+  "province_vieng_chan": "Vientiane",
+  "introduce_province_vieng_chan": "Vientiane, the capital of Laos, is an attractive tourist destination that draws many visitors from around the world. It is peaceful with many landscapes, historical sites, and famous architectural monuments.",
+
+  "province_luang_prabang": "Luang Prabang",
+  "introduce_province_luang_prabang": "Luang Prabang is a city in northern Laos and the current capital of Luang Prabang Province. It was the royal capital of Lan Xang (the Kingdom of a Million Elephants) from the 14th century until 1946. The effective capital moved to Vientiane in 1563, and after the separation of the Kingdom of Luang Prabang and the Kingdom of Vientiane in 1707, the title of Lan Xang's capital was disputed between the two cities.",
+
+  "province_ho_chi_minh": "Ho Chi Minh City",
+  "introduce_province_ho_chi_minh": "Ho Chi Minh City (commonly known as Saigon) is a city in southern Vietnam famous for its decisive role during the Vietnam War. It is also known for its French colonial landmarks, such as Saigon Notre-Dame Cathedral, built entirely with materials imported from France, and the 19th-century Central Post Office. Street food stalls line the city's bustling streets, especially around the lively Ben Thanh Market.",
+
+  "province_chau_doc": "Chau Doc",
+  "introduce_province_chau_doc": "Chau Doc is a small town in An Giang Province, in the Mekong Delta region of Vietnam. Bordering Cambodia, the town is located near the Hau Giang River.",
+
+  "province_can_tho": "Can Tho",
+  "introduce_province_can_tho": "Can Tho is a city in Vietnam with an estimated population of about 1.2 million in 2010, including its districts. Located on the Bassac (Hau Giang River), it is the largest city in the Mekong Delta and the capital of the province of the same name. It was the site of violent battles between American and North Vietnamese troops in August 1967.",
+
+  "province_cai_be": "Cai Be",
+  "introduce_province_cai_be": "Cai Be is a river–land town in Vietnam. It is a rural district of Tien Giang Province in the Mekong Delta region. Along the river, there are docks handling passengers and goods, and a floating market. Cai Be lies at the northern end of My Thuan Bridge, serving as the gateway to Vinh Long City and the Mekong Delta. In 2003, the district had a population of 290,457 and covered an area of 421 km². The district capital is Cai Be.",
+
+  "province_ben_tre": "Ben Tre",
+  "introduce_province_ben_tre": "Ben Tre is a large province in the Mekong Delta region of Vietnam. Its capital is Ben Tre City. It covers an area of 2,247 km² and has a population of about 1,258,500.",
+
+  "province_thanh_hoa": "Thanh Hoa",
+  "introduce_province_thanh_hoa": "Thanh Hoa is a city in central Vietnam and the capital of Thanh Hoa Province. It lies south of the Red River Delta, about 137 km from Hanoi, near the mouth of the Ma River. Almost completely destroyed by American bombings during the Vietnam War, it has since been rebuilt. It has about 200,000 inhabitants and is the seat of the Catholic diocese of the same name.",
+
+  "province_hue": "Hue",
+  "introduce_province_hue": "Hue is the former imperial capital of Vietnam (1802–1945). It is located in central Vietnam, just south of the 17th parallel, not far from the sea. The Perfume River flows through the city, dividing the old town to the north from the modern city to the south.",
+
+  "province_yen_bai": "Yen Bai",
+  "introduce_province_yen_bai": "Yen Bai Province lies on both banks of the Red River, about 160 km northwest of Hanoi and 160 km south of Lao Cai. Once the center of Nguyen Thai Hoc's revolt against French colonialism, Yen Bai is home to around 30 ethnic groups and is rich in cultural diversity and tourism potential. Highlights include Thac Ba Lake, known as 'Halong Bay in the mountains,' the peaceful Muong Lo Valley, hot springs in Nghia Lo and Tram Tau, stunning terraced rice fields in Mu Cang Chai, the sticky rice of Tu Le, and Luc Yen's gemstone market.",
+
+  "province_ninh_binh": "Ninh Binh",
+  "introduce_province_ninh_binh": "Ninh Binh is a city in northern Vietnam, about 93 km south of Hanoi, and the capital of Ninh Binh Province. With a population of about 130,517, it is the political, economic, social, and cultural center of the province. While not a tourist destination itself, it serves as the gateway to the famous 'terrestrial Halong Bay,' named for its karst landscapes rising among rice fields, similar to those in Halong Bay.",
+
+  "province_lao_cai": "Lao Cai",
+  "introduce_province_lao_cai": "Lao Cai is a mountainous border province in northern Vietnam, bordering China to the north, Lai Chau Province to the west, Ha Giang Province to the east, and Yen Bai Province to the south. The provincial capital is Lao Cai City, 330 km from Hanoi. The province has 855 villages and a population of 39,099 across 6,812 households. It is home to 11 ethnic groups, including the Hmong (26.56%), Dao (22.41%), Tay and Giay (20.77%), Kinh (4.52%), Nung (7.33%), Thai (9.25%), U Ni (2.48%), and others.",
+
+  "province_hoa_binh": "Hoa Binh",
+  "introduce_province_hoa_binh": "Hoa Binh is a province in northwestern Vietnam, covering an area of 4,608.7 km² with a population of about 806,100.",
+
+  "province_hai_phong": "Hai Phong",
+  "introduce_province_hai_phong": "Hai Phong is a city in Vietnam with a population of over one million and one of the country’s three major ports. It has been an important trading hub for centuries, once known to the French as the 'Venice of Tonkin.' After the French conquest, it became the main French naval base in Indochina.",
+
+  "province_ha_long": "Ha Long",
+  "introduce_province_ha_long": "Ha Long is a city in northern Vietnam, the capital of Quang Ninh Province. It is located mainly along Bai Tu Long Bay, part of the famous Ha Long Bay, about 160 km northeast of Hanoi. Its population was 300,267 in 2019.",
+
+  "province_ha_giang": "Ha Giang",
+  "introduce_province_ha_giang": "Ha Giang is a mountainous province in northeastern Vietnam, bordering China’s Yunnan Province with a 275 km boundary. It is one of the poorest provinces due to its rugged terrain and limited agricultural potential. However, in recent years, its economy has improved thanks to tourism development.",
+
+  "province_cao_bang": "Cao Bang",
+  "introduce_province_cao_bang": "Cao Bang is one of the most beautiful provinces in Vietnam, located 272 km north of Hanoi. A northern highland province bordering China, it sits at about 300 m above sea level and enjoys a mild tropical climate with four distinct seasons, the hottest in May and the coldest in January.",
+
+  "province_bac_kan": "Bac Kan",
+  "introduce_province_bac_kan": "Bac Kan is a province in northeastern Vietnam, consisting of Bac Kan City and seven districts: Ba Be, Bach Thong, Cho Don, Cho Moi, Na Ri, Ngan Son, and Pac Nam.",
+  "province_siem_reap": "Siem Reap",
+  "introduce_province_siem_reap": "This travel guide shares everything you need to know for visiting Siem Reap, Cambodia. Includes how to get to Siem Reap, where to stay, when to visit, what to eat and things to do. Driven by curiosity and the lure of re-discovering an ancient wonder of the world, most travellers to Asia have Angkor Wat on their bucketlist. So it’s no surprise that, as the gateway to the temples, Siem Reap is the most visited place in Cambodia. This Siem Reap travel guide will help you plan your trip to the city and the nearby temples of Angkor.",
+  "province_phnom_penh": "Phnom Penh",
+  "introduce_province_phnom_penh": "Phnom Penh (ភ្នំពេញ) is the largest, most populous city, and the capital of the Kingdom of Cambodia. Formerly known as the 'Pearl of Asia' in the 1920s, it is a city that attracts domestic and international tourists to Cambodia. This city boasts many architectural works influenced by French architecture and many unique works of Khmer architecture. Population: over one million people. Phnom Penh is located in south-central Cambodia, at the confluence of the Tonle Sap Lake and the Mekong River.",
+  "more_info": "More info",
+  "tour_ban_chay":"Most popular",
+  "tour_danh_gia":"Top rated",
+  "more":"More >>",
+  "khoi_hanh_tu_viet_tri":"depart from Viet Tri >>",
+  "thao_nguyen_mong_co":"MONGOLIAN STEPPEAS",
+  "gia_1_khach":"Price per guest",
+  "chuong_trinh_7_ngay_6_dem":"7 days 6 nights program",
+  "hang_hang_khong_air_china":"Air China",
+  "khoi_hanh_28_12_6_2":"Departure: 12/28, 2/6",
+  "ha_noi_can_tho_soc_trang": "HANOI - CAN THO - SOC TRANG...",
+  "lo_trinh_4_ngay_3_dem": "Itinerary: 4 days 3 nights",
+  "khoi_hanh_tu_ha_noi": "Departure from: Hanoi",
+  "diem_den_can_tho": "Destination: Can Tho",
+  "lich_khoi_hanh_thu_5_hang_tuan": "Departure schedule: Every Thursday",
+  "chi_tiet": "Details",
+  "tin_tuc_du_lich":"TRAVEL NEWS",
+  "ho_noi_gi_ve_chung_toi":"What are they saying about us?",
+  "review":"This was the best trip I've ever had to Vietnam. Instructor Boo did an excellent job explaining the history and culture of the Vietnamese people. I had the opportunity to visit the black market and the residential areas of the city. I loved it!",
+  "review1":"This was the best trip I've ever had to Vietnam. Instructor Boo did an excellent job explaining the history and culture of the Vietnamese people. I had the opportunity to visit the black market and the residential areas of the city. I enjoyed taking the ferry across the Red River. I had the opportunity to talk to the locals about their daily activities. I visited the rural city of Hanoi.",
+  "doc_het_danh_gia":"Read all reviews",
+  "lien_lac_voi_chung_toi":"CONTACT US",
+  "thong_tin_lien_he":"Contact information"
+
+}
