@@ -4,9 +4,9 @@ const Banner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const bannerImages = [
-    "/files/images/1.jpg",
-    "/files/images/7.jpg",
-    "/files/images/vietnam/1%20Nord/lao-cai/1%20-%20Bac%20Ha/_MG_0362.jpg"
+    "files/images/Banner/banner1.jpg",
+    "files/images/Banner/banner2.jpg",
+    "files/images/Banner/banner3.jpg",
   ];
 
   useEffect(() => {
@@ -19,17 +19,26 @@ const Banner = () => {
 
   return (
     <banner className="banner">
-      <div className="carousel slide" data-ride="carousel">
+      <div className="carousel slide" data-ride="carousel" style={{ maxHeight: '100vh', overflow: 'hidden' }}>
         <div className="carousel-inner">
           {bannerImages.map((image, index) => (
             <div 
               key={index}
               className={`carousel-item ${index === currentSlide ? 'active' : ''}`}
+              style={{ 
+                display: index === currentSlide ? 'block' : 'none'
+              }}
             >
               <img 
                 className="d-block w-100 banner-index" 
                 src={image}
                 alt={`Banner ${index + 1}`}
+                style={{
+                  maxHeight: '100vh',
+                  width: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center'
+                }}
               />
             </div>
           ))}

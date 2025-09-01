@@ -10,22 +10,13 @@ const Footer = () => {
         <section className="clearfix footer-pad">
           <div className="row justify-content-center margin-0">
             {/* Logo Section */}
-            <div className="widget about-us-widget col-md-2 col-sm-6">
+            <div className="widget about-us-widget col-md-2 col-sm-6 text-center">
               <a href="/">
-                <img 
-                  src="/files/images/logoád.jpg" 
-                  width="150px" 
+                <img
+                  src="/files/images/logo/logo.jpg"
                   alt="Logo"
-                  className="img-fluid img-fotter" 
-                />
-              </a>
-              <a href="">
-                <img 
-                  src="/Content/assets/images/TA_brand_logo.pngádsd" 
                   width="150px"
-                  style={{ marginTop: '15px' }} 
-                  className="img-fluid img-fotter" 
-                  alt="TripAdvisor" 
+                  className="img-fluid img-fotter"
                 />
               </a>
             </div>
@@ -37,32 +28,32 @@ const Footer = () => {
               </h4>
               <div className="row">
                 <div className="widget widget-links col-md-4 col-sm-6 color-fff">
-                  <i className="fa fa-map-marker"></i>
+                  <i className="fa fa-map-marker"></i>&nbsp;
                   <span className="fleft location_address">
                     <b>Address:</b>
                   </span>
-                  <br /> 364 Minh Khai street, Hai Ba Trung Square, Hanoi, Vietnam
+                  <br /> Xóm 9 xã Phù Đổng, thành phố Hà Nội
                 </div>
-                
+
                 <div className="widget widget-links col-md-4 col-sm-6 color-fff">
                   <i className="fa fa-phone"></i>
-                  <span className="fleft location_address">
+                  <span className="fleft location_address">&nbsp;
                     <b>Phone</b>
                   </span>
-                  <br /> +84 912 550 212
+                  <br /> 024 36760 888
                 </div>
-                
+
                 <div className="widget widget-links col-md-4 col-sm-6 color-fff">
                   <i className="far fa-envelope"></i>
-                  <span className="fleft location_address">
+                  <span className="fleft location_address">&nbsp;
                     <b>Email:</b>
                   </span>
-                  <br /> asdadsd@gmail.com
+                  <br /> dulichcanhbuomxanh@gmail.com
                 </div>
-                
+
                 <div className="col-md-12 color-fff">
                   <p style={{ marginTop: '10px', marginBottom: '0', color: '#FFF' }}>
-                    Commercial license number 01-882/2016/TCDL-GPLHQT issued by the Ministry of Culture, Sports and Tourism.
+                    CÔNG TY TNHH TMDV & DU LỊCH CÁNH BUỒM XANH
                   </p>
                 </div>
               </div>
@@ -76,16 +67,16 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Copyright Section */}
           <div className="container clearfix footer-b-pad">
             <div className="footer-copy">
               <div className="pull-left fo-txt text-center">
                 <p>
-                  Copyright © ajsdnadnskk
-                  <span> Power by: 
+                  Copyright © CÔNG TY TNHH TMDV & DU LỊCH CÁNH BUỒM XANH
+                  <span> Power by:
                     <a className="text-transform" style={{ color: '#94C120' }} href="#">
-                      kjaskda.casj
+                      canhbuomxanh.vn
                     </a>
                   </span>
                 </p>
@@ -101,29 +92,29 @@ const Footer = () => {
 // Social Media Links Component
 const SocialLinks = () => {
   const socialLinks = [
-    { 
-      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/", 
-      icon: "fab fa-facebook-f" 
+    {
+      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/",
+      icon: "fab fa-facebook-f"
     },
-    { 
-      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw", 
-      icon: "fab fa-youtube" 
+    {
+      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw",
+      icon: "fab fa-youtube"
     },
-    { 
-      href: "https://www.instagram.com/?hl=vi", 
-      icon: "fab fa-instagram" 
+    {
+      href: "https://www.instagram.com/?hl=vi",
+      icon: "fab fa-instagram"
     },
-    { 
-      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/", 
-      icon: "fab fa-twitter" 
+    {
+      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/",
+      icon: "fab fa-twitter"
     },
-    { 
-      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw", 
-      icon: "fab fa-whatsapp" 
+    {
+      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw",
+      icon: "fab fa-whatsapp"
     },
-    { 
-      href: "https://www.instagram.com/?hl=vi", 
-      icon: "fab fa-linkedin-in" 
+    {
+      href: "https://www.instagram.com/?hl=vi",
+      icon: "fab fa-linkedin-in"
     }
   ];
 

@@ -30,10 +30,22 @@ const NewsSection = () => {
       image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
       title: "ẨM THỰC HÀN QUỐC - TỰ LỊCH SỰ TẠO NÊN BẢN SẮC",
       excerpt: "Khám phá những món ăn đặc trưng và văn hóa ẩm thực phong phú của xứ sở kim chi..."
-    }
+    },
+    {
+      id: 5,
+      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
+      title: "ẨM THỰC HÀN QUỐC SỰ TẠO NÊN BẢN SẮC",
+      excerpt: "Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những món ăn truyền thống..."
+    },
+    {
+      id: 6,
+      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
+      title: "ẨM TH",
+      excerpt: "Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những món ăn truyền thống..."
+    },
   ];
 
-  const itemsPerSlide = 3;
+  const itemsPerSlide = 4;
   const maxSlides = Math.ceil(newsItems.length / itemsPerSlide);
 
   const nextSlide = () => {

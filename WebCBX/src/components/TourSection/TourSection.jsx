@@ -9,7 +9,7 @@ const TourSection = () => {
   const bestSellingTours = [
     {
       id: 1,
-      image: "files/images/1.jpg",
+      image: "files/images/Tours/1.jpg",
       title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
       price: "34.980.000 đ",
       duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
@@ -19,7 +19,37 @@ const TourSection = () => {
     },
     {
       id: 2,
-      image: "files/images/1.jpg",
+      image: "files/images/Tours/1.jpg",
+      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
+      price: "34.980.000 đ",
+      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
+      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
+      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
+      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
+    },
+    {
+      id: 3,
+      image: "files/images/Tours/1.jpg",
+      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
+      price: "34.980.000 đ",
+      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
+      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
+      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
+      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
+    },
+    {
+      id: 4,
+      image: "files/images/Tours/1.jpg",
+      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
+      price: "34.980.000 đ",
+      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
+      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
+      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
+      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
+    },
+    {
+      id: 5,
+      image: "files/images/Tours/1.jpg",
       title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
       price: "34.980.000 đ",
       duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
@@ -33,7 +63,7 @@ const TourSection = () => {
   const comboVouchers = [
     {
       id: 1,
-      image: "files/images/1.jpg",
+      image: "files/images/Tours/1.jpg",
       title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
       price: "6.990.000 đ",
       duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
@@ -43,7 +73,27 @@ const TourSection = () => {
     },
     {
       id: 2,
-      image: "files/images/1.jpg",
+      image: "files/images/Tours/1.jpg",
+      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
+      price: "6.990.000 đ",
+      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
+      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
+      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
+      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
+    },
+    {
+      id: 3,
+      image: "files/images/Tours/1.jpg",
+      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
+      price: "6.990.000 đ",
+      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
+      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
+      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
+      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
+    },
+    {
+      id: 4,
+      image: "files/images/Tours/1.jpg",
       title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
       price: "6.990.000 đ",
       duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",

@@ -1,53 +1,19 @@
 import React from 'react';
-import TopContact from './TopContact';
 import Navigation from './Navigation';
 import { useLanguage } from '../../hooks/useLanguage';
 
-
 const Header = () => {
+    const { t } = useLanguage();
   return (
     <header>
-      <style>{`
-        img.img-loca {
-            opacity: 0.7;
-        }
-
-        img.img-loca:hover {
-            opacity: 1;
-        }
-
-        .link-loca:hover {
-            opacity: 1;
-        }
-
-        .div-text {
-            position: absolute;
-            top: 30px;
-            width: 80%;
-            text-align: center
-        }
-
-        .icon-close i {
-            position: absolute;
-            top: 0px;
-            left: 150px;
-            width: 80%;
-        }
-
-        .footer-pad {
-            font-size: 14px;
-        }
-    `}</style>
-      <TopContact />
-      
       {/* Header Top Section */}
       <div className="header-top">
-        <div className="container">
+        <div className="container" style={{ maxWidth: '1180px' }}>
           <div className="row align-items-center">
             {/* Logo */}
             <div className="col-lg-2 col-md-12">
               <div className="logo">
-                <img src="files/images/logádao.jpg" alt="Logo" />
+                <img src="/files/images/logo/logo.jpg" alt="Logo" />
               </div>
             </div>
 
@@ -56,22 +22,32 @@ const Header = () => {
               <div className="contact-info">
                 <div className="contact-item">
                   <i className="fas fa-phone"></i>
-                  <span>Hotline: 0123.456.789</span>
+                  <span>Hotline: 024 36760 888</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-envelope"></i>
-                  <span>info@travel.com</span>
+                  <span>dulichcanhbuomxanh@gmail.com</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-map-marker-alt"></i>
-                  <span>123 Đường ABC, Hà Nội</span>
+                  <span>Xóm 9 xã Phù Đổng, thành phố Hà Nội</span>
                 </div>
               </div>
             </div>
 
             {/* Search Box */}
             <div className="col-lg-4 col-md-12">
-              <SearchBox />
+              <div className="search-container">
+                <input
+                  type="text"
+                  className="search-box"
+                  placeholder={t('tim_kiem') || 'Tìm kiếm tour, địa điểm...'}
+
+                />
+                <button className="search-btn">
+                  <i className="fas fa-search"></i>
+                </button>
+              </div>
             </div>
 
             {/* Language Switcher */}
@@ -87,58 +63,31 @@ const Header = () => {
   );
 };
 
-// Search Box Component
-const SearchBox = () => {
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const searchValue = e.target.search.value;
-    if (searchValue.trim()) {
-      alert('Tìm kiếm: ' + searchValue);
-    }
-  };
-
-  return (
-    <div className="search-container">
-      <form onSubmit={handleSearch}>
-        <input 
-          type="text" 
-          name="search"
-          className="search-box" 
-          placeholder="Tìm kiếm tour, địa điểm..." 
-        />
-        <button type="submit" className="search-btn">
-          <i className="fas fa-search"></i>
-        </button>
-      </form>
-    </div>
-  );
-};
-
 // Language Switcher Component
 const LanguageSwitcher = () => {
   const { language, switchLanguage } = useLanguage();
 
   return (
     <div className="language-switcher justify-content-end">
-      <a 
-        href="#" 
-        className={`lang-btn ${language === 'vi' ? 'active' : ''}`} 
+      <a
+        href="#"
+        className={`lang-btn ${language === 'vi' ? 'active' : ''}`}
         onClick={(e) => {
           e.preventDefault();
           switchLanguage('vi');
         }}
       >
-        <img src="/files/images/VI.png" alt="Vietnamese" width="30" height="17" />
+        <img src="/files/images/logo/flags/VI.png" alt="" width="30" height="17" />
       </a>
-      <a 
-        href="#" 
+      <a
+        href="#"
         className={`lang-btn ${language === 'en' ? 'active' : ''}`}
         onClick={(e) => {
           e.preventDefault();
           switchLanguage('en');
         }}
       >
-        <img src="/files/images/EN.png" alt="English" width="30" height="17" />
+        <img src="/files/images/logo/flags/EN.png" alt="" width="30" height="17" />
       </a>
     </div>
   );

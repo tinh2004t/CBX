@@ -1,169 +1,167 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
+import './Navigation.css';
 
 const Navigation = () => {
   const { t } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [mobileDropdowns, setMobileDropdowns] = useState({});
 
-  // Dropdown hover functionality for desktop
+  // Handle scroll effect
   useEffect(() => {
-    if (window.innerWidth > 991) {
-      const dropdowns = document.querySelectorAll('.dropdown');
-      
-      dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('mouseenter', () => {
-          const dropdownMenu = dropdown.querySelector('.dropdown-menu');
-          if (dropdownMenu) {
-            dropdownMenu.classList.add('show');
-          }
-        });
-
-        dropdown.addEventListener('mouseleave', () => {
-          const dropdownMenu = dropdown.querySelector('.dropdown-menu');
-          if (dropdownMenu) {
-            dropdownMenu.classList.remove('show');
-          }
-        });
-      });
-    }
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleDropdownEnter = (index) => {
+    setActiveDropdown(index);
+  };
+
+  const handleDropdownLeave = () => {
+    setActiveDropdown(null);
+  };
+
+  const toggleMobileDropdown = (index) => {
+    setMobileDropdowns(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const menuItems = [
+    {
+      title: t('trang_chu'),
+      href: '/',
+      type: 'link'
+    },
+    {
+      title: t('tour_noi_dia'),
+      type: 'dropdown',
+      href : '/DomesticTourPage',
+      items: [
+        { title: t('mien_bac'), href: '/DomesticTourPage/NorthernToursPage' },
+        { title: t('mien_trung'), href: '/DomesticTourPage/CentralToursPage' },
+        { title: t('mien_nam'), href: '/DomesticTourPage/SouthernToursPage' }
+      ]
+    },
+    {
+      title: t('tour_quoc_te'),
+      type: 'dropdown', 
+      items: [
+        { title: t('chau_a'), href: '#' },
+        { title: t('chau_au'), href: '#' },
+        { title: t('chau_phi'), href: '#' },
+        { title: t('chau_mi'), href: '#' }
+      ]
+    },
+    {
+      title: t('combo_voucher'),
+      type: 'dropdown',
+      items: [
+        { title: t('ve_may_bay'), href: '#' },
+        { title: t('khach_san_resort'), href: '#' },
+        { title: t('homestay'), href: '#' },
+        { title: t('teambuilding'), href: '#' },
+        { title: t('mice'), href: '#' },
+        { title: t('dich_vu_van_tai'), href: '#' }
+      ]
+    },
+    {
+      title: t('blog_du_lich'),
+      href: '/blog',
+      type: 'link'
+    }
+  ];
+
   return (
-    <nav className="navbar navbar-expand-lg main-navbar">
-      <div className="container">
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <span className="navbar-toggler-icon">
-            <i className="fas fa-bars" style={{color: 'white'}}></i>
-          </span>
-        </button>
-
-        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`}>
-          <ul className="navbar-nav">
-            {/* Trang chủ */}
-            <li className="nav-item">
-              <a className="nav-link" href="/">
-                {t('trang_chu') || 'Trang chủ'}
-              </a>
-            </li>
-
-            {/* Tour nội địa */}
-            <li className="nav-item dropdown">
-              <a 
-                className="nav-link dropdown-toggle" 
-                href="#" 
-                role="button"
+    <>
+      <nav className={`modern-navbar ${scrolled ? 'scrolled' : ''}`}>
+        <div className="navbar-container">
+          <ul className="nav-menu">
+            {menuItems.map((item, index) => (
+              <li 
+                key={index}
+                className="nav-item"
+                onMouseEnter={() => item.type === 'dropdown' ? handleDropdownEnter(index) : null}
+                onMouseLeave={() => item.type === 'dropdown' ? handleDropdownLeave() : null}
               >
-                {t('tour_noi_dia') || 'Tour nội địa'}
-              </a>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('mien_bac') || 'Miền Bắc'}
+                {item.type === 'link' ? (
+                  <a href={item.href} className="nav-link">
+                    {item.title}
                   </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('mien_trung') || 'Miền Trung'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('mien_nam') || 'Miền Nam'}
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            {/* Tour quốc tế */}
-            <li className="nav-item dropdown">
-              <a 
-                className="nav-link dropdown-toggle" 
-                href="#" 
-                role="button"
-              >
-                {t('tour_quoc_te') || 'Tour quốc tế'}
-              </a>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('chau_a') || 'Châu Á'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('chau_au') || 'Châu Âu'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('chau_phi') || 'Châu Phi'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('chau_my') || 'Châu Mỹ'}
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            {/* Combo & Voucher */}
-            <li className="nav-item dropdown">
-              <a 
-                className="nav-link dropdown-toggle" 
-                href="#" 
-                role="button"
-              >
-                {t('combo_voucher') || 'Combo & Voucher'}
-              </a>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('ve_may_bay') || 'Vé máy bay'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('khach_san_resort') || 'Khách sạn & Resort'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('homestay_villa') || 'Homestay & Villa'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('teambuilding_gala_dinner') || 'Teambuilding & Gala Dinner'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('mice') || 'MICE'}
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="#">
-                    {t('dich_vu_van_tai') || 'Dịch vụ vận tải'}
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            {/* Blog du lịch */}
-            <li className="nav-item">
-              <a className="nav-link" href="/blog">
-                {t('blog_du_lich') || 'Blog du lịch'}
-              </a>
-            </li>
+                ) : (
+                  <>
+                    <a href={item.href} className="nav-link">
+                      {item.title}
+                      <span className="dropdown-arrow">▼</span>
+                    </a>
+                    <ul className={`dropdown-menu ${activeDropdown === index ? 'show' : ''}`}>
+                      {item.items.map((subItem, subIndex) => (
+                        <li key={subIndex}>
+                          <a href={subItem.href} className="dropdown-item">
+                            {subItem.title}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+              </li>
+            ))}
           </ul>
+
+          <button 
+            className="mobile-menu-btn"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            ☰
+          </button>
         </div>
+      </nav>
+
+      <div className={`mobile-nav ${isMenuOpen ? 'open' : ''}`}>
+        <ul className="mobile-nav-list">
+          {menuItems.map((item, index) => (
+            <li key={index} className="mobile-nav-item">
+              {item.type === 'link' ? (
+                <a href={item.href} className="mobile-nav-link">
+                  {item.title}
+                </a>
+              ) : (
+                <>
+                  <a 
+                    href="#" 
+                    className="mobile-nav-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleMobileDropdown(index);
+                    }}
+                  >
+                    {item.title} <span style={{float: 'right'}}>{mobileDropdowns[index] ? '▲' : '▼'}</span>
+                  </a>
+                  <div className={`mobile-dropdown ${mobileDropdowns[index] ? 'open' : ''}`}>
+                    {item.items.map((subItem, subIndex) => (
+                      <a 
+                        key={subIndex}
+                        href={subItem.href} 
+                        className="mobile-nav-link mobile-dropdown-item"
+                      >
+                        {subItem.title}
+                      </a>
+                    ))}
+                  </div>
+                </>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
-    </nav>
+    </>
   );
 };
 

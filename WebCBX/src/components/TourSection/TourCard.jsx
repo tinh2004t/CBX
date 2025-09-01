@@ -1,8 +1,10 @@
 import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
+import './TourCard.css';
 
 const TourCard = ({ tour, type }) => {
   const { t } = useLanguage();
+
 
   if (type === 'bestselling') {
     return (
@@ -25,9 +27,9 @@ const TourCard = ({ tour, type }) => {
               </p>
             </div>
           </div>
-          <button className="btn-view-more">
+          <a href={tour.href} className="btn-view-more">
             {t('more_info') || 'XEM THÊM'}
-          </button>
+          </a>
         </div>
       </div>
     );
