@@ -13,6 +13,13 @@ import NorthernToursPage from './pages/DomensticTour/NorthernToursPage';
 import CentralToursPage from './pages/DomensticTour/CentralToursPage';
 import SouthernToursPage from './pages/DomensticTour/SouthernToursPage';
 
+import OverseasTourPage from './pages/OverseaTour/OverseasTourPage';
+import AsiaToursPage from './pages/OverseaTour/AsiaToursPage';
+import AmericaToursPage from './pages/OverseaTour/AmericaToursPage';
+import AfricaToursPage from './pages/OverseaTour/AfricaToursPage';
+import EuropeToursPage from './pages/OverseaTour/EuropeToursPage';
+
+import ComboVouchersPage from './pages/ComboVoucher/ComboVouchersPage';
 
 function NotFound() {
   return (
@@ -34,10 +41,25 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/TourismPage" element={<TourismPage />} />
+
+              {/*DomesticTourPage  */}
               <Route path="/DomesticTourPage" element={<DomesticTourPage />} />
               <Route path="/DomesticTourPage/NorthernToursPage" element={<NorthernToursPage />} />
               <Route path="/DomesticTourPage/CentralToursPage" element={<CentralToursPage />} />
               <Route path="/DomesticTourPage/SouthernToursPage" element={<SouthernToursPage />} />
+
+              {/* OverseasTourPage */}
+              <Route path="/OverseasTourPage" element={<OverseasTourPage />} />
+              <Route path="/OverseasTourPage/AsiaToursPage" element={<AsiaToursPage />} />
+              <Route path="/OverseasTourPage/AmericaToursPage" element={<AmericaToursPage />} />
+              <Route path="/OverseasTourPage/AfricaToursPage" element={<AfricaToursPage />} />
+              <Route path="/OverseasTourPage/EuropeToursPage" element={<EuropeToursPage />} />
+
+              {/* Combo & Voucher */}
+              <Route path="/ComboVouchersPage" element={<ComboVouchersPage />} />
+              
+
+              {/* TourDetailPage */}
               <Route path="/TourDetailPage" element={<TourDetailPage />} />
 
               

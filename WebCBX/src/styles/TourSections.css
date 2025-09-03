@@ -1,0 +1,13 @@
+.tour-section-alt {
+  background-color: #ececeec0; /* Màu xám nhạt */
+  width: 100vw; /* Kéo dài hết chiều ngang màn hình */
+  margin-left: calc(-50vw + 50%); /* Căn giữa */
+  padding: 40px 0;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.tour-section {
+  margin-bottom: 30px;
+  padding: 40px 0;
+}

@@ -51,12 +51,13 @@ const Navigation = () => {
     },
     {
       title: t('tour_quoc_te'),
-      type: 'dropdown', 
+      type: 'dropdown',
+      href : '/OverseasTourPage',
       items: [
-        { title: t('chau_a'), href: '#' },
-        { title: t('chau_au'), href: '#' },
-        { title: t('chau_phi'), href: '#' },
-        { title: t('chau_mi'), href: '#' }
+        { title: t('chau_a'), href: '/OverseasTourPage/AsiaToursPage' },
+        { title: t('chau_au'), href: '/OverseasTourPage/EuropeToursPage' },
+        { title: t('chau_phi'), href: '/OverseasTourPage/AfricaToursPage' },
+        { title: t('chau_mi'), href: '/OverseasTourPage/AmericaToursPage' }
       ]
     },
     {
