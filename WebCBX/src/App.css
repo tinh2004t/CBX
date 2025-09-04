@@ -1,0 +1,112 @@
+/* 1. Thêm vào file CSS global của bạn (index.css hoặc App.css) */
+
+/* Reset box-sizing cho toàn bộ trang */
+* {
+  box-sizing: border-box;
+}
+
+/* Reset margin và padding mặc định */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Ngăn cuộn ngang không mong muốn */
+}
+
+/* Container chính của App */
+.App {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content area */
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Đảm bảo tất cả các container không vượt quá width */
+.container,
+.content-wrapper {
+  width: 100%;
+  max-width: 1200px; /* hoặc max-width bạn muốn */
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Media queries cho responsive */
+@media screen and (max-width: 768px) {
+  .container,
+  .content-wrapper {
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container,
+  .content-wrapper {
+    padding: 0 8px;
+  }
+}
+
+/* Nếu bạn có images responsive */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Đối với các phần tử có position absolute */
+.absolute-element {
+  max-width: 100%;
+}
+
+/* Đối với các grid hoặc flex containers */
+.grid-container,
+.flex-container {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Fix cho các table responsive */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Fix cho các form elements */
+input, textarea, select {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Đối với các component có width cố định */
+.fixed-width-element {
+  max-width: 100%;
+  width: auto !important;
+}
+
+/* Scrollbar styling (tùy chọn) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

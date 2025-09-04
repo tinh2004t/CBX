@@ -1,0 +1,337 @@
+/* FlightCard.css - Complete styles for Flight Card Component */
+
+/* Card wrapper và link styles */
+.flight-card-link,
+.flight-card-wrapper {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  width: 100%;
+}
+
+/* Main card container */
+.flight-card {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.flight-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Image container */
+.flight-card-image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 71.43%; /* 14:10 aspect ratio */
+}
+
+.flight-card-image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.flight-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Type badge */
+.flight-card-type-badge {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background-color: rgba(3, 18, 26, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.flight-card-type-text {
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Gradient overlay */
+.flight-card-gradient-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+/* Content area */
+.flight-card-content {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Route info */
+.flight-card-info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.flight-card-route {
+  flex: 1;
+}
+
+.flight-card-route-text {
+  color: #434343;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Flight details */
+.flight-card-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flight-card-airline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flight-card-airline-logo {
+  height: 14px;
+  width: auto;
+  object-fit: contain;
+}
+
+.flight-card-date {
+  color: #8f8f8f;
+  font-size: 13px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Price */
+.flight-card-price-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flight-card-price {
+  color: #f96d01;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Grid container styles */
+.flights-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.flights-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* Modern grid layout */
+.flights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.flight-card-container {
+  width: 100%;
+}
+
+/* Original 20% width layout như Traveloka */
+.flights-grid-original {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.flights-grid-original .flight-card-container {
+  width: calc(20% - 12px);
+  min-width: 200px;
+}
+
+/* Responsive breakpoints */
+
+/* Large screens (1200px+) */
+@media (max-width: 1200px) {
+  .flights-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  .flights-grid-original .flight-card-container {
+    width: calc(25% - 12px);
+  }
+}
+
+/* Medium screens (768px - 1200px) */
+@media (max-width: 900px) {
+  .flights-grid-original .flight-card-container {
+    width: calc(33.333% - 12px);
+  }
+}
+
+@media (max-width: 768px) {
+  .flights-container {
+    padding: 15px;
+  }
+  
+  .flights-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .flights-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+  }
+  
+  .flight-card-content {
+    padding: 12px;
+    gap: 10px;
+  }
+  
+  .flight-card-route-text {
+    font-size: 14px;
+  }
+  
+  .flight-card-price {
+    font-size: 14px;
+  }
+  
+  .flight-card-date {
+    font-size: 12px;
+  }
+}
+
+/* Small screens (480px - 768px) */
+@media (max-width: 600px) {
+  .flights-grid-original .flight-card-container {
+    width: calc(50% - 8px);
+  }
+}
+
+@media (max-width: 480px) {
+  .flights-container {
+    padding: 10px;
+  }
+  
+  .flights-title {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .flights-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .flight-card-content {
+    padding: 10px;
+    gap: 8px;
+  }
+  
+  .flight-card-route-text {
+    font-size: 13px;
+  }
+  
+  .flight-card-price {
+    font-size: 13px;
+  }
+}
+
+/* Extra small screens (400px and below) */
+@media (max-width: 400px) {
+  .flights-grid-original .flight-card-container {
+    width: 100%;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .flight-card {
+    background: #2d2d2d;
+    color: white;
+  }
+  
+  .flight-card-route-text {
+    color: #e5e5e5;
+  }
+  
+  .flight-card-date {
+    color: #a5a5a5;
+  }
+  
+  .flights-title {
+    color: #e5e5e5;
+  }
+}
+
+/* Accessibility improvements */
+.flight-card:focus-within {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+.flight-card-link:focus {
+  outline: none;
+}
+
+/* Print styles */
+@media print {
+  .flight-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+  }
+  
+  .flight-card:hover {
+    transform: none;
+  }
+}

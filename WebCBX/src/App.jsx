@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import LanguageProvider from './components/LanguageProvider';
@@ -19,11 +18,27 @@ import AmericaToursPage from './pages/OverseaTour/AmericaToursPage';
 import AfricaToursPage from './pages/OverseaTour/AfricaToursPage';
 import EuropeToursPage from './pages/OverseaTour/EuropeToursPage';
 
-import ComboVouchersPage from './pages/ComboVoucher/ComboVouchersPage';
+import FlightTicketsPage from './pages/ComboVoucher/FlightTicketsPage';
+import HotelResort from './pages/ComboVoucher/HotelResortsPage';
+import HotelResortDetailPage from './pages/ComboVoucher/HotelResortDetailPage';
+import HomestayVillaPage from './pages/ComboVoucher/HomstayVillaPage';
+import TeamBuildingBooking from './pages/ComboVoucher/TeambuildingGaladinner';
+import TransportBooking from './pages/ComboVoucher/TransportBookingPage';
+import MiceToursPage from './pages/ComboVoucher/MiceToursPage';
+import MiceToursDetailPage from './pages/ComboVoucher/MiceToursDetailPage';
+
+import TravelBlogPage from './pages/Blog/TravelBlog';
+import TravelBlogPageData from './pages/Blog/TravelBlogPageData';
+
 
 function NotFound() {
   return (
-    <div style={{ textAlign: "center", padding: "50px" }}>
+    <div className="not-found-container" style={{ 
+      textAlign: "center", 
+      padding: "50px",
+      width: "100%",
+      maxWidth: "100%"
+    }}>
       <h1>404</h1>
       <p>Trang bạn tìm không tồn tại.</p>
     </div>
@@ -34,15 +49,26 @@ function App() {
   return (
     <LanguageProvider>
       <Router>
-        <div className="App">
+        <div className="App" style={{ 
+          width: "100%", 
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          maxWidth: "100vw",
+          overflowX: "hidden"
+        }}>
           <Header />
 
-          <main>
+          <main style={{ 
+            flex: 1, 
+            width: "100%",
+            maxWidth: "100%"
+          }}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/TourismPage" element={<TourismPage />} />
 
-              {/*DomesticTourPage  */}
+              {/*DomesticTourPage */}
               <Route path="/DomesticTourPage" element={<DomesticTourPage />} />
               <Route path="/DomesticTourPage/NorthernToursPage" element={<NorthernToursPage />} />
               <Route path="/DomesticTourPage/CentralToursPage" element={<CentralToursPage />} />
@@ -56,13 +82,22 @@ function App() {
               <Route path="/OverseasTourPage/EuropeToursPage" element={<EuropeToursPage />} />
 
               {/* Combo & Voucher */}
-              <Route path="/ComboVouchersPage" element={<ComboVouchersPage />} />
-              
+              <Route path="/FlightTickets" element={<FlightTicketsPage />} />
+              <Route path="/HotelResorts" element={<HotelResort />} />
+              <Route path="/HotelResortDetail" element={<HotelResortDetailPage />} />
+              <Route path="/HomestayVilla" element={<HomestayVillaPage />} />
+              <Route path="/Teambuilding" element={<TeamBuildingBooking />} />
+              <Route path="/MICE" element={<MiceToursPage />} />
+              <Route path="/MiceDetail" element={<MiceToursDetailPage />} />
+              <Route path="/Transport" element={<TransportBooking />} />
+
+              {/* Tralvel Blog */}
+              <Route path="/TravelBlog" element={<TravelBlogPage />} />
+              <Route path="/TravelBlogData" element={<TravelBlogPageData />} />
 
               {/* TourDetailPage */}
               <Route path="/TourDetailPage" element={<TourDetailPage />} />
 
-              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

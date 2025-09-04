@@ -64,17 +64,17 @@ const Navigation = () => {
       title: t('combo_voucher'),
       type: 'dropdown',
       items: [
-        { title: t('ve_may_bay'), href: '#' },
-        { title: t('khach_san_resort'), href: '#' },
-        { title: t('homestay'), href: '#' },
-        { title: t('teambuilding'), href: '#' },
-        { title: t('mice'), href: '#' },
-        { title: t('dich_vu_van_tai'), href: '#' }
+        { title: t('ve_may_bay'), href: '/FlightTickets' },
+        { title: t('khach_san_resort'), href: '/HotelResorts' },
+        { title: t('homestay'), href: '/HomestayVilla' },
+        { title: t('teambuilding'), href: '/Teambuilding' },
+        { title: t('mice'), href: '/Mice' },
+        { title: t('dich_vu_van_tai'), href: 'Transport' }
       ]
     },
     {
       title: t('blog_du_lich'),
-      href: '/blog',
+      href: '/TravelBlog',
       type: 'link'
     }
   ];
