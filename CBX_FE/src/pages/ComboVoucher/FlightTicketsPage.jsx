@@ -12,7 +12,7 @@ const FlightTicketsPage = () => {
   const cityTabs = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Nha Trang', 'Phú Quốc', 'Đà Lạt'];
 
   const flightData = {
-    'Hà Nội': [
+    'Hà Nội': [ 
       {
         id: 1,
         departure: 'Hà Nội',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
+import contact from '../../data/contact.json';
 
 const Footer = () => {
   const { t } = useLanguage();
@@ -61,7 +62,7 @@ const Footer = () => {
                     lineHeight: '1.5',
                     marginLeft: '26px'
                   }}>
-                    Xóm 9 xã Phù Đổng, thành phố Hà Nội
+                    {contact.address}
                   </span>
                 </div>
 
@@ -84,7 +85,7 @@ const Footer = () => {
                     lineHeight: '1.5',
                     marginLeft: '26px'
                   }}>
-                    024 36760 888
+                  {contact.hotline}
                   </span>
                 </div>
 
@@ -107,7 +108,7 @@ const Footer = () => {
                     lineHeight: '1.5',
                     marginLeft: '26px'
                   }}>
-                    dulichcanhbuomxanh@gmail.com
+                    {contact.email}
                   </span>
                 </div>
 
@@ -140,7 +141,7 @@ const Footer = () => {
                   marginBottom: '20px',
                   textAlign: 'center'
                 }}>
-                  Follow Us
+                  {t('follow_us') || 'Entrer en contact'}
                 </h4>
                 <SocialLinks />
               </div>
@@ -192,28 +193,8 @@ const Footer = () => {
 const SocialLinks = () => {
   const socialLinks = [
     {
-      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/",
+      href: "https://www.facebook.com/share/1CgoBQaaHC/?mibextid=wwXIfr",
       icon: "fab fa-facebook-f"
-    },
-    {
-      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw",
-      icon: "fab fa-youtube"
-    },
-    {
-      href: "https://www.instagram.com/?hl=vi",
-      icon: "fab fa-instagram"
-    },
-    {
-      href: "https://www.facebook.com/Vietnam-Impression-Travel-890079197757256/",
-      icon: "fab fa-twitter"
-    },
-    {
-      href: "https://www.youtube.com/channel/UCYVE8MubhP1DqzLio4oXIWw",
-      icon: "fab fa-whatsapp"
-    },
-    {
-      href: "https://www.instagram.com/?hl=vi",
-      icon: "fab fa-linkedin-in"
     }
   ];
 

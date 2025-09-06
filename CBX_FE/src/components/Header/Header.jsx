@@ -1,9 +1,10 @@
 import React from 'react';
 import Navigation from './Navigation';
 import { useLanguage } from '../../hooks/useLanguage';
+import contact from '../../data/contact.json';
 
 const Header = () => {
-    const { t } = useLanguage();
+  const { t } = useLanguage();
   return (
     <header>
       {/* Header Top Section */}
@@ -19,20 +20,24 @@ const Header = () => {
 
             {/* Contact Info */}
             <div className="col-lg-3 col-md-12">
+
+
+
               <div className="contact-info">
                 <div className="contact-item">
                   <i className="fas fa-phone"></i>
-                  <span>Hotline: 024 36760 888</span>
+                  <span>{contact.hotline}</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-envelope"></i>
-                  <span>dulichcanhbuomxanh@gmail.com</span>
+                  <span>{contact.email}</span>
                 </div>
                 <div className="contact-item">
                   <i className="fas fa-map-marker-alt"></i>
-                  <span>Xóm 9 xã Phù Đổng, thành phố Hà Nội</span>
+                  <span>{contact.address}</span>
                 </div>
               </div>
+
             </div>
 
             {/* Search Box */}
