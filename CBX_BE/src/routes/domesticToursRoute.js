@@ -4,11 +4,11 @@
     const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 
     // GET routes
-    router.get('/', authenticateToken,tourController.getAllTours );
+    router.get('/', tourController.getAllTours );
     router.get('/stats/summary', authenticateToken,tourController.getTourStats );
     router.get('/deleted', authenticateToken,tourController.getDeletedTours ); // Admin only
     router.get('/region/:region', authenticateToken,tourController.getToursByRegion );
-    router.get('/slug/:slug', authenticateToken,tourController.getTourBySlug );
+    router.get('/slug/:slug',authenticateToken, tourController.getTourBySlug );
     router.get('/:id', authenticateToken,tourController.getTourById );
 
     // POST routes

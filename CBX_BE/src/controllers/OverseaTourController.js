@@ -1,4 +1,4 @@
-const Tour = require("../models/DomesticTour");
+const OverseaTour = require("../models/OverseaTour");
 const TourDetail = require("../models/TourDetail"); // Thêm model TourDetail
 const logAdminAction = require("../utils/logAdminAction");
 
@@ -28,38 +28,39 @@ const createDefaultTourDetail = async (tour) => {
       originalPrice: "", // Để trống, có thể cập nhật sau
       rating: 0,
       reviews: 0,
-      groupSize: "10-15 người", // Mặc định
+      groupSize: "15-20 người", // Mặc định cho tour nước ngoài
       highlights: [
-        "Khám phá địa điểm du lịch nổi tiếng",
-        "Trải nghiệm văn hóa địa phương",
-        "Thưởng thức ẩm thực đặc sản",
-        "Dịch vụ chuyên nghiệp"
+        "Khám phá văn hóa quốc tế",
+        "Trải nghiệm ẩm thực thế giới",
+        "Tham quan các địa danh nổi tiếng",
+        "Dịch vụ chuyên nghiệp quốc tế"
       ]
     },
     scheduleData: [
       {
         day: "Ngày 1",
-        title: "Khởi hành",
+        title: "Khởi hành quốc tế",
         activities: [
-          "Tập trung và khởi hành",
-          "Di chuyển đến điểm đến",
+          "Tập trung và làm thủ tục xuất cảnh",
+          "Bay đến điểm đến",
           "Nhận phòng và nghỉ ngơi"
         ]
       }
     ],
     priceIncludes: [
-      "Xe ô tô đời mới, máy lạnh",
-      "Khách sạn tiêu chuẩn",
+      "Vé máy bay khứ hồi",
+      "Khách sạn tiêu chuẩn quốc tế",
       "Các bữa ăn theo chương trình",
       "Vé tham quan theo chương trình",
-      "Hướng dẫn viên kinh nghiệm",
-      "Bảo hiểm du lịch"
+      "Hướng dẫn viên địa phương",
+      "Visa và bảo hiểm du lịch"
     ],
     priceExcludes: [
       "Chi phí cá nhân",
       "Đồ uống có cồn",
       "Tip cho hướng dẫn viên và tài xế",
-      "Chi phí phát sinh ngoài chương trình"
+      "Chi phí phát sinh ngoài chương trình",
+      "Phí visa (nếu có)"
     ],
     landscapeImages: [],
     foodImages: []
@@ -68,15 +69,15 @@ const createDefaultTourDetail = async (tour) => {
   return await TourDetail.create(tourDetail);
 };
 
-// GET /api/tours - Lấy danh sách tất cả tour
-exports.getAllTours = async (req, res) => {
+// GET /api/oversea-tours - Lấy danh sách tất cả tour nước ngoài
+exports.getAllOverseaTours = async (req, res) => {
   try {
-    const { page = 1, limit = 10, region, departure, search } = req.query;
+    const { page = 1, limit = 10, continent, departure, search } = req.query;
     const query = {};
 
-    // Filter by region
-    if (region) {
-      query.region = { $regex: region, $options: "i" };
+    // Filter by continent
+    if (continent) {
+      query.continent = { $regex: continent, $options: "i" };
     }
 
     // Filter by departure
@@ -89,12 +90,12 @@ exports.getAllTours = async (req, res) => {
       query.title = { $regex: search, $options: "i" };
     }
 
-    const tours = await Tour.find(query)
+    const tours = await OverseaTour.find(query)
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 });
 
-    const total = await Tour.countDocuments(query);
+    const total = await OverseaTour.countDocuments(query);
 
     res.status(200).json({
       success: true,
@@ -108,21 +109,21 @@ exports.getAllTours = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy danh sách tour",
+      message: "Lỗi server khi lấy danh sách tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// GET /api/tours/:id - Lấy thông tin chi tiết tour theo ID
-exports.getTourById = async (req, res) => {
+// GET /api/oversea-tours/:id - Lấy thông tin chi tiết tour theo ID
+exports.getOverseaTourById = async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await OverseaTour.findById(req.params.id);
 
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
@@ -133,21 +134,21 @@ exports.getTourById = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy thông tin tour",
+      message: "Lỗi server khi lấy thông tin tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// GET /api/tours/slug/:slug - Lấy thông tin tour theo slug
-exports.getTourBySlug = async (req, res) => {
+// GET /api/oversea-tours/slug/:slug - Lấy thông tin tour theo slug
+exports.getOverseaTourBySlug = async (req, res) => {
   try {
-    const tour = await Tour.findOne({ slug: req.params.slug });
+    const tour = await OverseaTour.findOne({ slug: req.params.slug });
 
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
@@ -158,14 +159,14 @@ exports.getTourBySlug = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy thông tin tour",
+      message: "Lỗi server khi lấy thông tin tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// POST /api/tours - Tạo tour mới
-exports.createTour = async (req, res) => {
+// POST /api/oversea-tours - Tạo tour nước ngoài mới
+exports.createOverseaTour = async (req, res) => {
   try {
     const {
       title,
@@ -175,7 +176,7 @@ exports.createTour = async (req, res) => {
       duration,
       airline,
       scheduleInfo,
-      region,
+      continent,
     } = req.body;
 
     // Debug: Log request body
@@ -190,11 +191,11 @@ exports.createTour = async (req, res) => {
       !duration ||
       !airline ||
       !scheduleInfo ||
-      !region
+      !continent
     ) {
       return res.status(400).json({
         success: false,
-        message: "Vui lòng cung cấp đầy đủ thông tin tour",
+        message: "Vui lòng cung cấp đầy đủ thông tin tour nước ngoài",
         receivedFields: {
           title: !!title,
           image: !!image,
@@ -203,7 +204,7 @@ exports.createTour = async (req, res) => {
           duration: !!duration,
           airline: !!airline,
           scheduleInfo: !!scheduleInfo,
-          region: !!region,
+          continent: !!continent,
         },
       });
     }
@@ -213,14 +214,14 @@ exports.createTour = async (req, res) => {
     console.log("Generated slug:", slug);
 
     // Check if slug already exists - fix the query
-    const existingTour = await Tour.findOne({ slug }).setOptions({
+    const existingTour = await OverseaTour.findOne({ slug }).setOptions({
       includeDeleted: true,
     });
 
     if (existingTour && !existingTour.isDeleted) {
       return res.status(400).json({
         success: false,
-        message: "Tour với tiêu đề tương tự đã tồn tại",
+        message: "Tour nước ngoài với tiêu đề tương tự đã tồn tại",
       });
     }
 
@@ -234,45 +235,45 @@ exports.createTour = async (req, res) => {
       duration: duration.trim(),
       airline: airline.trim(),
       scheduleInfo: scheduleInfo.trim(),
-      region: region.trim(),
+      continent: continent.trim(),
       isDeleted: false,
       deletedAt: null,
     };
 
-    console.log("Tour data to save:", tourData);
+    console.log("OverseaTour data to save:", tourData);
 
     // Use create method instead of new + save
-    const savedTour = await Tour.create(tourData);
+    const savedTour = await OverseaTour.create(tourData);
     
     // Tạo TourDetail tương ứng
     try {
       await createDefaultTourDetail(savedTour);
-      console.log("Created corresponding TourDetail for tour:", savedTour.slug);
+      console.log("Created corresponding TourDetail for oversea tour:", savedTour.slug);
     } catch (detailError) {
       console.error("Error creating TourDetail:", detailError);
       // Không throw error để không ảnh hưởng đến việc tạo tour chính
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Tạo tour", savedTour);
+    await logAdminAction(req.user._id, req.user.username, "Tạo tour nước ngoài", savedTour);
 
     console.log(
-      "Saved tour:",
+      "Saved oversea tour:",
       savedTour.toObject ? savedTour.toObject() : savedTour
     );
 
     res.status(201).json({
       success: true,
-      message: "Tạo tour thành công",
+      message: "Tạo tour nước ngoài thành công",
       data: savedTour,
     });
   } catch (error) {
-    console.error("Error creating tour:", error);
+    console.error("Error creating oversea tour:", error);
 
     // Handle specific MongoDB errors
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: "Tour với tiêu đề này đã tồn tại",
+        message: "Tour nước ngoài với tiêu đề này đã tồn tại",
         error: "Duplicate key error",
       });
     }
@@ -288,15 +289,15 @@ exports.createTour = async (req, res) => {
 
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi tạo tour",
+      message: "Lỗi server khi tạo tour nước ngoài",
       error: error.message,
       stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };
 
-// PUT /api/tours/:id - Cập nhật tour
-exports.updateTour = async (req, res) => {
+// PUT /api/oversea-tours/:id - Cập nhật tour nước ngoài
+exports.updateOverseaTour = async (req, res) => {
   try {
     const {
       title,
@@ -306,14 +307,14 @@ exports.updateTour = async (req, res) => {
       duration,
       airline,
       scheduleInfo,
-      region,
+      continent,
     } = req.body;
 
-    const tour = await Tour.findById(req.params.id);
+    const tour = await OverseaTour.findById(req.params.id);
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
@@ -327,13 +328,13 @@ exports.updateTour = async (req, res) => {
       duration,
       airline,
       scheduleInfo,
-      region,
+      continent,
     };
 
     let newSlug = oldSlug;
     if (title && title !== tour.title) {
       newSlug = generateSlug(title);
-      const existingTour = await Tour.findOne({
+      const existingTour = await OverseaTour.findOne({
         slug: newSlug,
         _id: { $ne: req.params.id },
       });
@@ -341,7 +342,7 @@ exports.updateTour = async (req, res) => {
       if (existingTour) {
         return res.status(400).json({
           success: false,
-          message: "Tour với tiêu đề tương tự đã tồn tại",
+          message: "Tour nước ngoài với tiêu đề tương tự đã tồn tại",
         });
       }
 
@@ -349,7 +350,7 @@ exports.updateTour = async (req, res) => {
       updateData.slug = newSlug;
     }
 
-    const updatedTour = await Tour.findByIdAndUpdate(
+    const updatedTour = await OverseaTour.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
@@ -374,49 +375,49 @@ exports.updateTour = async (req, res) => {
           { new: true }
         );
 
-        console.log("Updated corresponding TourDetail for tour:", newSlug);
+        console.log("Updated corresponding TourDetail for oversea tour:", newSlug);
       } else {
         // Nếu không tìm thấy TourDetail, tạo mới
         await createDefaultTourDetail(updatedTour);
-        console.log("Created new TourDetail for updated tour:", newSlug);
+        console.log("Created new TourDetail for updated oversea tour:", newSlug);
       }
     } catch (detailError) {
       console.error("Error updating TourDetail:", detailError);
       // Không throw error để không ảnh hưởng đến việc cập nhật tour chính
     }
 
-    await logAdminAction(req.user._id, "Cập nhật tour", updatedTour);
+    await logAdminAction(req.user._id, "Cập nhật tour nước ngoài", updatedTour);
 
     res.status(200).json({
       success: true,
-      message: "Cập nhật tour thành công",
+      message: "Cập nhật tour nước ngoài thành công",
       data: updatedTour,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi cập nhật tour",
+      message: "Lỗi server khi cập nhật tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// DELETE /api/tours/:id - Soft delete tour
-exports.deleteTour = async (req, res) => {
+// DELETE /api/oversea-tours/:id - Soft delete tour nước ngoài
+exports.deleteOverseaTour = async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id);
+    const tour = await OverseaTour.findById(req.params.id);
 
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
     if (tour.isDeleted) {
       return res.status(400).json({
         success: false,
-        message: "Tour này đã bị xóa trước đó",
+        message: "Tour nước ngoài này đã bị xóa trước đó",
       });
     }
 
@@ -436,45 +437,45 @@ exports.deleteTour = async (req, res) => {
             deletedAt: new Date() 
           });
         }
-        console.log("Soft deleted corresponding TourDetail for tour:", tour.slug);
+        console.log("Soft deleted corresponding TourDetail for oversea tour:", tour.slug);
       }
     } catch (detailError) {
       console.error("Error deleting TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Xóa tour", tour);
+    await logAdminAction(req.user._id, "Xóa tour nước ngoài", tour);
 
     res.status(200).json({
       success: true,
-      message: "Xóa tour thành công (có thể khôi phục trong 30 ngày)",
+      message: "Xóa tour nước ngoài thành công (có thể khôi phục trong 30 ngày)",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi xóa tour",
+      message: "Lỗi server khi xóa tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// POST /api/tours/:id/restore - Khôi phục tour đã xóa
-exports.restoreTour = async (req, res) => {
+// POST /api/oversea-tours/:id/restore - Khôi phục tour nước ngoài đã xóa
+exports.restoreOverseaTour = async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id).setOptions({
+    const tour = await OverseaTour.findById(req.params.id).setOptions({
       includeDeleted: true,
     });
 
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
     if (!tour.isDeleted) {
       return res.status(400).json({
         success: false,
-        message: "Tour này chưa bị xóa",
+        message: "Tour nước ngoài này chưa bị xóa",
       });
     }
 
@@ -493,44 +494,44 @@ exports.restoreTour = async (req, res) => {
             deletedAt: null 
           });
         }
-        console.log("Restored corresponding TourDetail for tour:", tour.slug);
+        console.log("Restored corresponding TourDetail for oversea tour:", tour.slug);
       } else {
         // Nếu TourDetail bị xóa hoàn toàn, tạo lại
         await createDefaultTourDetail(tour);
-        console.log("Recreated TourDetail for restored tour:", tour.slug);
+        console.log("Recreated TourDetail for restored oversea tour:", tour.slug);
       }
     } catch (detailError) {
       console.error("Error restoring TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Khôi phục tour", tour);
+    await logAdminAction(req.user._id, "Khôi phục tour nước ngoài", tour);
 
     res.status(200).json({
       success: true,
-      message: "Khôi phục tour thành công",
+      message: "Khôi phục tour nước ngoài thành công",
       data: tour,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi khôi phục tour",
+      message: "Lỗi server khi khôi phục tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// DELETE /api/tours/:id/permanent - Xóa vĩnh viễn tour (chỉ admin)
-exports.permanentDeleteTour = async (req, res) => {
+// DELETE /api/oversea-tours/:id/permanent - Xóa vĩnh viễn tour nước ngoài (chỉ admin)
+exports.permanentDeleteOverseaTour = async (req, res) => {
   try {
     // Tìm tour với option includeDeleted để có thể tìm cả tour đã soft delete
-    const tour = await Tour.findById(req.params.id).setOptions({
+    const tour = await OverseaTour.findById(req.params.id).setOptions({
       includeDeleted: true,
     });
 
     if (!tour) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy tour",
+        message: "Không tìm thấy tour nước ngoài",
       });
     }
 
@@ -538,9 +539,9 @@ exports.permanentDeleteTour = async (req, res) => {
     try {
       const deletedDetail = await TourDetail.findOneAndDelete({ slug: tour.slug });
       if (deletedDetail) {
-        console.log("Permanently deleted corresponding TourDetail for tour:", tour.slug);
+        console.log("Permanently deleted corresponding TourDetail for oversea tour:", tour.slug);
       } else {
-        console.log("No TourDetail found for tour:", tour.slug);
+        console.log("No TourDetail found for oversea tour:", tour.slug);
       }
     } catch (detailError) {
       console.error("Error permanently deleting TourDetail:", detailError);
@@ -549,17 +550,17 @@ exports.permanentDeleteTour = async (req, res) => {
 
     // Xóa vĩnh viễn tour từ database
     // Sử dụng deleteOne thay vì findByIdAndDelete để đảm bảo xóa được cả soft deleted
-    const deleteResult = await Tour.deleteOne({ _id: req.params.id });
+    const deleteResult = await OverseaTour.deleteOne({ _id: req.params.id });
     
     if (deleteResult.deletedCount === 0) {
       return res.status(404).json({
         success: false,
-        message: "Không thể xóa tour, có thể tour không tồn tại",
+        message: "Không thể xóa tour nước ngoài, có thể tour không tồn tại",
       });
     }
 
     // Log admin action
-    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour", {
+    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour nước ngoài", {
       id: tour._id,
       title: tour.title,
       slug: tour.slug
@@ -567,7 +568,7 @@ exports.permanentDeleteTour = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Xóa vĩnh viễn tour thành công",
+      message: "Xóa vĩnh viễn tour nước ngoài thành công",
       data: {
         id: tour._id,
         title: tour.title,
@@ -575,27 +576,27 @@ exports.permanentDeleteTour = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error("Error in permanentDeleteTour:", error);
+    console.error("Error in permanentDeleteOverseaTour:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi xóa vĩnh viễn tour",
+      message: "Lỗi server khi xóa vĩnh viễn tour nước ngoài",
       error: error.message,
     });
   }
 };
 
 // Nếu bạn muốn thêm một hàm helper để kiểm tra và debug
-exports.debugTourStatus = async (req, res) => {
+exports.debugOverseaTourStatus = async (req, res) => {
   try {
     const tourId = req.params.id;
     
     // Kiểm tra tour với includeDeleted
-    const tourWithDeleted = await Tour.findById(tourId).setOptions({
+    const tourWithDeleted = await OverseaTour.findById(tourId).setOptions({
       includeDeleted: true,
     });
     
     // Kiểm tra tour không bao gồm deleted
-    const tourNormal = await Tour.findById(tourId);
+    const tourNormal = await OverseaTour.findById(tourId);
     
     // Kiểm tra TourDetail
     const tourDetail = tourWithDeleted ? await TourDetail.findOne({ slug: tourWithDeleted.slug }) : null;
@@ -622,23 +623,23 @@ exports.debugTourStatus = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi debug tour",
+      message: "Lỗi debug tour nước ngoài",
       error: error.message
     });
   }
 };
 
-// GET /api/tours/deleted - Lấy danh sách tour đã xóa (chỉ admin)
-exports.getDeletedTours = async (req, res) => {
+// GET /api/oversea-tours/deleted - Lấy danh sách tour nước ngoài đã xóa (chỉ admin)
+exports.getDeletedOverseaTours = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
 
-    const tours = await Tour.findDeleted()
+    const tours = await OverseaTour.findDeleted()
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ deletedAt: -1 });
 
-    const total = await Tour.countDocuments({ isDeleted: true });
+    const total = await OverseaTour.countDocuments({ isDeleted: true });
 
     res.status(200).json({
       success: true,
@@ -652,71 +653,71 @@ exports.getDeletedTours = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy danh sách tour đã xóa",
+      message: "Lỗi server khi lấy danh sách tour nước ngoài đã xóa",
       error: error.message,
     });
   }
 };
 
-// POST /api/tours/cleanup - Cleanup tour đã xóa quá 30 ngày (chỉ admin)
-exports.cleanupOldDeletedTours = async (req, res) => {
+// POST /api/oversea-tours/cleanup - Cleanup tour nước ngoài đã xóa quá 30 ngày (chỉ admin)
+exports.cleanupOldDeletedOverseaTours = async (req, res) => {
   try {
     // Lấy danh sách tour sẽ bị xóa để xóa TourDetail tương ứng
-    const toursToDelete = await Tour.find({
+    const toursToDelete = await OverseaTour.find({
       isDeleted: true,
       deletedAt: { $lte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
     }).setOptions({ includeDeleted: true });
 
-    console.log(`Found ${toursToDelete.length} tours to cleanup`);
+    console.log(`Found ${toursToDelete.length} oversea tours to cleanup`);
 
     // Xóa các TourDetail tương ứng
     for (const tour of toursToDelete) {
       try {
         const deletedDetail = await TourDetail.findOneAndDelete({ slug: tour.slug });
         if (deletedDetail) {
-          console.log("Cleaned up TourDetail for tour:", tour.slug);
+          console.log("Cleaned up TourDetail for oversea tour:", tour.slug);
         } else {
-          console.log("No TourDetail found for tour:", tour.slug);
+          console.log("No TourDetail found for oversea tour:", tour.slug);
         }
       } catch (detailError) {
-        console.error("Error cleaning up TourDetail for tour:", tour.slug, detailError);
+        console.error("Error cleaning up TourDetail for oversea tour:", tour.slug, detailError);
       }
     }
 
-    const result = await Tour.cleanupOldDeleted();
+    const result = await OverseaTour.cleanupOldDeleted();
 
-    await logAdminAction(req.user._id, "Cleanup tour", null);
+    await logAdminAction(req.user._id, "Cleanup tour nước ngoài", null);
 
     res.status(200).json({
       success: true,
-      message: `Đã xóa vĩnh viễn ${result.deletedCount} tour quá 30 ngày`,
+      message: `Đã xóa vĩnh viễn ${result.deletedCount} tour nước ngoài quá 30 ngày`,
       deletedCount: result.deletedCount,
     });
   } catch (error) {
-    console.error("Error in cleanupOldDeletedTours:", error);
+    console.error("Error in cleanupOldDeletedOverseaTours:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi cleanup tour",
+      message: "Lỗi server khi cleanup tour nước ngoài",
       error: error.message,
     });
   }
 };
 
-// GET /api/tours/region/:region - Lấy tour theo vùng miền
-exports.getToursByRegion = async (req, res) => {
+// GET /api/oversea-tours/continent/:continent - Lấy tour theo châu lục
+exports.getOverseaToursByContinent = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
-    const region = req.params.region;
+    const continent = req.params.continent;
 
-    const tours = await Tour.find({
-      region: { $regex: region, $options: "i" },
+    const tours = await OverseaTour.find({
+      continent: { $regex: continent, $options: "i" },
     })
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ createdAt: -1 });
 
-    const total = await Tour.countDocuments({
-      region: { $regex: region, $options: "i" },
+    const total = await OverseaTour.countDocuments({
+      continent: { $regex: continent, $options: "i" },
     });
 
     res.status(200).json({
@@ -731,32 +732,32 @@ exports.getToursByRegion = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy tour theo vùng miền",
+      message: "Lỗi server khi lấy tour nước ngoài theo châu lục",
       error: error.message,
     });
   }
 };
 
-// GET /api/tours/stats/summary - Thống kê tổng quan
-exports.getTourStats = async (req, res) => {
+// GET /api/oversea-tours/stats/summary - Thống kê tổng quan tour nước ngoài
+exports.getOverseaTourStats = async (req, res) => {
   try {
-    const totalTours = await Tour.countDocuments().setOptions({
+    const totalTours = await OverseaTour.countDocuments().setOptions({
       includeDeleted: true,
     });
-    const deletedTours = await Tour.countDocuments({ isDeleted: true });
-    const activeTours = await Tour.countDocuments({ isDeleted: { $ne: true } });
+    const deletedTours = await OverseaTour.countDocuments({ isDeleted: true });
+    const activeTours = await OverseaTour.countDocuments({ isDeleted: { $ne: true } });
 
-    const regionStats = await Tour.aggregate([
+    const continentStats = await OverseaTour.aggregate([
       { $match: { isDeleted: { $ne: true } } },
       {
         $group: {
-          _id: "$region",
+          _id: "$continent",
           count: { $sum: 1 },
         },
       },
     ]);
 
-    const departureStats = await Tour.aggregate([
+    const departureStats = await OverseaTour.aggregate([
       { $match: { isDeleted: { $ne: true } } },
       {
         $group: {
@@ -766,8 +767,18 @@ exports.getTourStats = async (req, res) => {
       },
     ]);
 
+    const airlineStats = await OverseaTour.aggregate([
+      { $match: { isDeleted: { $ne: true } } },
+      {
+        $group: {
+          _id: "$airline",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
     // Tours will be deleted permanently in next 30 days
-    const toBeDeletedCount = await Tour.countDocuments({
+    const toBeDeletedCount = await OverseaTour.countDocuments({
       isDeleted: true,
       deletedAt: { $exists: true },
     });
@@ -779,14 +790,15 @@ exports.getTourStats = async (req, res) => {
         activeTours,
         deletedTours,
         toBeDeletedCount,
-        regionStats,
+        continentStats,
         departureStats,
+        airlineStats,
       },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy thống kê",
+      message: "Lỗi server khi lấy thống kê tour nước ngoài",
       error: error.message,
     });
   }
