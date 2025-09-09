@@ -26,34 +26,43 @@ const createAccommodation = async (req, res) => {
 
     const savedAccommodation = await accommodation.save();
 
-    // Create accommodation detail if provided
-    let accommodationDetail = null;
-    if (detailData) {
-      accommodationDetail = new AccommodationDetail({
-        accommodationId: savedAccommodation._id,
-        slug: uniqueSlug, // Same slug as accommodation
-        name,
-        location,
-        address: detailData.address,
-        description: detailData.description,
-        stars,
-        rating,
-        reviewCount,
-        amenities: detailData.amenities || [],
-        distances: detailData.distances || {},
-        images: detailData.images || [],
-        roomTypes: detailData.roomTypes || []
-      });
+    // Always create accommodation detail automatically
+    const accommodationDetail = new AccommodationDetail({
+      accommodationId: savedAccommodation._id,
+      slug: uniqueSlug, // Same slug as accommodation
+      name, // Same name as accommodation
+      location, // Same location as accommodation
+      address: detailData?.address || `${location}, Việt Nam`, // Default address if not provided
+      description: detailData?.description || `${name} tọa lạc tại ${location}. Với ${stars} sao, đây là lựa chọn tuyệt vời cho kỳ nghỉ của bạn.`, // Default description
+      stars, // Same stars as accommodation
+      rating: rating || 0, // Same rating as accommodation
+      reviewCount: reviewCount || 0, // Same reviewCount as accommodation
+      amenities: detailData?.amenities || ['WiFi miễn phí', 'Dịch vụ phòng'], // Default amenities
+      distances: detailData?.distances || {
+        airport: 'N/A',
+        beach: 'N/A', 
+        mall: 'N/A',
+        cityCenter: 'N/A'
+      }, // Default distances
+      images: detailData?.images || [image], // Use accommodation image as default
+      roomTypes: detailData?.roomTypes || [
+        {
+          type: 'standard',
+          name: 'Phòng Standard',
+          price: parseInt(price.replace(/[^\d]/g, '')) || 1000000, // Extract number from price string
+          description: 'Phòng tiêu chuẩn với đầy đủ tiện nghi cơ bản'
+        }
+      ] // Default room type
+    });
 
-      await accommodationDetail.save();
-    }
+    const savedAccommodationDetail = await accommodationDetail.save();
 
     res.status(201).json({
       success: true,
       message: 'Accommodation created successfully',
       data: {
         accommodation: savedAccommodation,
-        accommodationDetail
+        accommodationDetail: savedAccommodationDetail
       }
     });
   } catch (error) {
@@ -64,7 +73,6 @@ const createAccommodation = async (req, res) => {
     });
   }
 };
-
 // Get all accommodations (not deleted)
 const getAllAccommodations = async (req, res) => {
   try {

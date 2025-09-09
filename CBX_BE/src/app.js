@@ -8,6 +8,8 @@ const domesticTourRoutes = require('./routes/domesticToursRoute');
 const tourDetailRoute = require('./routes/tourDetailRoute');
 const overseaTourRoute = require('./routes/overseaTourRoute');
 const flightRoute = require('./routes/flightRoute');
+const accommodationRoute = require('./routes/accommodationRoute');
+const accommodationDetailRoute = require('./routes/accommodationDetailRoute');
 
 const app = express();
 
@@ -22,6 +24,9 @@ app.use('/api/tour-noi-dia', domesticTourRoutes);
 app.use('/api/tour-quoc-te', overseaTourRoute);
 app.use('/api/tour', tourDetailRoute);
 app.use('/api/flight', flightRoute);
+app.use('/api/accommodation', accommodationRoute)
+app.use('/api/accommodationDetail', accommodationDetailRoute)
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

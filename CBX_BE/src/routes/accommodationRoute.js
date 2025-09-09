@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
+
 const {
   createAccommodation,
   getAllAccommodations,
@@ -9,10 +11,8 @@ const {
   permanentDeleteAccommodation,
   restoreAccommodation,
   cleanupOldDeleted
-} = require('../controllers/accommodationController');
+} = require('../controllers/AccommodationController');
 
-// Create accommodation
-router.post('/', createAccommodation);
 
 // Get all accommodations
 router.get('/', getAllAccommodations);
@@ -20,19 +20,22 @@ router.get('/', getAllAccommodations);
 // Get accommodation by slug
 router.get('/:slug', getAccommodationBySlug);
 
+// Create accommodation
+router.post('/',authenticateToken, createAccommodation);
+
 // Update accommodation
-router.put('/:id', updateAccommodation);
+router.put('/:id',authenticateToken, updateAccommodation);
 
 // Soft delete accommodation
-router.delete('/:id', deleteAccommodation);
+router.delete('/:id',authenticateToken, deleteAccommodation);
 
 // Permanent delete accommodation
-router.delete('/:id/permanent', permanentDeleteAccommodation);
+router.delete('/:id/permanent',authenticateToken, permanentDeleteAccommodation);
 
 // Restore deleted accommodation
-router.patch('/:id/restore', restoreAccommodation);
+router.patch('/:id/restore',authenticateToken, restoreAccommodation);
 
 // Cleanup old deleted records
-router.post('/cleanup', cleanupOldDeleted);
+router.post('/cleanup',authenticateToken, cleanupOldDeleted);
 
 module.exports = router;
