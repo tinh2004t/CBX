@@ -89,7 +89,6 @@ const accommodationDetailSchema = new mongoose.Schema({
 
 // Index for performance
 accommodationDetailSchema.index({ accommodationId: 1 });
-accommodationDetailSchema.index({ slug: 1 });
 accommodationDetailSchema.index({ isDeleted: 1 });
 
 module.exports = mongoose.model('AccommodationDetail', accommodationDetailSchema);

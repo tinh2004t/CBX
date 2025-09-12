@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const accommodationSchema = new mongoose.Schema({
   slug: {
     type: String,
-    required: true,
+    required: true, 
     unique: true
   },
   name: {
@@ -57,7 +57,6 @@ const accommodationSchema = new mongoose.Schema({
 });
 
 // Index for performance
-accommodationSchema.index({ slug: 1 });
 accommodationSchema.index({ isDeleted: 1 });
 accommodationSchema.index({ deletedAt: 1 });
 

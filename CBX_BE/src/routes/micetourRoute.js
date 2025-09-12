@@ -7,7 +7,7 @@ const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 router.get('/', miceTourRoute.getAllMiceTours);
 router.get('/stats/summary', authenticateToken, miceTourRoute.getMiceTourStats);
 router.get('/deleted', authenticateToken, miceTourRoute.getDeletedMiceTours); // Admin only
-router.get('/slug/:slug', authenticateToken, miceTourRoute.getMiceTourBySlug);
+router.get('/slug/:slug', miceTourRoute.getMiceTourBySlug);
 router.get('/:id', authenticateToken, miceTourRoute.getMiceTourById);
 
 // POST routes

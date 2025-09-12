@@ -37,7 +37,7 @@ router.get('/', transportController.getAllTransports);
 router.get('/search/route', transportController.searchByRoute);
 
 // GET /api/transports/:id - Lấy thông tin một chuyến xe theo ID hoặc slug
-router.get('/:id', transportController.getTransportById);
+router.get('/:id', authenticateToken, transportController.getTransportById);
 router.get('/slug/:slug', transportController.getTransportBySlug);
 router.get('/deleted', authenticateToken, transportController.getDeletedTransports);
 router.get('/cleanup/preview', authenticateToken, transportController.previewCleanup);

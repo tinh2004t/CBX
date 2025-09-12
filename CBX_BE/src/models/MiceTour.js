@@ -106,7 +106,6 @@ miceTourSchema.index({ price: 1 });
 miceTourSchema.index({ rating: -1 });
 miceTourSchema.index({ category: 1 });
 miceTourSchema.index({ createdAt: -1 });
-miceTourSchema.index({ slug: 1 }, { unique: true });
 
 // Static methods
 miceTourSchema.statics.findByLocation = function(location) {

@@ -11,7 +11,10 @@ const flightRoute = require('./routes/flightRoute');
 const accommodationRoute = require('./routes/accommodationRoute');
 const accommodationDetailRoute = require('./routes/accommodationDetailRoute');
 const micetourRoute = require('./routes/micetourRoute');
+const teamBuildingRoute = require('./routes/teamBuildingRoute');
 const transportRoute = require('./routes/transportRoute');
+const blog = require('./routes/blogPostRoute');
+const settingsRoute = require('./routes/settingRoute');
 
 const app = express();
 
@@ -28,8 +31,11 @@ app.use('/api/tour', tourDetailRoute);
 app.use('/api/flight', flightRoute);
 app.use('/api/accommodation', accommodationRoute)
 app.use('/api/accommodationDetail', accommodationDetailRoute)
+app.use('/api/TeamBuilding', teamBuildingRoute)
 app.use('/api/mice', micetourRoute)
 app.use('/api/transport', transportRoute)
+app.use('/api/blog', blog)
+app.use('/api/settings', settingsRoute)
 
 
 // Error handling middleware

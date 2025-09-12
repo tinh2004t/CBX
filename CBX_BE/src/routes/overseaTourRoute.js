@@ -7,8 +7,8 @@ const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 router.get('/', overseaTourController.getAllOverseaTours);
 router.get('/stats/summary', authenticateToken, overseaTourController.getOverseaTourStats);
 router.get('/deleted', authenticateToken, overseaTourController.getDeletedOverseaTours); // Admin only
-router.get('/continent/:continent', authenticateToken, overseaTourController.getOverseaToursByContinent);
-router.get('/slug/:slug', authenticateToken, overseaTourController.getOverseaTourBySlug);
+router.get('/continent/:continent', overseaTourController.getOverseaToursByContinent);
+router.get('/slug/:slug', overseaTourController.getOverseaTourBySlug);
 router.get('/:id', authenticateToken, overseaTourController.getOverseaTourById);
 
 // POST routes
