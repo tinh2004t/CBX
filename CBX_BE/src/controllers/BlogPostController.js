@@ -2,6 +2,7 @@
 const BlogPost = require('../models/BlogPost');
 const BlogPostData = require('../models/BlogPostData');
 const mongoose = require('mongoose');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Helper functions bên ngoài class để tránh vấn đề context
 const generateSlug = (title) => {
@@ -56,6 +57,7 @@ class BlogPostController {
         category,
         location,
         image,
+        content,
         excerpt,
         publishDate
       } = req.body;
@@ -76,6 +78,7 @@ class BlogPostController {
       });
 
       await blogPost.save({ session });
+      await logAdminAction(req.user._id, req.user.username, 'Tạo bài viết', blogPost.title);
 
       // Tạo BlogPostData tương ứng
       const blogPostData = new BlogPostData({
@@ -84,6 +87,7 @@ class BlogPostController {
         location: blogPost.location.city,
         category: blogPost.category,
         author: blogPost.author,
+        content: content,
         publishDate: blogPost.publishDate,
         slug: blogPost.slug
       });
@@ -307,36 +311,39 @@ class BlogPostController {
 
   // Cập nhật nội dung bài viết
   async updateBlogPostContent(req, res) {
-    try {
-      const { id } = req.params;
-      const { content } = req.body;
+  try {
+    const { slug } = req.params; // Đổi từ id thành slug
+    const { content } = req.body;
 
-      const blogPostData = await BlogPostData.findOneAndUpdate(
-        { blogPostId: id, isDeleted: false },
-        { content },
-        { new: true }
-      );
+    const blogPostData = await BlogPostData.findOneAndUpdate(
+      { slug: slug, isDeleted: false }, // Đổi từ blogPostId: id thành slug: slug
+      { content },
+      { new: true }
+    );
 
-      if (!blogPostData) {
-        return res.status(404).json({
-          success: false,
-          message: 'Không tìm thấy bài viết'
-        });
-      }
-
-      res.json({
-        success: true,
-        message: 'Cập nhật nội dung thành công',
-        data: blogPostData
-      });
-    } catch (error) {
-      console.error('Error updating blog post content:', error);
-      res.status(500).json({
+    if (!blogPostData) {
+      return res.status(404).json({
         success: false,
-        message: 'Lỗi cập nhật nội dung'
+        message: 'Không tìm thấy bài viết'
       });
     }
+
+    // Log action trước khi response
+    await logAdminAction(req.user._id, req.user.username, 'Cập nhật nội dung bài viết', blogPostData.title || `Blog Slug: ${slug}`);
+
+    res.json({
+      success: true,
+      message: 'Cập nhật nội dung thành công',
+      data: blogPostData
+    });
+  } catch (error) {
+    console.error('Error updating blog post content:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi cập nhật nội dung'
+    });
   }
+}
 
   // API để tạo lại slug cho bài viết cụ thể
   async regenerateSlug(req, res) {
@@ -376,6 +383,7 @@ class BlogPostController {
       );
 
       await session.commitTransaction();
+ 
 
       res.json({
         success: true,
@@ -492,6 +500,8 @@ class BlogPostController {
         { session }
       );
 
+      await logAdminAction(req.user._id, req.user.username, 'Xóa bài viết', blogPost.title);
+
       // Soft delete BlogPostData
       await BlogPostData.findOneAndUpdate(
         { blogPostId: id },
@@ -542,6 +552,8 @@ class BlogPostController {
         { blogPostId: id },
         { session }
       );
+
+      await logAdminAction(req.user._id, req.user.username, 'Xóa vĩnh viễn bài viết', blogPost.title);
 
       // Xóa vĩnh viễn BlogPost
       await BlogPost.findByIdAndDelete(id, { session });
@@ -751,6 +763,8 @@ class BlogPostController {
         { session }
       );
 
+      await logAdminAction(req.user._id, req.user.username, 'Khôi phục bài viết', blogPost.title);
+
       // Restore BlogPostData
       await BlogPostData.findOneAndUpdate(
         { blogPostId: id },
@@ -778,6 +792,378 @@ class BlogPostController {
       session.endSession();
     }
   }
+
+  async getBlogPostContent(req, res) {
+  try {
+    const { slug } = req.params;
+
+    const blogPostData = await BlogPostData.findOne({
+      slug: slug,
+      isDeleted: false
+    });
+
+    if (!blogPostData) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy nội dung bài viết'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        content: blogPostData.content || '<p>Nội dung đang được cập nhật...</p>'
+      }
+    });
+  } catch (error) {
+    console.error('Error getting blog post content:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi lấy nội dung bài viết'
+    });
+  }
+}
+
+  async getBlogPostBySlugUnified(req, res) {
+    try {
+      const { slug } = req.params;
+
+      // Lấy BlogPostData và populate BlogPost
+      const blogPostData = await BlogPostData.findOne({
+        slug: slug,
+        isDeleted: false
+      }).populate('blogPostId');
+
+      if (!blogPostData || !blogPostData.blogPostId) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy bài viết'
+        });
+      }
+
+      const blogPost = blogPostData.blogPostId;
+
+      // Tăng view count cho cả hai collection
+      await Promise.all([
+        BlogPost.findByIdAndUpdate(blogPost._id, {
+          $inc: { 'stats.views': 1 }
+        }),
+        BlogPostData.findByIdAndUpdate(blogPostData._id, {
+          $inc: { views: 1 }
+        })
+      ]);
+
+      // Tạo unified response
+      const unifiedData = {
+        // Thông tin từ BlogPost
+        _id: blogPost._id,
+        title: blogPost.title,
+        author: blogPost.author,
+        category: blogPost.category,
+        location: blogPost.location,
+        image: blogPost.image,
+        excerpt: blogPost.excerpt,
+        publishDate: blogPost.publishDate,
+        slug: blogPost.slug,
+        isDeleted: blogPost.isDeleted,
+        stats: blogPost.stats,
+        tags: blogPost.tags,
+        createdAt: blogPost.createdAt,
+        updatedAt: blogPost.updatedAt,
+        
+        // Thông tin từ BlogPostData
+        content: blogPostData.content || '<p>Nội dung đang được cập nhật...</p>',
+        views: blogPostData.views || 0,
+        
+        // Metadata
+        dataId: blogPostData._id
+      };
+
+      res.json({
+        success: true,
+        data: unifiedData
+      });
+    } catch (error) {
+      console.error('Error getting unified blog post by slug:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi lấy bài viết'
+      });
+    }
+  }
+
+  // PUT - Cập nhật toàn bộ thông tin bài viết theo slug (unified)
+  async updateBlogPostBySlugUnified(req, res) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const { slug } = req.params;
+      const updateData = req.body;
+
+      // Tìm BlogPostData để lấy blogPostId
+      const blogPostData = await BlogPostData.findOne({
+        slug: slug,
+        isDeleted: false
+      }).populate('blogPostId');
+
+      if (!blogPostData || !blogPostData.blogPostId) {
+        await session.abortTransaction();
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy bài viết'
+        });
+      }
+
+      const blogPost = blogPostData.blogPostId;
+      const blogPostId = blogPost._id;
+
+      // Tách dữ liệu cho BlogPost và BlogPostData
+      const {
+        content,
+        ...blogPostUpdateData
+      } = updateData;
+
+      let newSlug = slug; // Giữ slug hiện tại
+
+      // Nếu title được cập nhật, tạo slug mới
+      if (blogPostUpdateData.title && blogPostUpdateData.title !== blogPost.title) {
+        newSlug = await generateUniqueSlug(blogPostUpdateData.title, blogPostId);
+        blogPostUpdateData.slug = newSlug;
+      }
+
+      // Cập nhật BlogPost nếu có dữ liệu
+      let updatedBlogPost = blogPost;
+      if (Object.keys(blogPostUpdateData).length > 0) {
+        updatedBlogPost = await BlogPost.findByIdAndUpdate(
+          blogPostId,
+          blogPostUpdateData,
+          { new: true, session }
+        );
+      }
+
+      // Cập nhật BlogPostData
+      const blogPostDataUpdate = {};
+
+      // Đồng bộ thông tin từ BlogPost
+      if (updatedBlogPost.title !== blogPostData.title) blogPostDataUpdate.title = updatedBlogPost.title;
+      if (updatedBlogPost.location?.city !== blogPostData.location) blogPostDataUpdate.location = updatedBlogPost.location?.city;
+      if (updatedBlogPost.category !== blogPostData.category) blogPostDataUpdate.category = updatedBlogPost.category;
+      if (JSON.stringify(updatedBlogPost.author) !== JSON.stringify(blogPostData.author)) blogPostDataUpdate.author = updatedBlogPost.author;
+      if (updatedBlogPost.publishDate !== blogPostData.publishDate) blogPostDataUpdate.publishDate = updatedBlogPost.publishDate;
+      if (updatedBlogPost.slug !== blogPostData.slug) blogPostDataUpdate.slug = updatedBlogPost.slug;
+
+      // Cập nhật content nếu có
+      if (content !== undefined) blogPostDataUpdate.content = content;
+
+      // Thực hiện cập nhật BlogPostData nếu có thay đổi
+      let updatedBlogPostData = blogPostData;
+      if (Object.keys(blogPostDataUpdate).length > 0) {
+        updatedBlogPostData = await BlogPostData.findByIdAndUpdate(
+          blogPostData._id,
+          blogPostDataUpdate,
+          { new: true, session }
+        );
+      }
+
+      await session.commitTransaction();
+
+      // Log action
+      await logAdminAction(req.user._id, req.user.username, 'Cập nhật bài viết (unified)', updatedBlogPost.title);
+
+      // Tạo unified response
+      const unifiedData = {
+        _id: updatedBlogPost._id,
+        title: updatedBlogPost.title,
+        author: updatedBlogPost.author,
+        category: updatedBlogPost.category,
+        location: updatedBlogPost.location,
+        image: updatedBlogPost.image,
+        excerpt: updatedBlogPost.excerpt,
+        publishDate: updatedBlogPost.publishDate,
+        slug: updatedBlogPost.slug,
+        isDeleted: updatedBlogPost.isDeleted,
+        stats: updatedBlogPost.stats,
+        tags: updatedBlogPost.tags,
+        createdAt: updatedBlogPost.createdAt,
+        updatedAt: updatedBlogPost.updatedAt,
+        content: updatedBlogPostData.content,
+        views: updatedBlogPostData.views,
+        dataId: updatedBlogPostData._id
+      };
+
+      res.json({
+        success: true,
+        message: 'Cập nhật bài viết thành công',
+        data: unifiedData,
+        slugChanged: newSlug !== slug ? { oldSlug: slug, newSlug } : null
+      });
+
+    } catch (error) {
+      await session.abortTransaction();
+      console.error('Error updating unified blog post by slug:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Lỗi cập nhật bài viết'
+      });
+    } finally {
+      session.endSession();
+    }
+  }
+
+  // PATCH - Cập nhật từng phần thông tin bài viết theo slug (lighter version)
+  async patchBlogPostBySlugUnified(req, res) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const { slug } = req.params;
+      const updateData = req.body;
+
+      // Tìm BlogPostData để lấy blogPostId
+      const blogPostData = await BlogPostData.findOne({
+        slug: slug,
+        isDeleted: false
+      });
+
+      if (!blogPostData) {
+        await session.abortTransaction();
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy bài viết'
+        });
+      }
+
+      const blogPostId = blogPostData.blogPostId;
+
+      // Tách dữ liệu cho BlogPost và BlogPostData
+      const {
+        content,
+        ...blogPostUpdateData
+      } = updateData;
+
+      let responseData = {};
+
+      // Cập nhật BlogPost nếu có dữ liệu
+      if (Object.keys(blogPostUpdateData).length > 0) {
+        // Xử lý slug nếu title thay đổi
+        if (blogPostUpdateData.title) {
+          const currentPost = await BlogPost.findById(blogPostId);
+          if (currentPost && blogPostUpdateData.title !== currentPost.title) {
+            const newSlug = await generateUniqueSlug(blogPostUpdateData.title, blogPostId);
+            blogPostUpdateData.slug = newSlug;
+            responseData.slugChanged = { oldSlug: slug, newSlug };
+          }
+        }
+
+        const updatedBlogPost = await BlogPost.findByIdAndUpdate(
+          blogPostId,
+          blogPostUpdateData,
+          { new: true, session }
+        );
+
+        // Đồng bộ thông tin sang BlogPostData
+        const syncData = {};
+        if (updatedBlogPost.title) syncData.title = updatedBlogPost.title;
+        if (updatedBlogPost.location?.city) syncData.location = updatedBlogPost.location.city;
+        if (updatedBlogPost.category) syncData.category = updatedBlogPost.category;
+        if (updatedBlogPost.author) syncData.author = updatedBlogPost.author;
+        if (updatedBlogPost.publishDate) syncData.publishDate = updatedBlogPost.publishDate;
+        if (updatedBlogPost.slug) syncData.slug = updatedBlogPost.slug;
+
+        if (Object.keys(syncData).length > 0) {
+          await BlogPostData.findByIdAndUpdate(
+            blogPostData._id,
+            syncData,
+            { session }
+          );
+        }
+
+        responseData.blogPost = updatedBlogPost;
+      }
+
+      // Cập nhật content nếu có
+      if (content !== undefined) {
+        const updatedContent = await BlogPostData.findByIdAndUpdate(
+          blogPostData._id,
+          { content },
+          { new: true, session }
+        );
+        responseData.content = updatedContent.content;
+      }
+
+      await session.commitTransaction();
+
+      // Log action
+      await logAdminAction(req.user._id, req.user.username, 'Cập nhật bài viết (patch)', `Slug: ${slug}`);
+
+      res.json({
+        success: true,
+        message: 'Cập nhật bài viết thành công',
+        data: responseData
+      });
+
+    } catch (error) {
+      await session.abortTransaction();
+      console.error('Error patching unified blog post by slug:', error);
+      res.status(400).json({
+        success: false,
+        message: error.message || 'Lỗi cập nhật bài viết'
+      });
+    } finally {
+      session.endSession();
+    }
+  }
+
+  // GET - Lấy chỉ metadata bài viết theo slug (không có content - faster)
+  async getBlogPostMetadataBySlug(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const blogPostData = await BlogPostData.findOne({
+        slug: slug,
+        isDeleted: false
+      }).populate('blogPostId', '-__v'); // Exclude __v field
+
+      if (!blogPostData || !blogPostData.blogPostId) {
+        return res.status(404).json({
+          success: false,
+          message: 'Không tìm thấy bài viết'
+        });
+      }
+
+      const blogPost = blogPostData.blogPostId;
+
+      const metadata = {
+        _id: blogPost._id,
+        title: blogPost.title,
+        author: blogPost.author,
+        category: blogPost.category,
+        location: blogPost.location,
+        image: blogPost.image,
+        excerpt: blogPost.excerpt,
+        publishDate: blogPost.publishDate,
+        slug: blogPost.slug,
+        stats: blogPost.stats,
+        tags: blogPost.tags,
+        views: blogPostData.views || 0,
+        createdAt: blogPost.createdAt,
+        updatedAt: blogPost.updatedAt
+      };
+
+      res.json({
+        success: true,
+        data: metadata
+      });
+    } catch (error) {
+      console.error('Error getting blog post metadata by slug:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Lỗi lấy metadata bài viết'
+      });
+    }
+  }
+
 }
 
 module.exports = new BlogPostController();

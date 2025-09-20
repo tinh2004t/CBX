@@ -1,5 +1,6 @@
 // controllers/settingsController.js
 const Settings = require('../models/Settings');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Lấy thông tin settings
 const getSettings = async (req, res) => {
@@ -59,6 +60,7 @@ const updateSettings = async (req, res) => {
       data: updatedSettings,
       message: 'Cập nhật settings thành công'
     });
+    await logAdminAction(req.user._id, 'Cập nhật settings');
   } catch (error) {
     console.error('Error updating settings:', error);
     

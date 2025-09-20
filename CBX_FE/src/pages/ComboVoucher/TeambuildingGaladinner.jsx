@@ -12,7 +12,7 @@ const mockData = {
         viewCount: 2341,
         price: "Liên hệ",
         location: "Hà Nội, Hồ Chí Minh",
-        description: "Tổ chức team building ngày càng được nhiều doanh nghiệp quan tâm. Một đơn vị tổ chức teambuilding chuyên nghiệp phải bằng kinh nghiệm của mình để lắng nghe và thấu hiểu mong muốn của khách hàng, đáp ứng nhu cầu, giúp khách hàng không những đạt được mục tiêu của chuyến đi mà còn khai thác chiều sâu và để lại nhiều cảm xúc lắng đọng sau chuyến đi. Ở Du Lịch Việt mọi loại hình tour, teambuilding từ các chương trình team building vui chơi vận động sôi động gắn kết đồng đội, xây dựng đội ngũ,  đến các chương trình teambuilding chuyên đề bồi dưỡng và đào đạo nhân sự, những chương trình team building đặc biệt để kick off doanh nghiệp hay những sự kiện nhằm lan tỏa thương hiệu, xây dựng văn hóa nội bộ bền vững.. đều có thể thực hiện được. Đội ngũ chuyên viên teambuilding của Du Lịch Việt năng động, nhiệt huyết và không ngừng sáng tạo với những kịch bản mới lạ và độc đáo, đưa các đia danh du lịch trên nhiều tỉnh thành trong nước TPHCM, Hà Nội, Đà Nẵng, Bình Dương, Đồng Nai, Bến Tre, Vũng Tàu..Ninh Bình, Sapa, Thái Nguyên, Hòa Bình, Quảng Ninh...và các nước trong khu vực như Singapore, Thái Lan, Malaysia, Hàn Quốc.. để khai thác teambuilding..đáp ứng được các nhu cầu của khách hàng 3 miền. Du Lịch Việt, top 10 công ty du lịch hàng đầu Việt Nam, tự hào là một trong những đơn vị tổ chức team building uy tín, chuyên nghiệp hàng đầu Việt Nam! Du Lịch Việt luôn đồng hành cùng doanh nghiệp trên con đường phát triển thịnh vượng."
+        description: "Tổ chức g."
     },
     contact: {
         phone: "024 36760 888",

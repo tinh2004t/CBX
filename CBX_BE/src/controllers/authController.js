@@ -1,6 +1,7 @@
 const User = require('../models/User');
-const AdminLog = require('../models/AdminLog');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Tạo JWT token
 const generateToken = (userId, username) => {
@@ -17,19 +18,7 @@ const generateToken = (userId, username) => {
 };
 
 // Ghi log hoạt động admin
-const logAdminAction = async (adminId, adminUsername, action, targetUser = null, details = {}) => {
-  try {
-    await AdminLog.create({
-      adminId: adminId.toString(),
-      adminUsername,
-      action,
-      targetUser,
-      details
-    });
-  } catch (error) {
-    console.error('Lỗi ghi log:', error);
-  }
-};
+
 
 // Đăng nhập
 const login = async (req, res) => {
@@ -138,6 +127,7 @@ const createAccount = async (req, res) => {
     });
 
     await newUser.save();
+
 
     // Ghi log
     await logAdminAction(
@@ -261,11 +251,192 @@ const getAdminLogs = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Vui lòng nhập mật khẩu cũ và mật khẩu mới"
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy người dùng"
+      });
+    }
+
+    // Kiểm tra mật khẩu cũ
+    const isMatch = await user.comparePassword(oldPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Mật khẩu cũ không đúng"
+      });
+    }
+
+    // 🚀 Gán trực tiếp, middleware sẽ hash
+    user.passwordHash = newPassword;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Đổi mật khẩu thành công"
+    });
+
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Có lỗi xảy ra khi đổi mật khẩu"
+    });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { username, role, password  } = req.body;
+
+    // Kiểm tra user tồn tại
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy user'
+      });
+    }
+
+    // Không cho phép user thường sửa SuperAdmin
+    if (user.role === 'SuperAdmin' && req.user.role !== 'SuperAdmin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Không có quyền sửa SuperAdmin'
+      });
+    }
+
+    // Không cho phép user tự hạ cấp quyền của mình
+    if (userId === req.user.id && role && role !== user.role) {
+      return res.status(403).json({
+        success: false,
+        message: 'Không thể thay đổi quyền của chính mình'
+      });
+    }
+
+    // Cập nhật thông tin
+    const updateData = {};
+    if (username) updateData.username = username;
+    if (role) updateData.role = role;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.passwordHash = await bcrypt.hash(password, salt);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateData,
+      { 
+        new: true,
+        runValidators: true 
+      }
+    ).select('-passwordHash');
+
+    res.json({
+      success: true,
+      message: 'Cập nhật user thành công',
+      data: updatedUser
+    });
+
+    await logAdminAction(req.user._id, req.user.username, 'Cập nhật user', updatedUser.username);
+
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username đã tồn tại'
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi cập nhật user',
+      error: error.message
+    });
+  }
+};
+
+// Xóa user
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Kiểm tra user tồn tại
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'Không tìm thấy user'
+      });
+    }
+
+    // Không cho phép xóa chính mình
+    if (userId === req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'Không thể xóa chính mình'
+      });
+    }
+
+    // Không cho phép user thường xóa SuperAdmin
+    if (user.role === 'SuperAdmin' && req.user.role !== 'SuperAdmin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Không có quyền xóa SuperAdmin'
+      });
+    }
+
+    // Kiểm tra có phải SuperAdmin cuối cùng không
+    if (user.role === 'SuperAdmin') {
+      const superAdminCount = await User.countDocuments({ role: 'SuperAdmin' });
+      if (superAdminCount <= 1) {
+        return res.status(403).json({
+          success: false,
+          message: 'Không thể xóa SuperAdmin cuối cùng'
+        });
+      }
+    }
+
+    await User.findByIdAndDelete(userId);
+    await logAdminAction(req.user._id, req.user.username, 'Xóa user', user.username);
+
+    res.json({
+      success: true,
+      message: 'Xóa user thành công'
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Lỗi server khi xóa user',
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   login,
   createAccount,
   getCurrentUser,
   logout,
   getAllUsers,
-  getAdminLogs
+  getAdminLogs,
+  changePassword,
+  updateUser,
+  deleteUser
 };

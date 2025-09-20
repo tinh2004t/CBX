@@ -254,7 +254,7 @@ exports.createOverseaTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc tạo tour chính
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Tạo tour nước ngoài", savedTour);
+    await logAdminAction(req.user._id, req.user.username, "Tạo tour nước ngoài", savedTour.title);
 
     console.log(
       "Saved oversea tour:",
@@ -386,7 +386,7 @@ exports.updateOverseaTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc cập nhật tour chính
     }
 
-    await logAdminAction(req.user._id, "Cập nhật tour nước ngoài", updatedTour);
+    await logAdminAction(req.user._id, "Cập nhật tour nước ngoài", updatedTour.title);
 
     res.status(200).json({
       success: true,
@@ -443,7 +443,7 @@ exports.deleteOverseaTour = async (req, res) => {
       console.error("Error deleting TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Xóa tour nước ngoài", tour);
+    await logAdminAction(req.user._id, "Xóa tour nước ngoài", tour.title);
 
     res.status(200).json({
       success: true,
@@ -504,7 +504,7 @@ exports.restoreOverseaTour = async (req, res) => {
       console.error("Error restoring TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Khôi phục tour nước ngoài", tour);
+    await logAdminAction(req.user._id, "Khôi phục tour nước ngoài", tour.title);
 
     res.status(200).json({
       success: true,
@@ -560,11 +560,7 @@ exports.permanentDeleteOverseaTour = async (req, res) => {
     }
 
     // Log admin action
-    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour nước ngoài", {
-      id: tour._id,
-      title: tour.title,
-      slug: tour.slug
-    });
+    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour nước ngoài", tour.title);
 
     res.status(200).json({
       success: true,

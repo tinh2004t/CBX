@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import authAPI from '../../api/auth';
 import './Login.css';
 
 const Login = ({ onLogin }) => {
@@ -6,20 +7,74 @@ const Login = ({ onLogin }) => {
     username: '',
     password: ''
   });
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    
+    // Clear error when user starts typing
+    if (error) {
+      setError('');
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Sau này sẽ tích hợp API ở đây
-    console.log('Login data:', formData);
-    onLogin();
+  const handleRememberMeChange = (e) => {
+    setRememberMe(e.target.checked);
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      // Validate form
+      if (!formData.username || !formData.password) {
+        throw new Error('Vui lòng nhập đầy đủ thông tin');
+      }
+
+      // Call login API
+      const response = await authAPI.login({
+        username: formData.username,
+        password: formData.password
+      });
+
+      // Handle remember me option
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
+
+      console.log('Đăng nhập thành công:', response);
+      
+      // Call onLogin callback
+      if (onLogin) {
+        onLogin(response);
+      }
+      
+    } catch (error) {
+      console.error('Lỗi đăng nhập:', error);
+      setError(error.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load remembered credentials on component mount
+  React.useEffect(() => {
+    const remembered = localStorage.getItem('rememberMe');
+    if (remembered) {
+      setRememberMe(true);
+      // You might want to load saved username here if you store it
+    }
+  }, []);
 
   return (
     <div className="login-container">
@@ -30,15 +85,23 @@ const Login = ({ onLogin }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">
+          {error && (
+            <div className="error-message">
+              <span className="error-icon">⚠️</span>
+              {error}
+            </div>
+          )}
+
           <div className="form-group">
             <label htmlFor="username">Username</label>
             <input
-              type="username"
+              type="text"
               id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
               placeholder="Nhập username của bạn"
+              disabled={loading}
               required
             />
           </div>
@@ -52,13 +115,19 @@ const Login = ({ onLogin }) => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Nhập mật khẩu"
+              disabled={loading}
               required
             />
           </div>
 
           <div className="form-options">
             <label className="checkbox-container">
-              <input type="checkbox" />
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={handleRememberMeChange}
+                disabled={loading}
+              />
               <span className="checkmark"></span>
               Ghi nhớ đăng nhập
             </label>
@@ -67,8 +136,15 @@ const Login = ({ onLogin }) => {
             </a>
           </div>
 
-          <button type="submit" className="login-btn">
-            Đăng Nhập
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Đang đăng nhập...
+              </>
+            ) : (
+              'Đăng Nhập'
+            )}
           </button>
         </form>
 

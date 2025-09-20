@@ -2,6 +2,7 @@
 const Transport = require('../models/Transport');
 const slugify = require('slugify');
 const { validationResult } = require('express-validator');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Hàm helper để xử lý lỗi
 const handleValidationErrors = (req, res) => {
@@ -212,6 +213,7 @@ const createTransport = async (req, res) => {
       message: 'Tạo chuyến xe thành công',
       data: transport
     });
+    await logAdminAction (req.user._id, req.user.username, 'Tạo chuyến xe', transport.slug);
   } catch (error) {
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(val => val.message);
@@ -297,6 +299,7 @@ const updateTransport = async (req, res) => {
       message: 'Cập nhật chuyến xe thành công',
       data: transport
     });
+    await logAdminAction (req.user._id, req.user.username, 'Câp nhật chuyến xe', transport.slug);
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
@@ -336,6 +339,7 @@ const deleteTransport = async (req, res) => {
       message: 'Xóa chuyến xe thành công',
       data: {}
     });
+    await logAdminAction (req.user._id, req.user.username, 'Xóa chuyến xe', transport.slug);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -363,6 +367,7 @@ const permanentDeleteTransport = async (req, res) => {
       message: 'Xóa vĩnh viễn chuyến xe thành công',
       data: {}
     });
+    await logAdminAction (req.user._id, req.user.username, 'Xóa vĩnh viễn chuyến xe', transport.slug);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -392,6 +397,7 @@ const restoreTransport = async (req, res) => {
       message: 'Khôi phục chuyến xe thành công',
       data: transport
     });
+    await logAdminAction (req.user._id, req.user.username, 'Khôi phục chuyến xe', transport.slug);
   } catch (error) {
     res.status(500).json({
       success: false,

@@ -1,6 +1,7 @@
 // controllers/teamBuildingController.js
 const mongoose = require('mongoose');
 const TeamBuildingService = require('../models/TeamBuilding');
+const logAdminAction = require('../utils/logAdminAction');
 
 // GET - Lấy danh sách tất cả dịch vụ
 const getAllTeamBuildingServices = async (req, res) => {
@@ -101,6 +102,7 @@ const updateTeamBuildingService = async (req, res) => {
       message: 'Cập nhật dịch vụ thành công',
       data: updatedService
     });
+    await logAdminAction(req.user._id, 'Câp nhật dịch vụ Teambuilding');
 
   } catch (error) {
     console.error('Lỗi cập nhật dịch vụ:', error);

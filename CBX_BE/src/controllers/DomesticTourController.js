@@ -253,7 +253,7 @@ exports.createTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc tạo tour chính
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Tạo tour", savedTour);
+    await logAdminAction(req.user._id, req.user.username, "Tạo tour", tourData.title);
 
     console.log(
       "Saved tour:",
@@ -385,7 +385,7 @@ exports.updateTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc cập nhật tour chính
     }
 
-    await logAdminAction(req.user._id, "Cập nhật tour", updatedTour);
+    await logAdminAction(req.user._id, "Cập nhật tour", updatedTour.title);
 
     res.status(200).json({
       success: true,
@@ -442,7 +442,7 @@ exports.deleteTour = async (req, res) => {
       console.error("Error deleting TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Xóa tour", tour);
+    await logAdminAction(req.user._id, "Xóa tour", tour.title);
 
     res.status(200).json({
       success: true,
@@ -503,7 +503,7 @@ exports.restoreTour = async (req, res) => {
       console.error("Error restoring TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Khôi phục tour", tour);
+    await logAdminAction(req.user._id, "Khôi phục tour", tour.title);
 
     res.status(200).json({
       success: true,
@@ -559,11 +559,7 @@ exports.permanentDeleteTour = async (req, res) => {
     }
 
     // Log admin action
-    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour", {
-      id: tour._id,
-      title: tour.title,
-      slug: tour.slug
-    });
+    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn tour", tour.title);
 
     res.status(200).json({
       success: true,

@@ -1,5 +1,6 @@
 const Flight = require('../models/Flight');
 const { validateFlight, validateFlightUpdate } = require('../middleware/flightValidation');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Lấy tất cả chuyến bay
 const getAllFlights = async (req, res) => {
@@ -92,6 +93,8 @@ const createFlight = async (req, res) => {
     const flight = new Flight(value);
     await flight.save();
 
+    await logAdminAction(req.user._id, 'Tạo chuyến bay', flight._id);
+
     res.status(201).json({
       success: true,
       message: 'Tạo chuyến bay thành công',
@@ -131,6 +134,8 @@ const updateFlight = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    await logAdminAction(req.user._id, 'Câp nhật chuyến bay', flight._id);
+
     if (!flight) {
       return res.status(404).json({
         success: false,
@@ -168,6 +173,7 @@ const deleteFlight = async (req, res) => {
       success: true,
       message: 'Xóa chuyến bay thành công'
     });
+    await logAdminAction(req.user._id, 'Xoá chuyến bay', flight._id);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -240,6 +246,8 @@ const updateFlightStatus = async (req, res) => {
       message: 'Cập nhật trạng thái thành công',
       data: flight
     });
+
+    await logAdminAction(req.user._id, 'Câp nhật trạng thái chuyến bay', flight._id);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -310,6 +318,8 @@ const addSubFlight = async (req, res) => {
       message: 'Thêm chuyến bay con thành công',
       data: flight
     });
+
+    await logAdminAction(req.user._id, 'Thêm chuyến bay con', flight._id);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -372,6 +382,8 @@ const updateSubFlight = async (req, res) => {
       message: 'Cập nhật chuyến bay con thành công',
       data: flight
     });
+
+    await logAdminAction(req.user._id, 'Cập nhật chuyến bay con', flight._id);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -413,6 +425,8 @@ const deleteSubFlight = async (req, res) => {
       message: 'Xóa chuyến bay con thành công',
       data: flight
     });
+
+    await logAdminAction(req.user._id, 'Xoá chuyến bay con', flight._id);
   } catch (error) {
     res.status(500).json({
       success: false,

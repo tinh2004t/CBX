@@ -14,6 +14,7 @@ const micetourRoute = require('./routes/micetourRoute');
 const teamBuildingRoute = require('./routes/teamBuildingRoute');
 const transportRoute = require('./routes/transportRoute');
 const blog = require('./routes/blogPostRoute');
+const blogPostData = require('./routes/blogPostDataRoute');
 const settingsRoute = require('./routes/settingRoute');
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/TeamBuilding', teamBuildingRoute)
 app.use('/api/mice', micetourRoute)
 app.use('/api/transport', transportRoute)
 app.use('/api/blog', blog)
+app.use('/api/blog-post-data', blogPostData)
 app.use('/api/settings', settingsRoute)
 
 

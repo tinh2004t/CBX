@@ -1,36 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from "react-router-dom";
 
-const Sidebar = () => {
+const Sidebar = ({ user, isOpen, onClose, onCollapsedChange }) => {
   const [activeItem, setActiveItem] = useState('dashboard');
   const [openDropdowns, setOpenDropdowns] = useState({});
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [userToggled, setUserToggled] = useState(false);
 
   // Handle window resize with proper breakpoints
   useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      
-      if (width >= 1280) { // xl: desktop
-        setIsMobileMenuOpen(false);
-        setIsCollapsed(false);
-      } else if (width >= 1024) { // lg: laptop
-        setIsMobileMenuOpen(false);
-        setIsCollapsed(false);
-      } else if (width >= 768) { // md: tablet
-        setIsMobileMenuOpen(false);
-        setIsCollapsed(true);
-      } else { // sm: mobile
-        setIsCollapsed(false);
-        // Keep mobile menu state as is
-      }
-    };
+  const handleResize = () => {
+    // Nếu user vừa toggle thủ công, bỏ qua resize logic
+    if (userToggled) {
+      setUserToggled(false);
+      return;
+    }
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    const width = window.innerWidth;
+    let newCollapsedState = isCollapsed;
+    
+    if (width >= 1280) { 
+      setIsMobileMenuOpen(false);
+      newCollapsedState = false;
+    } else if (width >= 1024) { 
+      setIsMobileMenuOpen(false);
+      newCollapsedState = false;
+    } else if (width >= 768) { 
+      setIsMobileMenuOpen(false);
+      newCollapsedState = true;
+    } else { 
+      newCollapsedState = false;
+    }
+    
+    if (newCollapsedState !== isCollapsed) {
+      setIsCollapsed(newCollapsedState);
+      if (onCollapsedChange) {
+        onCollapsedChange(newCollapsedState);
+      }
+    }
+  };
+
+  handleResize();
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, [isCollapsed]);
+
+  useEffect(() => {
+  if (onCollapsedChange) {
+    onCollapsedChange(isCollapsed);
+  }
+}, [isCollapsed]); // Thay vì [] thành [isCollapsed]
+
+useEffect(() => {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    setIsMobileMenuOpen(isOpen || false);
+  }
+}, [isOpen]);
 
   // Simplified menu items for demonstration
   const menuItems = [
@@ -181,9 +207,9 @@ const Sidebar = () => {
     },
     {
       id: 'OverseaTour',
-      name: 'Tour Nước Ngoài',
+      name: 'Tour Quốc Tế',
       type: 'link',
-      href: '/tour-nuoc-ngoai',
+      href: '/tour-quoc-te',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
@@ -214,12 +240,12 @@ const Sidebar = () => {
         </svg>
       ),
       children: [
-        { id: 'product-list', name: 'Vé máy bay', href: '/products/list' },
-        { id: 'product-categories', name: 'Khách sạn & Resort', href: '/products/categories' },
-        { id: 'product-inventory', name: 'Homestay & Villa', href: '/products/inventory' },
-        { id: 'teambuilding', name: 'Teambuilding & Gala Dinner', href: '/products/teambuilding' },
-        { id: 'mice', name: 'MICE', href: '/products/mice' },
-        { id: 'transport', name: 'Dịch vụ vận tải', href: '/products/transport' }
+        { id: 've-may-bay', name: 'Vé máy bay', href: '/ve-may-bay' },
+        { id: 'khach-san-resort', name: 'Khách sạn & Resort', href: '/khach-san-resort' },
+        { id: 'homestay-villa', name: 'Homestay & Villa', href: '/homestay-villa' },
+        { id: 'teambuilding', name: 'Teambuilding & Gala Dinner', href: '/teambuilding' },
+        { id: 'mice', name: 'MICE', href: '/mice' },
+        { id: 'dich-vu-van-tai', name: 'Dịch vụ vận tải', href: '/dich-vu-van-tai' }
       ]
     },
     {
@@ -241,6 +267,14 @@ const Sidebar = () => {
       )
     },
   ];
+  const handleCollapseToggle = () => {
+  const newCollapsedState = !isCollapsed;
+  setUserToggled(true); // Đánh dấu user đã toggle thủ công
+  setIsCollapsed(newCollapsedState);
+  if (onCollapsedChange) {
+    onCollapsedChange(newCollapsedState);
+  }
+};
 
   const toggleDropdown = (itemId) => {
     setOpenDropdowns(prev => ({
@@ -367,18 +401,18 @@ const Sidebar = () => {
 
   // Calculate sidebar classes
   const getSidebarClasses = () => {
-    const baseClasses = "bg-gray-900 text-white h-screen flex flex-col overflow-hidden z-40 transition-all duration-300 ease-in-out";
-    
-    // Mobile (< 768px)
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
-      return `${baseClasses} fixed left-0 top-0 w-64 transform ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      }`;
-    }
-    
-    // Tablet and up (>= 768px)
-    return `${baseClasses} fixed left-0 top-0 ${isCollapsed ? 'w-16' : 'w-64'}`;
-  };
+  const baseClasses = "bg-gray-900 text-white h-screen flex flex-col overflow-hidden z-40 transition-all duration-300 ease-in-out";
+  
+  // Mobile (< 768px) - sử dụng isMobileMenuOpen thay vì isOpen
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    return `${baseClasses} fixed left-0 top-0 w-64 transform ${
+      isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+    }`;
+  }
+  
+  // Tablet and up (>= 768px)
+  return `${baseClasses} fixed left-0 top-0 ${isCollapsed ? 'w-16' : 'w-64'}`;
+};
 
   return (
     <>
@@ -412,7 +446,7 @@ const Sidebar = () => {
             {window.innerWidth >= 768 && (
               <button
                 className="p-1.5 hover:bg-gray-800 rounded-lg transition-colors duration-200 flex-shrink-0"
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={handleCollapseToggle}
                 title={isCollapsed ? "Mở rộng" : "Thu gọn"}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >

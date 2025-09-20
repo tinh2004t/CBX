@@ -1,6 +1,7 @@
 const Accommodation = require('../models/Accommodation');
 const AccommodationDetail = require('../models/AccommodationDetail');
 const { slugify, generateUniqueSlug } = require('../utils/slugify');
+const logAdminAction = require('../utils/logAdminAction');
 
 // Create accommodation
 const createAccommodation = async (req, res) => {
@@ -25,6 +26,9 @@ const createAccommodation = async (req, res) => {
     });
 
     const savedAccommodation = await accommodation.save();
+
+    // Log admin action
+    await logAdminAction(req.user, req.user.username, 'Tạo accommodation', savedAccommodation.name);
 
     // Always create accommodation detail automatically
     const accommodationDetail = new AccommodationDetail({
@@ -187,6 +191,8 @@ const updateAccommodation = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    await logAdminAction(req.user._id, req.user.username, 'Cập nhật accommodation', updatedAccommodation.name);
+
     // Update related fields in accommodation detail
     const detailUpdateData = {};
     if (updateData.location) detailUpdateData.location = updateData.location;
@@ -247,6 +253,8 @@ const deleteAccommodation = async (req, res) => {
       }
     );
 
+    await logAdminAction(req.user._id, req.user.username, 'Xóa accommodation', accommodation.name);
+
     res.json({
       success: true,
       message: 'Accommodation deleted successfully'
@@ -279,6 +287,8 @@ const permanentDeleteAccommodation = async (req, res) => {
 
     // Permanently delete accommodation
     await Accommodation.findByIdAndDelete(id);
+
+    await logAdminAction(req.user._id, req.user.username, 'Xóa vĩnh viễn accommodation', accommodation.name);
 
     res.json({
       success: true,
@@ -315,6 +325,8 @@ const restoreAccommodation = async (req, res) => {
       isDeleted: false,
       deletedAt: null
     });
+
+    await logAdminAction(req.user._id, req.user.username, 'Khôi phục accommodation', accommodation.name);
 
     // Restore accommodation detail
     await AccommodationDetail.findOneAndUpdate(

@@ -264,6 +264,7 @@ exports.createMiceTour = async (req, res) => {
 
     // Use create method
     const savedTour = await MiceTour.create(tourData);
+
     
     // Tạo TourDetail tương ứng
     try {
@@ -274,7 +275,6 @@ exports.createMiceTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc tạo tour chính
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Tạo MICE tour", savedTour);
 
     console.log(
       "Saved MICE tour:",
@@ -286,6 +286,8 @@ exports.createMiceTour = async (req, res) => {
       message: "Tạo MICE tour thành công",
       data: savedTour,
     });
+    await logAdminAction(req.user._id, req.user.username, "Tạo MICE tour", savedTour.name);
+
   } catch (error) {
     console.error("Error creating MICE tour:", error);
 
@@ -392,6 +394,7 @@ exports.updateMiceTour = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+
     // Cập nhật TourDetail tương ứng
     try {
       const existingTourDetail = await TourDetail.findOne({ slug: oldSlug });
@@ -432,13 +435,14 @@ exports.updateMiceTour = async (req, res) => {
       // Không throw error để không ảnh hưởng đến việc cập nhật tour chính
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Cập nhật MICE tour", updatedTour);
 
     res.status(200).json({
       success: true,
       message: "Cập nhật MICE tour thành công",
       data: updatedTour,
     });
+    await logAdminAction(req.user._id, req.user.username, "Cập nhật MICE tour", updatedTour.name);
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -489,7 +493,8 @@ exports.deleteMiceTour = async (req, res) => {
       console.error("Error deleting TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Xóa MICE tour", tour);
+    await logAdminAction(req.user._id, "Xóa MICE tour", tour.name);
+
 
     res.status(200).json({
       success: true,
@@ -550,13 +555,14 @@ exports.restoreMiceTour = async (req, res) => {
       console.error("Error restoring TourDetail:", detailError);
     }
 
-    await logAdminAction(req.user._id, "Khôi phục MICE tour", tour);
 
     res.status(200).json({
       success: true,
       message: "Khôi phục MICE tour thành công",
       data: tour,
     });
+    await logAdminAction(req.user._id, "Khôi phục MICE tour", tour.name);
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -608,11 +614,7 @@ exports.permanentDeleteMiceTour = async (req, res) => {
     }
 
     // Log admin action
-    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn MICE tour", {
-      id: tour._id,
-      title: tour.title,
-      slug: tour.slug
-    });
+    await logAdminAction(req.user._id, req.user.username, "Xóa vĩnh viễn MICE tour", tour.name);
 
     res.status(200).json({
       success: true,
