@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import 'quill/dist/quill.snow.css';
+import socketAPI from "./api/socket";
 import Login from './components/Login/Login';
 import Sidebar from './components/Home/Sidebar';
 import Header from './components/Home/Header';
@@ -22,6 +23,7 @@ import MiceTourManagement from './pages/MiceTourManagement';
 import TransportManagement from './pages/TransportManagement';
 import TravelSettingsPage from './pages/SettingPage';
 import authAPI from './api/auth';
+import BlogDeleted from './pages/Blog/BlogDeleted';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -55,7 +57,8 @@ function App() {
   }, []);
 
   // Check authentication status on app start
-  useEffect(() => {
+  // Check authentication status on app start
+useEffect(() => {
   const checkAuth = () => {
     const token = authAPI.getToken();
     const savedUser = authAPI.getUserFromStorage();
@@ -63,6 +66,23 @@ function App() {
     if (token && savedUser) {
       setUser(savedUser);
       setIsLoggedIn(true);
+
+      // ✅ Connect socket khi đã login
+      const socket = socketAPI.connect(token);
+
+      // Lắng nghe notification
+      socketAPI.on("notification", (data) => {
+        console.log("📩 Notification:", data);
+      });
+
+      socketAPI.on("broadcast", (data) => {
+        console.log("📢 Broadcast:", data);
+      });
+
+      socketAPI.on("force_disconnect", (data) => {
+        alert(`Bạn đã bị ngắt kết nối: ${data.reason}`);
+        handleLogout(); // auto logout
+      });
     } else {
       setUser(null);
       setIsLoggedIn(false);
@@ -72,41 +92,56 @@ function App() {
   };
 
   checkAuth();
+
+  // cleanup khi component unmount
+  return () => {
+    socketAPI.disconnect();
+  };
 }, []);
 
+
   const handleLogin = async (loginResponse) => {
-    try {
-      // If loginResponse is provided (from API), use it
-      if (loginResponse && loginResponse.user) {
-        setUser(loginResponse.user);
-        setIsLoggedIn(true);
-      } else {
-        // Fallback for development/testing
-        const fallbackUser = { username: 'admin', role: 'SuperAdmin' };
-        setUser(fallbackUser);
-        setIsLoggedIn(true);
-        localStorage.setItem("user", JSON.stringify(fallbackUser));
+  try {
+    if (loginResponse && loginResponse.user) {
+      setUser(loginResponse.user);
+      setIsLoggedIn(true);
+
+      const token = authAPI.getToken();
+      if (token) {
+        socketAPI.connect(token);
       }
-    } catch (error) {
-      console.error('Login handler error:', error);
+    } else {
+      const fallbackUser = { username: 'admin', role: 'SuperAdmin' };
+      setUser(fallbackUser);
+      setIsLoggedIn(true);
+      localStorage.setItem("user", JSON.stringify(fallbackUser));
+
+      const token = authAPI.getToken();
+      if (token) {
+        socketAPI.connect(token);
+      }
     }
-  };
+  } catch (error) {
+    console.error('Login handler error:', error);
+  }
+};
+
 
   const handleLogout = async () => {
-    try {
-      // Call API logout if user is authenticated via API
-      if (authAPI.isAuthenticated()) {
-        await authAPI.logout();
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      // Always clean up local state
-      setIsLoggedIn(false);
-      setUser(null);
-      localStorage.removeItem("user");
+  try {
+    if (authAPI.isAuthenticated()) {
+      await authAPI.logout();
     }
-  };
+  } catch (error) {
+    console.error('Logout error:', error);
+  } finally {
+    socketAPI.disconnect(); // ✅ disconnect socket khi logout
+    setIsLoggedIn(false);
+    setUser(null);
+    localStorage.removeItem("user");
+  }
+};
+
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -181,6 +216,8 @@ function App() {
                   {/* Updated blog routes with proper props */}
                   <Route path="/blog" element={<BlogManagement currentUser={user} />} />
                   <Route path="/blog/editor" element={<BlogEditor currentUser={user} />} />
+                  <Route path="/blog/deleted" element={<BlogDeleted currentUser={user} />} />
+
 
                   <Route path="/tour-noi-dia" element={<DomesticTourManagement currentUser={user} />} />
                   <Route path="/tour-noi-dia/editor" element={<EditTour currentUser={user} />} />

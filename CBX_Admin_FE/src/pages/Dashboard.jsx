@@ -1,116 +1,229 @@
-import React, { useState } from 'react';
-import { Activity, Users, Eye, Search, Calendar, User, FileText, Clock } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Activity, Users, Eye, Search, Calendar, User, FileText, Clock, AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import adminLogAPI from '../api/adminLog';
+import socketAPI from '../api/socket';
+import authAPI from '../api/auth';
 
-const Dashboard = () => {
-  // Sample data for admin logs
-  const adminLogs = [
-    {
-      _id: "68c1393dec80cca0d0fc0ba0",
-      adminId: "68bd2854e85e2d0c64204a64",
-      adminUsername: "newadmin",
-      action: "Tạo MICE tour",
-      targetUser: JSON.stringify({
-        slug: 'mice-tour-du-lich-ha-noi-nha-tho-da-lat-da-nang',
-        name: 'mice tour du lịch hà nội nhà thờ đà lạt đà nẵng',
-        image: 'https://iit.com.vn/files/images/Article/5-dieu-can-biet-khi-thiet-ke-website-du-lich.jpg',
-        duration: '3 ngày 2 đêm',
-        location: 'Đà Lạt, Lâm Đồng',
-        rating: 4.8,
-        price: '1000000',
-        category: 'teambuilding'
-      }, null, 2),
-      createdAt: "2025-09-10T08:39:25.942Z"
-    },
-    {
-      _id: "68c1393dec80cca0d0fc0ba1",
-      adminId: "68bd2854e85e2d0c64204a65",
-      adminUsername: "admin_manager",
-      action: "Cập nhật tour",
-      targetUser: JSON.stringify({
-        slug: 'tour-ha-long-bay',
-        name: 'Tour Hạ Long Bay 2 ngày 1 đêm',
-        duration: '2 ngày 1 đêm',
-        location: 'Hạ Long, Quảng Ninh',
-        price: '800000'
-      }, null, 2),
-      createdAt: "2025-09-10T07:25:15.123Z"
-    },
-    {
-      _id: "68c1393dec80cca0d0fc0ba2",
-      adminId: "68bd2854e85e2d0c64204a66",
-      adminUsername: "content_admin",
-      action: "Xóa bài viết",
-      targetUser: JSON.stringify({
-        title: 'Kinh nghiệm du lịch Đà Nẵng',
-        category: 'blog',
-        author: 'travel_writer'
-      }, null, 2),
-      createdAt: "2025-09-10T06:15:30.456Z"
-    },
-    {
-      _id: "68c1393dec80cca0d0fc0ba3",
-      adminId: "68bd2854e85e2d0c64204a67",
-      adminUsername: "support_admin",
-      action: "Phản hồi khách hàng",
-      targetUser: JSON.stringify({
-        customerId: 'cust_001',
-        subject: 'Hủy tour do thời tiết',
-        status: 'resolved'
-      }, null, 2),
-      createdAt: "2025-09-10T05:45:12.789Z"
-    }
-  ];
+const Dashboard = ({ user }) => {
+  // State cho admin logs
+  const [adminLogs, setAdminLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({ total: 0, page: 1, limit: 20 });
 
-  // Sample data for active admins
-  const activeAdmins = [
-    {
-      id: "68bd2854e85e2d0c64204a64",
-      username: "newadmin",
-      fullName: "Nguyễn Văn An",
-      role: "Super Admin",
-      lastActivity: "2025-09-10T08:39:25.942Z",
-      status: "online",
-      avatar: "https://ui-avatars.com/api/?name=Nguyen+Van+An&background=3b82f6&color=fff"
-    },
-    {
-      id: "68bd2854e85e2d0c64204a65",
-      username: "admin_manager",
-      fullName: "Trần Thị Bình",
-      role: "Tour Manager",
-      lastActivity: "2025-09-10T08:15:10.123Z",
-      status: "online",
-      avatar: "https://ui-avatars.com/api/?name=Tran+Thi+Binh&background=10b981&color=fff"
-    },
-    {
-      id: "68bd2854e85e2d0c64204a66",
-      username: "content_admin",
-      fullName: "Lê Văn Cường",
-      role: "Content Admin",
-      lastActivity: "2025-09-10T07:50:45.456Z",
-      status: "idle",
-      avatar: "https://ui-avatars.com/api/?name=Le+Van+Cuong&background=f59e0b&color=fff"
-    },
-    {
-      id: "68bd2854e85e2d0c64204a67",
-      username: "support_admin",
-      fullName: "Phạm Thị Dung",
-      role: "Support Admin",
-      lastActivity: "2025-09-10T08:30:20.789Z",
-      status: "online",
-      avatar: "https://ui-avatars.com/api/?name=Pham+Thi+Dung&background=8b5cf6&color=fff"
-    }
-  ];
+  // State cho real-time admin activity
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [onlineCount, setOnlineCount] = useState(0);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
 
+  // State cho filters
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAction, setSelectedAction] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // Filter logs based on search and action
-  const filteredLogs = adminLogs.filter(log => {
-    const matchesSearch = log.adminUsername.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         log.action.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesAction = selectedAction === 'all' || log.action.includes(selectedAction);
-    return matchesSearch && matchesAction;
-  });
+  // Refs
+  const socketConnectedRef = useRef(false);
+
+  // Initialize Socket Connection
+  useEffect(() => {
+    const initializeSocket = () => {
+      const token = authAPI.getToken();
+      if (!token) {
+        console.log('No token available for socket connection');
+        return;
+      }
+
+      try {
+        // Kết nối socket
+        const socket = socketAPI.connect(token);
+
+        // Lắng nghe các sự kiện socket
+        socketAPI.on('connect', () => {
+          console.log('✅ Socket connected successfully');
+          setIsSocketConnected(true);
+          socketConnectedRef.current = true;
+
+          // Fetch initial online users khi connect
+          fetchOnlineUsers();
+        });
+
+        socketAPI.on('disconnect', (reason) => {
+          console.log('❌ Socket disconnected:', reason);
+          setIsSocketConnected(false);
+          socketConnectedRef.current = false;
+        });
+
+        // Lắng nghe cập nhật users online
+        socketAPI.on('user_online', (data) => {
+          console.log('👤 User came online:', data);
+          setOnlineUsers(prev => {
+            const updated = [...prev];
+            const index = updated.findIndex(u => u.userId === data.userId);
+            if (index === -1) {
+              updated.push(data);
+            } else {
+              updated[index] = data;
+            }
+            return updated;
+          });
+          setOnlineCount(prev => prev + 1);
+        });
+
+        socketAPI.on('user_offline', (data) => {
+          console.log('👤 User went offline:', data);
+          setOnlineUsers(prev => prev.filter(u => u.userId !== data.userId));
+          setOnlineCount(prev => Math.max(0, prev - 1));
+        });
+
+        // Lắng nghe cập nhật danh sách users online
+        socketAPI.on('users_online_update', (data) => {
+          console.log('📊 Online users updated:', data);
+          setOnlineUsers(data.users || []);
+          setOnlineCount(data.count || 0);
+        });
+
+
+        // Lắng nghe thông báo từ admin khác
+        socketAPI.on('notification', (data) => {
+          console.log('🔔 Received notification:', data);
+          // Có thể hiển thị toast notification ở đây
+        });
+
+        socketAPI.on('broadcast', (data) => {
+          console.log('📢 Received broadcast:', data);
+          // Có thể hiển thị toast notification ở đây
+        });
+
+        socketAPI.on('connect_error', (error) => {
+          console.error('Socket connection error:', error);
+          setIsSocketConnected(false);
+          socketConnectedRef.current = false;
+        });
+
+      } catch (error) {
+        console.error('Error initializing socket:', error);
+        setIsSocketConnected(false);
+      }
+    };
+
+    initializeSocket();
+
+    // Cleanup khi component unmount
+    return () => {
+      socketAPI.disconnect();
+      setIsSocketConnected(false);
+      socketConnectedRef.current = false;
+    };
+  }, []);
+
+  // Fetch online users từ API
+  // Fetch online users từ API
+  const fetchOnlineUsers = async () => {
+    try {
+      const res = await socketAPI.getOnlineUsers();
+      if (res.success) {
+        setOnlineUsers(res.data.users || []);
+        setOnlineCount(res.data.count || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching online users:", error);
+    }
+  };
+
+
+  // Fetch admin logs từ API
+  const fetchAdminLogs = async (params = {}) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const queryParams = {
+        page: currentPage,
+        limit: 20,
+        ...params
+      };
+
+      if (selectedAction !== 'all') {
+        queryParams.action = selectedAction;
+      }
+
+      const response = await adminLogAPI.getLogs(queryParams);
+
+      if (response.success) {
+        setAdminLogs(response.data);
+        setPagination(response.pagination);
+      } else {
+        setError('Không thể tải dữ liệu nhật ký');
+      }
+    } catch (err) {
+      console.error('Error fetching admin logs:', err);
+      setError(err.message || 'Có lỗi xảy ra khi tải dữ liệu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Effect để load dữ liệu ban đầu
+  useEffect(() => {
+    fetchAdminLogs();
+  }, [currentPage, selectedAction]);
+
+  // Effect để tìm kiếm với debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm) {
+        setCurrentPage(1);
+        fetchAdminLogs({ search: searchTerm });
+      } else {
+        fetchAdminLogs();
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  // Auto refresh online users mỗi 30 giây
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (socketConnectedRef.current) {
+        fetchOnlineUsers();
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Xử lý thay đổi action filter
+  const handleActionChange = (action) => {
+    setSelectedAction(action);
+    setCurrentPage(1);
+  };
+
+  // Xử lý refresh dữ liệu
+  const handleRefresh = () => {
+    setSearchTerm('');
+    setSelectedAction('all');
+    setCurrentPage(1);
+    fetchAdminLogs();
+    fetchOnlineUsers();
+  };
+
+  // Xử lý phân trang
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  // Reconnect socket
+  const handleReconnectSocket = () => {
+    const token = authAPI.getToken();
+    if (token) {
+      socketAPI.disconnect();
+      setTimeout(() => {
+        socketAPI.connect(token);
+      }, 1000);
+    }
+  };
+
 
   // Format date
   const formatDate = (dateString) => {
@@ -123,21 +236,48 @@ const Dashboard = () => {
     });
   };
 
+  // Format relative time
+  const formatRelativeTime = (dateString) => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffMs = now - date;
+    const diffMinutes = Math.floor(diffMs / 60000);
+
+    if (diffMinutes < 1) return 'Vừa xong';
+    if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} giờ trước`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} ngày trước`;
+  };
+
   // Get status color
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'online': return 'bg-green-500';
-      case 'idle': return 'bg-yellow-500';
-      case 'offline': return 'bg-gray-500';
-      default: return 'bg-gray-500';
-    }
+  const getStatusColor = (isOnline) => {
+    return isOnline ? 'bg-green-500' : 'bg-gray-400';
   };
 
   // Truncate long text
   const truncateText = (text, maxLength = 100) => {
+    if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
   };
+
+  // Get action badge color
+  const getActionBadgeColor = (action) => {
+    if (action.includes('Tạo')) return 'bg-green-100 text-green-800';
+    if (action.includes('Cập nhật')) return 'bg-blue-100 text-blue-800';
+    if (action.includes('Xóa')) return 'bg-red-100 text-red-800';
+    if (action.includes('Khôi phục')) return 'bg-purple-100 text-purple-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  // Filter chỉ admin users
+  const adminUsers = onlineUsers.filter(u =>
+    ['Admin', 'SuperAdmin'].includes(u.role)
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -147,9 +287,34 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Dashboard Quản Trị</h1>
-              <p className="text-gray-600 mt-1">Quản lý hoạt động và theo dõi hệ thống</p>
+              <p className="text-gray-600 mt-1">Quản lý hoạt động và theo dõi hệ thống real-time</p>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Connection Status */}
+              <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${isSocketConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                {isSocketConnected ? <Wifi className="h-4 w-4" /> : <WifiOff className="h-4 w-4" />}
+                <span>{isSocketConnected ? 'Kết nối' : 'Mất kết nối'}</span>
+                {!isSocketConnected && (
+                  <button
+                    onClick={handleReconnectSocket}
+                    className="ml-2 text-xs underline hover:no-underline"
+                  >
+                    Kết nối lại
+                  </button>
+                )}
+              </div>
+
+
+
+              <button
+                onClick={handleRefresh}
+                disabled={loading}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                <span>Làm mới</span>
+              </button>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <Activity className="h-6 w-6 text-blue-600" />
               </div>
@@ -163,20 +328,22 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Tổng Hoạt Động</p>
-                <p className="text-2xl font-bold text-gray-900">{adminLogs.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '...' : pagination.total}
+                </p>
               </div>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <FileText className="h-5 w-5 text-blue-600" />
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Admin Online</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {activeAdmins.filter(admin => admin.status === 'online').length}
+                  {adminUsers.length}
                 </p>
               </div>
               <div className="bg-green-50 p-3 rounded-lg">
@@ -184,24 +351,14 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Hoạt Động Hôm Nay</p>
-                <p className="text-2xl font-bold text-gray-900">{adminLogs.length}</p>
-              </div>
-              <div className="bg-orange-50 p-3 rounded-lg">
-                <Clock className="h-5 w-5 text-orange-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Tổng Admin</p>
-                <p className="text-2xl font-bold text-gray-900">{activeAdmins.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {loading ? '...' : adminLogs.length}
+                </p>
               </div>
               <div className="bg-purple-50 p-3 rounded-lg">
                 <User className="h-5 w-5 text-purple-600" />
@@ -217,19 +374,21 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900">Nhật Ký Hoạt Động</h2>
                 <div className="flex items-center space-x-2">
-                  <select 
+                  <select
                     value={selectedAction}
-                    onChange={(e) => setSelectedAction(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => handleActionChange(e.target.value)}
+                    disabled={loading}
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                   >
                     <option value="all">Tất cả</option>
                     <option value="Tạo">Tạo</option>
                     <option value="Cập nhật">Cập nhật</option>
                     <option value="Xóa">Xóa</option>
+                    <option value="Khôi phục">Khôi phục</option>
                   </select>
                 </div>
               </div>
-              
+
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
@@ -237,71 +396,102 @@ const Dashboard = () => {
                   placeholder="Tìm kiếm theo admin hoặc hoạt động..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={loading}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                 />
               </div>
             </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Admin
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Hoạt Động
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Chi Tiết
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Thời Gian
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredLogs.map((log) => (
-                    <tr key={log._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="flex-shrink-0 h-8 w-8">
-                            <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
-                              <span className="text-xs font-medium text-white">
-                                {log.adminUsername.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {log.adminUsername}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {log.action}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs">
-                          {truncateText(log.targetUser)}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {formatDate(log.createdAt)}
-                        </div>
-                      </td>
+
+            {error && (
+              <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center space-x-2 text-red-600 bg-red-50 p-3 rounded-lg">
+                  <AlertCircle className="h-5 w-5" />
+                  <span className="text-sm">{error}</span>
+                  <button
+                    onClick={handleRefresh}
+                    className="ml-auto text-red-600 hover:text-red-700 underline text-sm"
+                  >
+                    Thử lại
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {loading && (
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center space-x-2 text-gray-500">
+                  <RefreshCw className="h-5 w-5 animate-spin" />
+                  <span>Đang tải dữ liệu...</span>
+                </div>
+              </div>
+            )}
+
+            {!loading && !error && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Admin
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Hoạt Động
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Chi Tiết
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Thời Gian
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            
-            {filteredLogs.length === 0 && (
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {adminLogs.map((log) => (
+                      <tr key={log._id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8 relative">
+                              <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                <span className="text-xs font-medium text-white">
+                                  {log.adminUsername.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              {/* Online indicator */}
+                              {onlineUsers.some(u => u.username === log.adminUsername) && (
+                                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                              )}
+                            </div>
+                            <div className="ml-3">
+                              <div className="text-sm font-medium text-gray-900">
+                                {log.adminUsername}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getActionBadgeColor(log.action)}`}>
+                            {log.action}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-900 max-w-xs">
+                            {truncateText(log.targetUser)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            {formatDate(log.createdAt)}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {!loading && !error && adminLogs.length === 0 && (
               <div className="text-center py-8">
                 <FileText className="mx-auto h-12 w-12 text-gray-300" />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">Không có hoạt động</h3>
@@ -310,57 +500,160 @@ const Dashboard = () => {
                 </p>
               </div>
             )}
+
+            {!loading && !error && pagination.total > pagination.limit && (
+              <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                <div className="text-sm text-gray-500">
+                  Hiển thị {((currentPage - 1) * pagination.limit) + 1} - {Math.min(currentPage * pagination.limit, pagination.total)}
+                  trong tổng số {pagination.total} kết quả
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Trước
+                  </button>
+                  <span className="text-sm text-gray-700">
+                    Trang {currentPage} / {Math.ceil(pagination.total / pagination.limit)}
+                  </span>
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage >= Math.ceil(pagination.total / pagination.limit)}
+                    className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:cursor-not-allowed"
+                  >
+                    Sau
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Active Admins */}
+          {/* Real-time Online Users */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-semibold text-gray-900">Admin Đang Hoạt Động</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {activeAdmins.filter(admin => admin.status === 'online').length} admin đang online
-              </p>
-            </div>
-            
-            <div className="p-6 space-y-4">
-              {activeAdmins.map((admin) => (
-                <div key={admin.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <div className="flex items-center space-x-3">
-                    <div className="relative">
-                      <img
-                        src={admin.avatar}
-                        alt={admin.fullName}
-                        className="h-10 w-10 rounded-full"
-                      />
-                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(admin.status)}`}></div>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">
-                        {admin.fullName}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        @{admin.username}
-                      </div>
-                      <div className="text-xs text-gray-400">
-                        {admin.role}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      admin.status === 'online' 
-                        ? 'bg-green-100 text-green-800' 
-                        : admin.status === 'idle'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {admin.status === 'online' ? 'Trực tuyến' : admin.status === 'idle' ? 'Chờ' : 'Ngoại tuyến'}
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      {formatDate(admin.lastActivity)}
-                    </div>
-                  </div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900"> Đang Online</h2>
+
                 </div>
-              ))}
+                <div className={`w-2 h-2 rounded-full ${isSocketConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-96 overflow-y-auto">
+              {!isSocketConnected ? (
+                <div className="text-center py-8">
+                  <WifiOff className="mx-auto h-12 w-12 text-gray-300" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">Mất kết nối</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Không thể hiển thị trạng thái online
+                  </p>
+                  <button
+                    onClick={handleReconnectSocket}
+                    className="mt-2 text-blue-600 hover:text-blue-700 text-sm underline"
+                  >
+                    Thử kết nối lại
+                  </button>
+                </div>
+              ) : onlineUsers.length === 0 ? (
+                <div className="text-center py-8">
+                  <Users className="mx-auto h-12 w-12 text-gray-300" />
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">Không có ai online</h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Hiện tại không có người dùng nào đang hoạt động.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Admin Users First */}
+                  {adminUsers.length > 0 && (
+                    <div className="mb-4">
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">Quản trị viên ({adminUsers.length})</h3>
+                      {adminUsers.map((userItem) => (
+                        <div key={userItem.userId} className="flex items-center justify-between p-3 border border-blue-200 rounded-lg mb-2 bg-blue-50">
+                          <div className="flex items-center space-x-3">
+                            <div className="relative">
+                              <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                                <span className="text-xs font-medium text-white">
+                                  {(userItem.username || '').charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(true)}`}></div>
+                            </div>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {userItem.username}
+                              </div>
+                              <div className="text-xs text-blue-600 font-medium">
+                                {userItem.role || 'Admin'}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Online
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {formatRelativeTime(userItem.connectedAt || new Date())}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Other Users */}
+                  {onlineUsers.filter(u => !['Admin', 'SuperAdmin'].includes(u.role)).length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-700 mb-2">
+                        Người dùng khác ({onlineUsers.filter(u => !['Admin', 'SuperAdmin'].includes(u.role)).length})
+                      </h3>
+                      {onlineUsers
+                        .filter(u => !['Admin', 'SuperAdmin'].includes(u.role))
+                        .slice(0, 10) // Giới hạn hiển thị 10 user
+                        .map((userItem) => (
+                          <div key={userItem.userId} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg mb-2 hover:bg-gray-50">
+                            <div className="flex items-center space-x-3">
+                              <div className="relative">
+                                <div className="h-8 w-8 rounded-full bg-gray-500 flex items-center justify-center">
+                                  <span className="text-xs font-medium text-white">
+                                    {(userItem.username || 'U').charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(true)}`}></div>
+                              </div>
+                              <div>
+                                <div className="text-sm font-medium text-gray-900">
+                                  {userItem.username || 'Unknown User'}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {userItem.role || 'User'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Online
+                              </div>
+                              <div className="text-xs text-gray-400 mt-1">
+                                {formatRelativeTime(userItem.connectedAt || new Date())}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+
+                      {/* Show more indicator if there are more users */}
+                      {onlineUsers.filter(u => !['Admin', 'SuperAdmin'].includes(u.role)).length > 10 && (
+                        <div className="text-center py-2 text-sm text-gray-500">
+                          và {onlineUsers.filter(u => !['Admin', 'SuperAdmin'].includes(u.role)).length - 10} người dùng khác...
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>

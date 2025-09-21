@@ -74,7 +74,7 @@ const blogAPI = {
 
   // 📌 Xoá mềm bài viết
   softDeletePost: async (id) => {
-    const res = await apiClient.delete(`/blog/${id}/soft`);
+    const res = await apiClient.delete(`/blog/${id}`);
     return res.data;
   },
 
@@ -86,7 +86,7 @@ const blogAPI = {
 
   // 📌 Khôi phục bài viết
   restorePost: async (id) => {
-    const res = await apiClient.post(`/blog/${id}/restore`);
+    const res = await apiClient.patch(`/blog/${id}/restore`);
     return res.data;
   },
 

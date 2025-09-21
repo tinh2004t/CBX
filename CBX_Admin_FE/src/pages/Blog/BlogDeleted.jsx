@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Trash2, RotateCcw, Search, Filter, Calendar, User, MapPin, Eye, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, Plus, Search, Filter, Eye, Calendar, User, MapPin, Tag, RefreshCw, Archive } from 'lucide-react';
-import blogAPI from '../../api/blogApi'; // Import the API service
+import blogAPI from '../../api/blogApi';
 
-const BlogManagement = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [filteredBlogs, setFilteredBlogs] = useState([]);
+const BlogDeleted = () => {
+  const [deletedBlogs, setDeletedBlogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,14 +12,15 @@ const BlogManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalBlogs, setTotalBlogs] = useState(0);
-  const [categories, setCategories] = useState(['all']); // Dynamic categories
+  const [categories, setCategories] = useState(['all']);
+  const [processingIds, setProcessingIds] = useState(new Set()); // Theo dõi các blog đang xử lý
   const navigate = useNavigate();
 
-  // Load blogs from API
-  const loadBlogs = async (page = 1) => {
+  // Load deleted blogs from API
+  const loadDeletedBlogs = async (page = 1) => {
     setIsLoading(true);
     setError(null);
-
+    
     try {
       const params = {
         page: page,
@@ -29,23 +29,23 @@ const BlogManagement = () => {
         ...(searchTerm && { search: searchTerm })
       };
 
-      const response = await blogAPI.getPosts(params);
-
+      const response = await blogAPI.getDeletedPosts(params);
+      
       if (response.success) {
-        setBlogs(response.data.blogPosts || []);
-        setTotalBlogs(response.data.totalCount || 0);
-
+        setDeletedBlogs(response.data.deletedPosts || []);
+        setTotalBlogs(response.data.pagination?.totalRecords || 0);
+        
         // Extract unique categories for filter dropdown
-        const uniqueCategories = ['all', ...new Set(response.data.blogPosts?.map(blog => blog.category) || [])];
+        const uniqueCategories = ['all', ...new Set(response.data.deletedPosts?.map(blog => blog.category) || [])];
         setCategories(uniqueCategories);
       } else {
-        setError(response.message || 'Failed to load blogs');
-        setBlogs([]);
+        setError(response.message || 'Failed to load deleted blogs');
+        setDeletedBlogs([]);
       }
     } catch (error) {
-      console.error('Error loading blogs:', error);
-      setError('Không thể tải danh sách blog. Vui lòng thử lại.');
-      setBlogs([]);
+      console.error('Error loading deleted blogs:', error);
+      setError('Không thể tải danh sách blog đã xóa. Vui lòng thử lại.');
+      setDeletedBlogs([]);
     } finally {
       setIsLoading(false);
     }
@@ -53,15 +53,15 @@ const BlogManagement = () => {
 
   // Initial load
   useEffect(() => {
-    loadBlogs(1);
+    loadDeletedBlogs(1);
   }, []);
 
   // Search and filter effect
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       setCurrentPage(1);
-      loadBlogs(1);
-    }, 500); // Debounce search
+      loadDeletedBlogs(1);
+    }, 500);
 
     return () => clearTimeout(debounceTimer);
   }, [searchTerm, selectedCategory]);
@@ -69,7 +69,7 @@ const BlogManagement = () => {
   // Page change effect
   useEffect(() => {
     if (currentPage > 1) {
-      loadBlogs(currentPage);
+      loadDeletedBlogs(currentPage);
     }
   }, [currentPage]);
 
@@ -81,41 +81,60 @@ const BlogManagement = () => {
     });
   };
 
-  const handleEdit = (slug) => {
-    navigate(`/blog/editor?slug=${slug}`);
-  };
-
-  const handleDelete = async (blogId) => {
-    if (window.confirm('Bạn có chắc chắn muốn xóa blog này? Blog sẽ được chuyển vào thùng rác và có thể khôi phục được.')) {
+  const handleRestore = async (blogId) => {
+    if (window.confirm('Bạn có chắc chắn muốn khôi phục blog này?')) {
       try {
-        setIsLoading(true);
-        const response = await blogAPI.softDeletePost(blogId); // Thay đổi từ deleteBlogPost thành softDeletePost
-
+        setProcessingIds(prev => new Set(prev).add(blogId));
+        const response = await blogAPI.restorePost(blogId);
+        
         if (response.success) {
           // Reload current page data
-          await loadBlogs(currentPage);
-          alert('Blog đã được chuyển vào thùng rác!');
+          await loadDeletedBlogs(currentPage);
+          alert('Blog đã được khôi phục thành công!');
         } else {
-          alert(response.message || 'Có lỗi xảy ra khi xóa blog');
+          alert(response.message || 'Có lỗi xảy ra khi khôi phục blog');
         }
       } catch (error) {
-        console.error('Error deleting blog:', error);
-        alert('Không thể xóa blog. Vui lòng thử lại.');
+        console.error('Error restoring blog:', error);
+        alert('Không thể khôi phục blog. Vui lòng thử lại.');
       } finally {
-        setIsLoading(false);
+        setProcessingIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(blogId);
+          return newSet;
+        });
       }
     }
   };
-  const handleViewDeleted = () => {
-    navigate('/blog/deleted');
+
+  const handlePermanentDelete = async (blogId) => {
+    if (window.confirm('⚠️ CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn blog và không thể khôi phục. Bạn có chắc chắn muốn tiếp tục?')) {
+      try {
+        setProcessingIds(prev => new Set(prev).add(blogId));
+        const response = await blogAPI.permanentDeletePost(blogId);
+        
+        if (response.success) {
+          // Reload current page data
+          await loadDeletedBlogs(currentPage);
+          alert('Blog đã được xóa vĩnh viễn!');
+        } else {
+          alert(response.message || 'Có lỗi xảy ra khi xóa vĩnh viễn blog');
+        }
+      } catch (error) {
+        console.error('Error permanently deleting blog:', error);
+        alert('Không thể xóa vĩnh viễn blog. Vui lòng thử lại.');
+      } finally {
+        setProcessingIds(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(blogId);
+          return newSet;
+        });
+      }
+    }
   };
 
-  const handleCreateNew = () => {
-    navigate('/blog/editor');
-  };
-
-  const handleRefresh = () => {
-    loadBlogs(currentPage);
+  const handleBackToBlogManagement = () => {
+    navigate('/blog');
   };
 
   // Calculate pagination
@@ -143,33 +162,25 @@ const BlogManagement = () => {
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Quản lý Blog</h1>
-              <p className="text-gray-600">Quản lý các bài viết blog du lịch</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleBackToBlogManagement}
+                className="bg-gray-100 hover:bg-gray-200 p-2 rounded-lg transition-colors"
+              >
+                <ArrowLeft size={20} className="text-gray-700" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold text-red-600 mb-2">Blog Đã Xóa</h1>
+                <p className="text-gray-600">Quản lý các bài viết blog đã bị xóa</p>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleRefresh}
-                disabled={isLoading}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors disabled:opacity-50"
-              >
-                <RefreshCw size={20} className={isLoading ? 'animate-spin' : ''} />
-                Làm mới
-              </button>
-              <button
-                onClick={handleViewDeleted}
-                className="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors"
-              >
-                <Archive size={20} />
-                Thùng rác
-              </button>
-              <button
-                onClick={handleCreateNew}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors w-fit"
-              >
-                <Plus size={20} />
-                Tạo Blog Mới
-              </button>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center text-red-700">
+                <AlertTriangle size={20} className="mr-2" />
+                <span className="text-sm font-medium">
+                  Các blog ở đây sẽ bị xóa vĩnh viễn sau 30 ngày
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -184,7 +195,7 @@ const BlogManagement = () => {
                 <p className="text-red-700 text-sm">{error}</p>
               </div>
               <button
-                onClick={handleRefresh}
+                onClick={() => loadDeletedBlogs(currentPage)}
                 className="ml-auto text-red-600 hover:text-red-800"
               >
                 Thử lại
@@ -200,10 +211,10 @@ const BlogManagement = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tiêu đề, tác giả, địa điểm..."
+                placeholder="Tìm kiếm blog đã xóa..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
             <div className="relative">
@@ -211,7 +222,7 @@ const BlogManagement = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-10 pr-8 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white min-w-48"
+                className="pl-10 pr-8 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent appearance-none bg-white min-w-48"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>
@@ -224,36 +235,21 @@ const BlogManagement = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Eye className="text-blue-600" size={24} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Tổng lượt xem</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? '...' : blogs.reduce((total, blog) => total + (blog.stats?.views || 0), 0).toLocaleString()}
-                </p>
-              </div>
+        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+          <div className="flex items-center">
+            <div className="bg-red-100 p-3 rounded-full">
+              <Trash2 className="text-red-600" size={24} />
             </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center">
-              <div className="bg-green-100 p-3 rounded-full">
-                <Calendar className="text-green-600" size={24} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Tổng bài viết</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {isLoading ? '...' : totalBlogs.toLocaleString()}
-                </p>
-              </div>
+            <div className="ml-4">
+              <p className="text-sm text-gray-600">Tổng blog đã xóa</p>
+              <p className="text-2xl font-bold text-red-600">
+                {isLoading ? '...' : totalBlogs.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Blog Grid */}
+        {/* Deleted Blog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-6">
           {isLoading ? (
             // Loading skeleton
@@ -261,42 +257,51 @@ const BlogManagement = () => {
               <LoadingCard key={index} />
             ))
           ) : (
-            blogs.map((blog) => (
-              <div key={blog._id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                <div className="relative">
+            deletedBlogs.map((blog) => (
+              <div key={blog._id} className="bg-white rounded-lg shadow-sm overflow-hidden border border-red-200">
+                <div className="relative opacity-75">
                   <img
                     src={blog.image || 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop'}
                     alt={blog.title}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48 object-cover grayscale"
                     onError={(e) => {
                       e.target.src = 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop';
                     }}
                   />
+                  <div className="absolute inset-0 bg-red-900 bg-opacity-20"></div>
                   <div className="absolute top-4 left-4">
-                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                       {blog.category}
                     </span>
                   </div>
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
-                      onClick={() => handleEdit(blog.slug)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-all"
+                      onClick={() => handleRestore(blog._id)}
+                      disabled={processingIds.has(blog._id)}
+                      className="bg-green-600 bg-opacity-90 hover:bg-opacity-100 disabled:bg-opacity-50 p-2 rounded-full transition-all"
+                      title="Khôi phục blog"
                     >
-                      <Edit size={16} className="text-gray-700" />
+                      <RotateCcw size={16} className="text-white" />
                     </button>
                     <button
-                      onClick={() => handleDelete(blog._id)}
-                      className="bg-white bg-opacity-90 hover:bg-opacity-100 p-2 rounded-full transition-all"
+                      onClick={() => handlePermanentDelete(blog._id)}
+                      disabled={processingIds.has(blog._id)}
+                      className="bg-red-600 bg-opacity-90 hover:bg-opacity-100 disabled:bg-opacity-50 p-2 rounded-full transition-all"
+                      title="Xóa vĩnh viễn"
                     >
-                      <Trash2 size={16} className="text-red-600" />
+                      <Trash2 size={16} className="text-white" />
                     </button>
                   </div>
                 </div>
-
-                <div className="p-6">
+                
+                <div className="p-6 bg-red-50">
+                  <div className="flex items-center mb-2">
+                    <Trash2 size={16} className="text-red-500 mr-2" />
+                    <span className="text-sm text-red-600 font-medium">Đã xóa</span>
+                  </div>
                   <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{blog.title}</h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{blog.excerpt}</p>
-
+                  
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center text-sm text-gray-500">
                       <User size={16} className="mr-2" />
@@ -308,12 +313,32 @@ const BlogManagement = () => {
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
                       <Calendar size={16} className="mr-2" />
-                      {formatDate(blog.publishDate || blog.createdAt)}
+                      Xóa: {formatDate(blog.deletedAt || blog.updatedAt)}
                     </div>
                     <div className="flex items-center text-sm text-gray-500">
                       <Eye size={16} className="mr-2" />
                       {(blog.stats?.views || 0).toLocaleString()} lượt xem
                     </div>
+                  </div>
+
+                  {/* Action buttons */}
+                  <div className="flex gap-2 pt-4 border-t border-red-200">
+                    <button
+                      onClick={() => handleRestore(blog._id)}
+                      disabled={processingIds.has(blog._id)}
+                      className="flex-1 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors"
+                    >
+                      <RotateCcw size={16} />
+                      {processingIds.has(blog._id) ? 'Đang khôi phục...' : 'Khôi phục'}
+                    </button>
+                    <button
+                      onClick={() => handlePermanentDelete(blog._id)}
+                      disabled={processingIds.has(blog._id)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 font-medium transition-colors"
+                    >
+                      <Trash2 size={16} />
+                      {processingIds.has(blog._id) ? 'Đang xóa...' : 'Xóa vĩnh viễn'}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -322,26 +347,24 @@ const BlogManagement = () => {
         </div>
 
         {/* Empty State */}
-        {!isLoading && blogs.length === 0 && !error && (
+        {!isLoading && deletedBlogs.length === 0 && !error && (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <div className="text-gray-400 mb-4">
-              <Search size={48} className="mx-auto" />
+              <Trash2 size={48} className="mx-auto" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Không tìm thấy blog nào</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Không có blog nào đã xóa</h3>
             <p className="text-gray-600 mb-4">
-              {searchTerm || selectedCategory !== 'all'
-                ? 'Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc'
-                : 'Chưa có blog nào được tạo'
+              {searchTerm || selectedCategory !== 'all' 
+                ? 'Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc' 
+                : 'Chưa có blog nào bị xóa'
               }
             </p>
-            {(!searchTerm && selectedCategory === 'all') && (
-              <button
-                onClick={handleCreateNew}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Tạo Blog Đầu Tiên
-              </button>
-            )}
+            <button
+              onClick={handleBackToBlogManagement}
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Quay lại quản lý blog
+            </button>
           </div>
         )}
 
@@ -360,7 +383,7 @@ const BlogManagement = () => {
                 >
                   Trước
                 </button>
-
+                
                 {/* Page numbers */}
                 {Array.from({ length: Math.min(5, totalPages) }, (_, index) => {
                   let pageNumber;
@@ -378,16 +401,17 @@ const BlogManagement = () => {
                     <button
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`px-4 py-2 border border-gray-200 rounded-lg ${currentPage === pageNumber
-                          ? 'bg-blue-600 text-white border-blue-600'
+                      className={`px-4 py-2 border border-gray-200 rounded-lg ${
+                        currentPage === pageNumber
+                          ? 'bg-red-600 text-white border-red-600'
                           : 'hover:bg-gray-50'
-                        }`}
+                      }`}
                     >
                       {pageNumber}
                     </button>
                   );
                 })}
-
+                
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
@@ -400,7 +424,7 @@ const BlogManagement = () => {
           </div>
         )}
       </div>
-
+      
       {/* Custom CSS for line clamp */}
       <style jsx>{`
         .line-clamp-2 {
@@ -414,4 +438,4 @@ const BlogManagement = () => {
   );
 };
 
-export default BlogManagement;
+export default BlogDeleted;

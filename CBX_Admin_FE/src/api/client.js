@@ -10,7 +10,6 @@ class ApiClient {
 
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
-    
 
     // 👉 Lấy token từ sessionStorage trước, rồi đến localStorage
     const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
@@ -39,7 +38,9 @@ class ApiClient {
 
       let data;
       const contentType = response.headers.get('content-type');
-      data = contentType && contentType.includes('application/json') ? await response.json() : await response.text();
+      data = contentType && contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
 
       if (!response.ok) throw new Error(data?.message || `HTTP error! status: ${response.status}`);
 
@@ -53,6 +54,7 @@ class ApiClient {
   get(endpoint, options = {}) { return this.request(endpoint, { ...options, method: 'GET' }); }
   post(endpoint, body, options = {}) { return this.request(endpoint, { ...options, method: 'POST', body }); }
   put(endpoint, body, options = {}) { return this.request(endpoint, { ...options, method: 'PUT', body }); }
+  patch(endpoint, body, options = {}) { return this.request(endpoint, { ...options, method: 'PATCH', body }); } // ✅ thêm patch
   delete(endpoint, options = {}) { return this.request(endpoint, { ...options, method: 'DELETE' }); }
 }
 
