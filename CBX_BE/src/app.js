@@ -19,6 +19,8 @@ const blogPostData = require('./routes/blogPostDataRoute');
 const settingsRoute = require('./routes/settingRoute');
 const adminLogRoutes = require('./routes/adminLogRoutes');
 
+const TourRoute = require('./routes/TourRoute');
+
 // Thêm socket routes
 const socketRoutes = require('./routes/socketRoute');
 
@@ -57,6 +59,8 @@ app.use('/api/blog', blog);
 app.use('/api/blog-post-data', blogPostData);
 app.use('/api/settings', settingsRoute);
 app.use('/api/admin-logs', adminLogRoutes);
+app.use('/api/tours',TourRoute)
+
 
 // Thêm socket routes
 app.use('/api/socket', socketRoutes);

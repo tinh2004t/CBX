@@ -263,7 +263,7 @@ const BlogDeleted = () => {
                   <img
                     src={blog.image || 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop'}
                     alt={blog.title}
-                    className="w-full h-48 object-cover grayscale"
+                    className="w-full aspect-[4/3] object-cover"
                     onError={(e) => {
                       e.target.src = 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop';
                     }}

@@ -10,7 +10,7 @@ router.get('/deleted', authenticateToken, overseaTourController.getDeletedOverse
 router.get('/continent/:continent', overseaTourController.getOverseaToursByContinent);
 router.get('/slug/:slug', overseaTourController.getOverseaTourBySlug);
 router.get('/:id', authenticateToken, overseaTourController.getOverseaTourById);
-
+    
 // POST routes
 router.post('/', authenticateToken, overseaTourController.createOverseaTour);
 router.post('/cleanup', authenticateToken, overseaTourController.cleanupOldDeletedOverseaTours); // Admin only

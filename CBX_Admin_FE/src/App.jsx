@@ -9,10 +9,18 @@ import Header from './components/Home/Header';
 import Dashboard from './pages/Dashboard';
 import AdminManagement from './pages/AdminManagement';
 import TourismManagement from './pages/TourismManagement';
+
 import BlogManagement from './pages/Blog/Blogmanagement';
 import BlogEditor from './pages/Blog/BlogEditor';
-import DomesticTourManagement from './pages/DomesticTourManagement';
-import OverseaTourManagement from './pages/OverseaTourManagement';
+
+import DomesticTourManagement from './pages/DomesticTour/DomesticTourManagement';
+import DomesticEditTour from './pages/DomesticTour/DomesticTourEdit';
+import DomesticTourDeleted from './pages/DomesticTour/DomesticTourDeleted';
+
+import OverseaTourManagement from './pages/OverseaTour/OverseaTourManagement';
+import OverseaEditTour from './pages/OverseaTour/OverseaTourEdit';
+import OverseaTourDeleted from './pages/OverseaTour/OverseaTourDeleted';
+
 import EditTour from './pages/TourEdit';
 import FlightManagement from './pages/FlightManagement';
 import HotelResortManagement from './pages/HotelResortManagement';
@@ -220,10 +228,17 @@ useEffect(() => {
 
 
                   <Route path="/tour-noi-dia" element={<DomesticTourManagement currentUser={user} />} />
-                  <Route path="/tour-noi-dia/editor" element={<EditTour currentUser={user} />} />
+                  <Route path="/tour-noi-dia/editor" element={<DomesticEditTour currentUser={user} />} />
+                  <Route path="/tour-noi-dia/editor/:slug" element={<DomesticEditTour currentUser={user} />} />
+                  <Route path="/tour-noi-dia/deleted" element={<DomesticTourDeleted currentUser={user} />} />
+
 
                   <Route path="/tour-quoc-te" element={<OverseaTourManagement currentUser={user} />} />
-                  <Route path="/tour-quoc-te/editor" element={<EditTour currentUser={user} />} />
+                  <Route path="/tour-quoc-te/editor" element={<OverseaEditTour currentUser={user} />} />
+                  <Route path="/tour-quoc-te/editor/:slug" element={<OverseaEditTour currentUser={user} />} />
+                  <Route path="/tour-quoc-te/deleted" element={<OverseaTourDeleted currentUser={user} />} />
+
+
 
                   <Route path="/ve-may-bay" element={<FlightManagement currentUser={user} />} />
 

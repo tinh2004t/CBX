@@ -213,9 +213,9 @@ tourSchema.set('toJSON', {
 
 tourSchema.set('toObject', { virtuals: true });
 
-const Tour = mongoose.model('Tour', tourSchema);
+const TourDetail = mongoose.model('TourDetail', tourSchema);
 
-module.exports = Tour;
+module.exports = TourDetail;
 
 // Example usage:
 /*

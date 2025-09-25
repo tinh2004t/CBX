@@ -1,5 +1,5 @@
 const TourDetail = require("../models/TourDetail");
-const DomesticTour = require("../models/DomesticTour");
+const { Tour, MiceTour, DomesticTour, OverseaTour } = require("../models/Tour");
 const logAdminAction = require("../utils/logAdminAction");
 
 // GET /api/tour-details/by-tour/:id - Lấy TourDetail bằng ID của DomesticTour
@@ -7,8 +7,8 @@ exports.getTourDetailByTourId = async (req, res) => {
   try {
     const tourId = req.params.id;
 
-    // Tìm DomesticTour trước để lấy slug
-    const domesticTour = await DomesticTour.findById(tourId);
+    // Tìm tour từ base model Tour với includeDeleted option
+    const domesticTour = await Tour.findById(tourId);
     
     if (!domesticTour) {
       return res.status(404).json({
@@ -17,6 +17,7 @@ exports.getTourDetailByTourId = async (req, res) => {
       });
     }
 
+    // Kiểm tra isDeleted thay vì isDeleted property
     if (domesticTour.isDeleted) {
       return res.status(404).json({
         success: false,
@@ -43,7 +44,8 @@ exports.getTourDetailByTourId = async (req, res) => {
       domesticTour: {
         id: domesticTour._id,
         title: domesticTour.title,
-        slug: domesticTour.slug
+        slug: domesticTour.slug,
+        tourType: domesticTour.tourType
       }
     });
   } catch (error) {
@@ -60,8 +62,8 @@ exports.getTourDetailBySlug = async (req, res) => {
   try {
     const slug = req.params.slug;
 
-    // Tìm DomesticTour trước để verify
-    const domesticTour = await DomesticTour.findOne({ slug });
+    // Tìm tour từ base model Tour
+    const domesticTour = await Tour.findOne({ slug });
     
     if (!domesticTour) {
       return res.status(404).json({
@@ -96,7 +98,8 @@ exports.getTourDetailBySlug = async (req, res) => {
       domesticTour: {
         id: domesticTour._id,
         title: domesticTour.title,
-        slug: domesticTour.slug
+        slug: domesticTour.slug,
+        tourType: domesticTour.tourType
       }
     });
   } catch (error) {
@@ -107,6 +110,7 @@ exports.getTourDetailBySlug = async (req, res) => {
     });
   }
 };
+
 
 // GET /api/tour-details/direct/:id - Lấy TourDetail trực tiếp bằng ID của TourDetail (cho admin)
 exports.getTourDetailById = async (req, res) => {
@@ -120,8 +124,8 @@ exports.getTourDetailById = async (req, res) => {
       });
     }
 
-    // Tìm DomesticTour tương ứng để thêm thông tin
-    const domesticTour = await DomesticTour.findOne({ slug: tourDetail.slug });
+    // Tìm Tour tương ứng từ base model
+    const domesticTour = await Tour.findOne({ slug: tourDetail.slug });
 
     res.status(200).json({
       success: true,
@@ -130,6 +134,7 @@ exports.getTourDetailById = async (req, res) => {
         id: domesticTour._id,
         title: domesticTour.title,
         slug: domesticTour.slug,
+        tourType: domesticTour.tourType,
         isDeleted: domesticTour.isDeleted
       } : null
     });
@@ -166,8 +171,8 @@ exports.updateTourDetail = async (req, res) => {
       });
     }
 
-    // Verify DomesticTour còn tồn tại
-    const domesticTour = await DomesticTour.findOne({ slug: existingTourDetail.slug });
+    // Verify Tour còn tồn tại - sử dụng base model Tour
+    const domesticTour = await Tour.findOne({ slug: existingTourDetail.slug });
     
     if (!domesticTour) {
       return res.status(400).json({
@@ -235,8 +240,8 @@ exports.updateTourDetailByTourId = async (req, res) => {
       });
     }
 
-    // Tìm DomesticTour trước
-    const domesticTour = await DomesticTour.findById(tourId);
+    // Tìm Tour trước - sử dụng base model Tour
+    const domesticTour = await Tour.findById(tourId);
     
     if (!domesticTour) {
       return res.status(404).json({
@@ -356,8 +361,8 @@ exports.restoreTourDetail = async (req, res) => {
       });
     }
 
-    // Kiểm tra DomesticTour còn tồn tại
-    const domesticTour = await DomesticTour.findOne({ slug: tourDetail.slug });
+    // Kiểm tra Tour còn tồn tại - sử dụng base model Tour
+    const domesticTour = await Tour.findOne({ slug: tourDetail.slug });
     
     if (!domesticTour || domesticTour.isDeleted) {
       return res.status(400).json({
@@ -431,15 +436,16 @@ exports.getDeletedTourDetails = async (req, res) => {
 
     const total = await TourDetail.countDocuments({ isActive: false });
 
-    // Thêm thông tin DomesticTour tương ứng
+    // Thêm thông tin Tour tương ứng - sử dụng base model Tour
     const tourDetailsWithInfo = await Promise.all(
       tourDetails.map(async (detail) => {
-        const domesticTour = await DomesticTour.findOne({ slug: detail.slug });
+        const domesticTour = await Tour.findOne({ slug: detail.slug });
         return {
           ...detail.toObject(),
           domesticTour: domesticTour ? {
             id: domesticTour._id,
             title: domesticTour.title,
+            tourType: domesticTour.tourType,
             isDeleted: domesticTour.isDeleted
           } : null
         };

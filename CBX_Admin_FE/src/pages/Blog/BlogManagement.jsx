@@ -267,7 +267,7 @@ const BlogManagement = () => {
                   <img
                     src={blog.image || 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop'}
                     alt={blog.title}
-                    className="w-full h-48 object-cover"
+                    className="w-full aspect-[4/3] object-cover"
                     onError={(e) => {
                       e.target.src = 'https://images.unsplash.com/photo-1555264988-df62956fb737?w=400&h=250&fit=crop';
                     }}
@@ -379,8 +379,8 @@ const BlogManagement = () => {
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
                       className={`px-4 py-2 border border-gray-200 rounded-lg ${currentPage === pageNumber
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'hover:bg-gray-50'
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'hover:bg-gray-50'
                         }`}
                     >
                       {pageNumber}
