@@ -1,7 +1,9 @@
 const Joi = require('joi');
 
 const flightDetailSchema = Joi.object({
+  _id: Joi.string().optional(),
   time: Joi.string().required().messages({
+    
     'string.empty': 'Thời gian bay không được để trống',
     'any.required': 'Thời gian bay là bắt buộc'
   }),
@@ -44,9 +46,8 @@ const flightSchema = Joi.object({
     'string.empty': 'Giá vé không được để trống',
     'any.required': 'Giá vé là bắt buộc'
   }),
-  flights: Joi.array().items(flightDetailSchema).min(1).required().messages({
-    'array.min': 'Phải có ít nhất một chuyến bay',
-    'any.required': 'Danh sách chuyến bay là bắt buộc'
+  flights: Joi.array().items(flightDetailSchema).optional().default([]).messages({
+    'array.min': 'Phải có ít nhất một chuyến bay'
   })
 });
 

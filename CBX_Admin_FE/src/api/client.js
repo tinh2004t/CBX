@@ -9,47 +9,56 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
+  let url = `${this.baseURL}${endpoint}`;
 
-    // 👉 Lấy token từ sessionStorage trước, rồi đến localStorage
-    const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
-
-    const config = {
-      method: options.method || 'GET',
-      headers: {
-        ...this.headers,
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    if (options.body && config.method !== 'GET') {
-      config.body = JSON.stringify(options.body);
-      // Đảm bảo Content-Type
-      config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json';
+  // ✅ build query string nếu có params
+  if (options.params) {
+    const queryString = new URLSearchParams(options.params).toString();
+    if (queryString) {
+      url += (url.includes('?') ? '&' : '?') + queryString;
     }
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-      const response = await fetch(url, { ...config, signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      let data;
-      const contentType = response.headers.get('content-type');
-      data = contentType && contentType.includes('application/json')
-        ? await response.json()
-        : await response.text();
-
-      if (!response.ok) throw new Error(data?.message || `HTTP error! status: ${response.status}`);
-
-      return { data, status: response.status, headers: response.headers };
-    } catch (error) {
-      if (error.name === 'AbortError') throw new Error('Request timeout');
-      throw error;
-    }
+    delete options.params; // xoá để fetch không bị lỗi
   }
+
+  // 👉 Lấy token từ sessionStorage trước, rồi đến localStorage
+  const token = sessionStorage.getItem('authToken') || localStorage.getItem('authToken');
+
+  const config = {
+    method: options.method || 'GET',
+    headers: {
+      ...this.headers,
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  if (options.body && config.method !== 'GET') {
+    config.body = JSON.stringify(options.body);
+    config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json';
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    const response = await fetch(url, { ...config, signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    let data;
+    const contentType = response.headers.get('content-type');
+    data = contentType && contentType.includes('application/json')
+      ? await response.json()
+      : await response.text();
+
+    if (!response.ok) throw new Error(data?.message || `HTTP error! status: ${response.status}`);
+
+    return { data, status: response.status, headers: response.headers };
+  } catch (error) {
+    if (error.name === 'AbortError') throw new Error('Request timeout');
+    throw error;
+  }
+}
+
 
   get(endpoint, options = {}) { return this.request(endpoint, { ...options, method: 'GET' }); }
   post(endpoint, body, options = {}) { return this.request(endpoint, { ...options, method: 'POST', body }); }

@@ -49,7 +49,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tour-noi-dia', domesticTourRoutes);
 app.use('/api/tour-quoc-te', overseaTourRoute);
 app.use('/api/tour', tourDetailRoute);
-app.use('/api/flight', flightRoute);
+app.use('/api/flights', flightRoute);
 app.use('/api/accommodation', accommodationRoute);
 app.use('/api/accommodationDetail', accommodationDetailRoute);
 app.use('/api/TeamBuilding', teamBuildingRoute);

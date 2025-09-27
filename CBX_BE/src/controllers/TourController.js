@@ -350,7 +350,7 @@ exports.createTour = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Dữ liệu không hợp lệ",
-        errors: messages,
+        error: error.errors || error.message
       });
     }
 
@@ -638,14 +638,24 @@ exports.permanentDeleteTour = async (req, res) => {
 // GET /api/tours/deleted - Lấy danh sách tour đã xóa (chỉ admin)
 exports.getDeletedTours = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, tourType } = req.query;
 
-    const tours = await Tour.findDeleted()
+    // Tạo filter object
+    const filter = { isDeleted: true };
+    
+    // Thêm filter theo tourType nếu có
+    if (tourType && ['mice', 'domestic', 'oversea'].includes(tourType)) {
+      filter.tourType = tourType;
+    }
+
+    const tours = await Tour.find(filter)
+      .setOptions({ includeDeleted: true }) // Bắt buộc để lấy tours đã xóa
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .sort({ deletedAt: -1 });
 
-    const total = await Tour.countDocuments({ isDeleted: true });
+    // Đếm total với cùng filter
+    const total = await Tour.countDocuments(filter);
 
     res.status(200).json({
       success: true,
@@ -655,6 +665,55 @@ exports.getDeletedTours = async (req, res) => {
         pages: Math.ceil(total / limit),
         total,
       },
+      filter: {
+        tourType: tourType || 'all'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi server khi lấy danh sách tour đã xóa",
+      error: error.message,
+    });
+  }
+};
+
+// Hoặc nếu bạn muốn sử dụng static method findDeleted() từ schema:
+exports.getDeletedToursAlternative = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, tourType } = req.query;
+
+    // Tạo query builder
+    let query = Tour.findDeleted();
+    
+    // Thêm filter theo tourType nếu có
+    if (tourType && ['mice', 'domestic', 'oversea'].includes(tourType)) {
+      query = query.where({ tourType });
+    }
+
+    const tours = await query
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ deletedAt: -1 });
+
+    // Đếm total
+    const totalQuery = Tour.find({ isDeleted: true }).setOptions({ includeDeleted: true });
+    if (tourType && ['mice', 'domestic', 'oversea'].includes(tourType)) {
+      totalQuery.where({ tourType });
+    }
+    const total = await totalQuery.countDocuments();
+
+    res.status(200).json({
+      success: true,
+      data: tours,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total,
+      },
+      filter: {
+        tourType: tourType || 'all'
+      }
     });
   } catch (error) {
     res.status(500).json({

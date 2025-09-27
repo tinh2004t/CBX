@@ -23,6 +23,8 @@ const flightDetailSchema = new mongoose.Schema({
     enum: ['Còn chỗ', 'Sắp hết', 'Hết chỗ'],
     default: 'Còn chỗ'
   }
+}, {
+  _id: false // Tắt auto _id cho subdocument
 });
 
 const flightSchema = new mongoose.Schema({
@@ -50,7 +52,15 @@ const flightSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Giá vé là bắt buộc']
   },
-  flights: [flightDetailSchema]
+  flights: [flightDetailSchema],
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+  deletedAt: {
+    type: Date,
+    default: null
+  }
 }, {
   timestamps: true
 });
@@ -58,5 +68,7 @@ const flightSchema = new mongoose.Schema({
 // Index để tối ưu tìm kiếm
 flightSchema.index({ departure: 1, destination: 1, date: 1 });
 flightSchema.index({ airline: 1 });
+flightSchema.index({ isDeleted: 1 });
+flightSchema.index({ deletedAt: 1 });
 
 module.exports = mongoose.model('Flight', flightSchema);

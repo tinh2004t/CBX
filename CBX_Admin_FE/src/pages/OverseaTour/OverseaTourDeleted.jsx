@@ -33,7 +33,7 @@ const DomesticTourDeleted = () => {
         limit: 10,
         search: searchTerm,
         region: selectedRegion,
-        type: 'oversea' // Thêm type để lọc tour nội địa
+        tourType: 'oversea' // Thêm type để lọc tour nội địa
       };
 
       const response = await tourAPI.getDeletedTours(params);

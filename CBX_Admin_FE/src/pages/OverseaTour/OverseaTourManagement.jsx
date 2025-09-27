@@ -20,7 +20,7 @@ const loadTours = async () => {
     setError(null);
 
     // Gọi API lấy tour theo type (domestic)
-    const response = await tourApi.getToursByType('oversea');
+    const response = await tourApi.getToursByType('oversea'); 
 
     if (response.success) {
       setTours(response.data); // response đã trả về danh sách Domestic

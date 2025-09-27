@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, RefreshCw, Trash2, RotateCcw, Search, Calendar, MapPin, DollarSign, Clock, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import tourAPI from '../../api/tourApi.js';
-const DomesticTourDeleted = () => {
+const MiceTourDeleted = () => {
   const navigate = useNavigate();
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,7 +32,7 @@ const DomesticTourDeleted = () => {
         limit: 10,
         search: searchTerm,
         region: selectedRegion,
-        tourType: 'domestic' // Thêm type để lọc tour nội địa
+        tourType: 'mice' // Thêm type để lọc tour nội địa
       };
 
       const response = await tourAPI.getDeletedTours(params);
@@ -137,7 +137,7 @@ const DomesticTourDeleted = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/tour-noi-dia')}
+              onClick={() => navigate('/mice')}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -398,4 +398,4 @@ const DomesticTourDeleted = () => {
   );
 };
 
-export default DomesticTourDeleted;
+export default MiceTourDeleted;

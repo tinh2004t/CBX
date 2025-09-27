@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { jwtDecode } from "jwt-decode";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import 'quill/dist/quill.snow.css';
@@ -14,20 +15,26 @@ import BlogManagement from './pages/Blog/Blogmanagement';
 import BlogEditor from './pages/Blog/BlogEditor';
 
 import DomesticTourManagement from './pages/DomesticTour/DomesticTourManagement';
-import DomesticEditTour from './pages/DomesticTour/DomesticTourEdit';
+// import DomesticEditTour from './pages/DomesticTourEdit';
 import DomesticTourDeleted from './pages/DomesticTour/DomesticTourDeleted';
 
 import OverseaTourManagement from './pages/OverseaTour/OverseaTourManagement';
-import OverseaEditTour from './pages/OverseaTour/OverseaTourEdit';
+// import OverseaEditTour from './pages/OverseaTour/OverseaTourEdit';
 import OverseaTourDeleted from './pages/OverseaTour/OverseaTourDeleted';
 
 import EditTour from './pages/TourEdit';
-import FlightManagement from './pages/FlightManagement';
+
+import FlightManagement from './pages/Flight/FlightManagement';
+import FlightDeleted from './pages/Flight/FlightDeleted';
+
 import HotelResortManagement from './pages/HotelResortManagement';
 import EditAccommodation from './pages/EditAccommodation';
 import HomestayVillaManagement from './pages/HomestayVillaManagement';
 import TeambuildingManagement from './pages/TeambuildingManagement';
-import MiceTourManagement from './pages/MiceTourManagement';
+
+import MiceTourManagement from './pages/MiceTour/MiceTourManagement';
+import MiceTourDeleted from './pages/MiceTour/MiceTourDeleted';
+
 import TransportManagement from './pages/TransportManagement';
 import TravelSettingsPage from './pages/SettingPage';
 import authAPI from './api/auth';
@@ -44,7 +51,7 @@ function App() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      
+
       if (width >= 1280) { // xl: desktop
         setSidebarOpen(false);
         setSidebarCollapsed(false); // Sidebar expanded trên desktop lớn
@@ -65,90 +72,91 @@ function App() {
   }, []);
 
   // Check authentication status on app start
-  // Check authentication status on app start
-useEffect(() => {
-  const checkAuth = () => {
-    const token = authAPI.getToken();
-    const savedUser = authAPI.getUserFromStorage();
+  useEffect(() => {
+    const checkAuth = () => {
+      const token = authAPI.getToken();
+      const savedUser = authAPI.getUserFromStorage();
 
-    if (token && savedUser) {
-      setUser(savedUser);
-      setIsLoggedIn(true);
+      if (token && savedUser) {
+        try {
+          const decoded = jwtDecode(token); // giải mã JWT
+          const now = Date.now() / 1000; // tính theo giây
 
-      // ✅ Connect socket khi đã login
-      const socket = socketAPI.connect(token);
+          if (decoded.exp && decoded.exp < now) {
+            console.warn("⚠️ Token đã hết hạn");
+            handleLogout();
+            return;
+          }
 
-      // Lắng nghe notification
-      socketAPI.on("notification", (data) => {
-        console.log("📩 Notification:", data);
-      });
+          setUser(savedUser);
+          setIsLoggedIn(true);
 
-      socketAPI.on("broadcast", (data) => {
-        console.log("📢 Broadcast:", data);
-      });
+          // kết nối socket
+          const socket = socketAPI.connect(token);
 
-      socketAPI.on("force_disconnect", (data) => {
-        alert(`Bạn đã bị ngắt kết nối: ${data.reason}`);
-        handleLogout(); // auto logout
-      });
-    } else {
-      setUser(null);
-      setIsLoggedIn(false);
-    }
+          socketAPI.on("force_disconnect", (data) => {
+            alert(`Bạn đã bị ngắt kết nối: ${data.reason}`);
+            handleLogout();
+          });
 
-    setAuthLoading(false);
-  };
+        } catch (err) {
+          console.error("Token không hợp lệ:", err);
+          handleLogout();
+        }
+      } else {
+        setUser(null);
+        setIsLoggedIn(false);
+      }
 
-  checkAuth();
+      setAuthLoading(false);
+    };
 
-  // cleanup khi component unmount
-  return () => {
-    socketAPI.disconnect();
-  };
-}, []);
+    checkAuth();
+  }, []);
+
 
 
   const handleLogin = async (loginResponse) => {
-  try {
-    if (loginResponse && loginResponse.user) {
-      setUser(loginResponse.user);
-      setIsLoggedIn(true);
+    try {
+      if (loginResponse && loginResponse.user) {
+        setUser(loginResponse.user);
+        setIsLoggedIn(true);
 
-      const token = authAPI.getToken();
-      if (token) {
-        socketAPI.connect(token);
-      }
-    } else {
-      const fallbackUser = { username: 'admin', role: 'SuperAdmin' };
-      setUser(fallbackUser);
-      setIsLoggedIn(true);
-      localStorage.setItem("user", JSON.stringify(fallbackUser));
+        const token = authAPI.getToken();
+        if (token) {
+          socketAPI.connect(token);
+        }
+      } else {
+        const fallbackUser = { username: 'admin', role: 'SuperAdmin' };
+        setUser(fallbackUser);
+        setIsLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(fallbackUser));
 
-      const token = authAPI.getToken();
-      if (token) {
-        socketAPI.connect(token);
+        const token = authAPI.getToken();
+        if (token) {
+          socketAPI.connect(token);
+        }
       }
+    } catch (error) {
+      console.error('Login handler error:', error);
     }
-  } catch (error) {
-    console.error('Login handler error:', error);
-  }
-};
+  };
 
 
   const handleLogout = async () => {
-  try {
-    if (authAPI.isAuthenticated()) {
-      await authAPI.logout();
+    try {
+      if (authAPI.isAuthenticated()) {
+        await authAPI.logout();
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      socketAPI.disconnect(); // ✅ disconnect socket khi logout
+      setIsLoggedIn(false);
+      setUser(null);
+      localStorage.removeItem("user");
     }
-  } catch (error) {
-    console.error('Logout error:', error);
-  } finally {
-    socketAPI.disconnect(); // ✅ disconnect socket khi logout
-    setIsLoggedIn(false);
-    setUser(null);
-    localStorage.removeItem("user");
-  }
-};
+  };
 
 
   const toggleSidebar = () => {
@@ -167,12 +175,12 @@ useEffect(() => {
   // Tính toán class cho main-container
   const getMainContainerClass = () => {
     const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
-    
+
     // Mobile: không thêm class, sidebar sẽ overlay
     if (width < 768) {
       return "main-container";
     }
-    
+
     // Desktop/Tablet: thêm class dựa trên trạng thái collapsed
     if (sidebarCollapsed) {
       return "main-container sidebar-collapsed";
@@ -198,14 +206,14 @@ useEffect(() => {
       {isLoggedIn ? (
         <Router>
           <div className="app-layout">
-            <Header 
-              user={user} 
-              onLogout={handleLogout} 
+            <Header
+              user={user}
+              onLogout={handleLogout}
               onToggleSidebar={toggleSidebar}
             />
             <div className={getMainContainerClass()}>
-              <Sidebar 
-                user={user} 
+              <Sidebar
+                user={user}
                 isOpen={sidebarOpen}
                 onClose={closeSidebar}
                 onCollapsedChange={handleSidebarCollapsedChange}
@@ -228,19 +236,20 @@ useEffect(() => {
 
 
                   <Route path="/tour-noi-dia" element={<DomesticTourManagement currentUser={user} />} />
-                  <Route path="/tour-noi-dia/editor" element={<DomesticEditTour currentUser={user} />} />
-                  <Route path="/tour-noi-dia/editor/:slug" element={<DomesticEditTour currentUser={user} />} />
+                  <Route path="/tour-noi-dia/editor" element={<EditTour currentUser={user} />} />
+                  <Route path="/tour-noi-dia/editor/:slug" element={<EditTour currentUser={user} />} />
                   <Route path="/tour-noi-dia/deleted" element={<DomesticTourDeleted currentUser={user} />} />
 
 
                   <Route path="/tour-quoc-te" element={<OverseaTourManagement currentUser={user} />} />
-                  <Route path="/tour-quoc-te/editor" element={<OverseaEditTour currentUser={user} />} />
-                  <Route path="/tour-quoc-te/editor/:slug" element={<OverseaEditTour currentUser={user} />} />
+                  <Route path="/tour-quoc-te/editor" element={<EditTour currentUser={user} />} />
+                  <Route path="/tour-quoc-te/editor/:slug" element={<EditTour currentUser={user} />} />
                   <Route path="/tour-quoc-te/deleted" element={<OverseaTourDeleted currentUser={user} />} />
 
 
 
                   <Route path="/ve-may-bay" element={<FlightManagement currentUser={user} />} />
+                  <Route path="/ve-may-bay/deleted" element={<FlightDeleted currentUser={user} />} />
 
                   <Route path="/khach-san-resort" element={<HotelResortManagement currentUser={user} />} />
                   <Route path="/khach-san-resort/editor" element={<EditAccommodation currentUser={user} />} />
@@ -252,6 +261,8 @@ useEffect(() => {
 
                   <Route path="/mice" element={<MiceTourManagement currentUser={user} />} />
                   <Route path="/mice/editor" element={<EditTour currentUser={user} />} />
+                  <Route path="/mice/editor/:slug" element={<EditTour currentUser={user} />} />
+                  <Route path="/mice/deleted" element={<MiceTourDeleted currentUser={user} />} />
 
                   <Route path="/dich-vu-van-tai" element={<TransportManagement currentUser={user} />} />
 
