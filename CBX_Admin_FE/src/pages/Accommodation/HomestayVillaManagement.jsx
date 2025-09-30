@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Edit2, Trash2, Plus, Star, MapPin, Users, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Demo data for homestays and villas
 const demoData = [
@@ -101,34 +102,40 @@ const HomestayVillaManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
+  const navigate = useNavigate();
+
   // Filter data based on search term and type
   useEffect(() => {
     let filtered = accommodations.filter(item => !item.isDeleted);
-    
+
     if (searchTerm) {
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.location.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (typeFilter !== 'all') {
-      filtered = filtered.filter(item => 
+      filtered = filtered.filter(item =>
         item.type.toLowerCase() === typeFilter.toLowerCase()
       );
     }
-    
+
     setFilteredData(filtered);
   }, [accommodations, searchTerm, typeFilter]);
 
-  const handleDelete = (id) => {
+  const handleSoftDelete = (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa mục này?')) {
-      setAccommodations(prev => 
-        prev.map(item => 
+      setAccommodations(prev =>
+        prev.map(item =>
           item._id === id ? { ...item, isDeleted: true, deletedAt: new Date().toISOString() } : item
         )
       );
     }
+  };
+
+  const handleDeleted = () => {
+    navigate('/homestay-villa/deleted');
   };
 
   const handleEdit = (item) => {
@@ -162,14 +169,24 @@ const HomestayVillaManagement = () => {
       <div className="mb-6 sm:mb-8">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Quản lý Homestay & Villa</h1>
-          <button
-            onClick={handleAdd}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
-          >
-            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="hidden sm:inline">Thêm mới</span>
-            <span className="sm:hidden">Thêm</span>
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleDeleted}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
+            >
+              <Trash2 size={20} />
+              Thùng Rác
+            </button>
+
+            <button
+              onClick={handleAdd}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
+            >
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Thêm mới</span>
+              <span className="sm:hidden">Thêm</span>
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -224,19 +241,19 @@ const HomestayVillaManagement = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/5">
                   Thông tin cơ bản
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                   Đánh giá
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                   Giá
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                   Ngày tạo
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-[120px]">
                   Thao tác
                 </th>
               </tr>
@@ -244,7 +261,7 @@ const HomestayVillaManagement = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredData.map((item) => (
                 <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-16 w-20">
                         <img
@@ -253,21 +270,17 @@ const HomestayVillaManagement = () => {
                           alt={item.name}
                         />
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 mb-1">
+                      <div className="ml-4 min-w-0 flex-1">
+                        <div className="text-sm font-medium text-gray-900 mb-1 line-clamp-2">
                           {item.name}
                         </div>
                         <div className="text-sm text-gray-500 flex items-center">
-                          <MapPin className="w-4 h-4 mr-1" />
-                          {item.location}
+                          <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+                          <span className="truncate">{item.location}</span>
                         </div>
-                        <div className="flex items-center mt-1">
-                          {renderStars(item.stars)}
-                          <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
-                            item.type === 'Homestay' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-purple-100 text-purple-800'
-                          }`}>
+                        <div className="flex items-center mt-1 flex-wrap gap-1">
+                          <div className="flex">{renderStars(item.stars)}</div>
+                          <span className="ml-1 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full whitespace-nowrap">
                             {item.type}
                           </span>
                         </div>
@@ -295,13 +308,13 @@ const HomestayVillaManagement = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEdit(item)}
-                        className="text-purple-600 hover:text-purple-900 p-2 hover:bg-purple-50 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Sửa"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(item._id)}
+                        onClick={() => handleSoftDelete(item._id)}
                         className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
                         title="Xóa"
                       >
@@ -319,29 +332,29 @@ const HomestayVillaManagement = () => {
         <div className="lg:hidden">
           {filteredData.map((item) => (
             <div key={item._id} className="p-4 border-b border-gray-200 last:border-b-0">
-              <div className="flex space-x-4">
+              <div className="flex gap-3">
                 <div className="flex-shrink-0">
                   <img
-                    className="h-20 w-24 sm:h-24 sm:w-32 rounded-lg object-cover"
+                    className="h-20 w-20 sm:h-24 sm:w-28 rounded-lg object-cover"
                     src={item.image}
                     alt={item.name}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate pr-2">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 flex-1">
                       {item.name}
                     </h3>
-                    <div className="flex space-x-2 flex-shrink-0">
+                    <div className="flex gap-1.5 flex-shrink-0">
                       <button
                         onClick={() => handleEdit(item)}
-                        className="text-purple-600 hover:text-purple-900 p-1.5 hover:bg-purple-50 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Sửa"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
                       <button
-                        onClick={() => handleDelete(item._id)}
+                        onClick={() => handleSoftDelete(item._id)}
                         className="text-red-600 hover:text-red-900 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
                         title="Xóa"
                       >
@@ -349,42 +362,34 @@ const HomestayVillaManagement = () => {
                       </button>
                     </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center text-xs sm:text-sm text-gray-500">
-                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                      <span className="truncate">{item.location}</span>
+
+                  <div className="space-y-1.5">
+                    <div className="flex items-start text-xs sm:text-sm text-gray-500">
+                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-1">{item.location}</span>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="flex">
-                          {renderStars(item.stars)}
-                        </div>
-                        <span className={`ml-2 text-xs px-2 py-1 rounded-full ${
-                          item.type === 'Homestay' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-purple-100 text-purple-800'
-                        }`}>
-                          {item.type}
-                        </span>
-                      </div>
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex">{renderStars(item.stars)}</div>
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                        {item.type}
+                      </span>
                     </div>
-                    
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
+
+                    <div className="flex items-center gap-2 text-xs sm:text-sm flex-wrap">
+                      <span className="font-medium text-gray-900">⭐ {item.rating}</span>
+                      <span className="text-gray-400">•</span>
                       <div className="flex items-center text-gray-500">
-                        <span className="font-medium text-gray-900">⭐ {item.rating}</span>
-                        <span className="mx-2">•</span>
                         <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                        {item.reviewCount} đánh giá
+                        <span>{item.reviewCount} đánh giá</span>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm sm:text-base font-medium text-gray-900">
+
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      <div className="text-sm sm:text-base font-medium text-gray-900 truncate">
                         {item.price}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-gray-500 whitespace-nowrap">
                         {formatDate(item.createdAt)}
                       </div>
                     </div>
@@ -394,7 +399,7 @@ const HomestayVillaManagement = () => {
             </div>
           ))}
         </div>
-        
+
         {filteredData.length === 0 && (
           <div className="text-center py-8 sm:py-12">
             <div className="text-gray-500 mb-4">

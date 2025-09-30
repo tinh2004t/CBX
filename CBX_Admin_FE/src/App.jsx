@@ -27,9 +27,11 @@ import EditTour from './pages/TourEdit';
 import FlightManagement from './pages/Flight/FlightManagement';
 import FlightDeleted from './pages/Flight/FlightDeleted';
 
-import HotelResortManagement from './pages/HotelResortManagement';
-import EditAccommodation from './pages/EditAccommodation';
-import HomestayVillaManagement from './pages/HomestayVillaManagement';
+import HotelResortManagement from './pages/Accommodation/HotelResortManagement';
+import EditAccommodation from './pages/Accommodation/EditAccommodation';
+import HomestayVillaManagement from './pages/Accommodation/HomestayVillaManagement';
+import AccommodationDeleted from './pages/Accommodation/AccommodationDeleted';
+
 import TeambuildingManagement from './pages/TeambuildingManagement';
 
 import MiceTourManagement from './pages/MiceTour/MiceTourManagement';
@@ -251,11 +253,14 @@ function App() {
                   <Route path="/ve-may-bay" element={<FlightManagement currentUser={user} />} />
                   <Route path="/ve-may-bay/deleted" element={<FlightDeleted currentUser={user} />} />
 
-                  <Route path="/khach-san-resort" element={<HotelResortManagement currentUser={user} />} />
-                  <Route path="/khach-san-resort/editor" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/hotel-resort" element={<HotelResortManagement currentUser={user} />} />
+                  <Route path="/hotel-resort/edit/:slug" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/hotel-resort/add" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/hotel-resort/deleted" element={<AccommodationDeleted currentUser={user} />} />
 
                   <Route path="/homestay-villa" element={<HomestayVillaManagement currentUser={user} />} />
                   <Route path="/homestay-villa/editor" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/homestay-villa/deleted" element={<AccommodationDeleted currentUser={user} />} />
 
                   <Route path="/teambuilding" element={<TeambuildingManagement currentUser={user} />} />
 

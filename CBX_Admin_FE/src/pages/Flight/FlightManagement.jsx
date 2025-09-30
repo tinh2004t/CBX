@@ -715,12 +715,12 @@ const FlightManagement = () => {
             </div>
             <div className="flex gap-3">
               <button
-                            onClick={handleDeleted}
-                            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
-                          >
-                            <Trash2 size={20} />
-                            Thùng Rác
-                          </button>
+                onClick={handleDeleted}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
+              >
+                <Trash2 size={20} />
+                Thùng Rác
+              </button>
               <button
                 onClick={refreshData}
                 className="bg-gray-600 hover:bg-gray-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"

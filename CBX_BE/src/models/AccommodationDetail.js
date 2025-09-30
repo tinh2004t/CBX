@@ -66,6 +66,7 @@ const accommodationDetailSchema = new mongoose.Schema({
     type: String
   }],
   distances: {
+    type: Object,
     airport: String,
     beach: String,
     mall: String,

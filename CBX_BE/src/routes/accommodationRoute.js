@@ -6,19 +6,27 @@ const {
   createAccommodation,
   getAllAccommodations,
   getAccommodationBySlug,
+  getDeletedAccommodations,
+  getAccommodationsByType,
   updateAccommodation,
   deleteAccommodation,
   permanentDeleteAccommodation,
   restoreAccommodation,
   cleanupOldDeleted
-} = require('../controllers/AccommodationController');
+} = require('../controllers/accommodationController');
 
 
 // Get all accommodations
 router.get('/', getAllAccommodations);
+router.get('/deleted', authenticateToken, getDeletedAccommodations);
 
 // Get accommodation by slug
 router.get('/:slug', getAccommodationBySlug);
+
+// Get deleted accommodations
+
+// Get accommodations by type
+router.get('/type/:type', getAccommodationsByType);
 
 // Create accommodation
 router.post('/',authenticateToken, createAccommodation);

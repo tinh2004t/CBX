@@ -241,7 +241,7 @@ useEffect(() => {
       ),
       children: [
         { id: 've-may-bay', name: 'Vé máy bay', href: '/ve-may-bay' },
-        { id: 'khach-san-resort', name: 'Khách sạn & Resort', href: '/khach-san-resort' },
+        { id: 'khach-san-resort', name: 'Khách sạn & Resort', href: '/hotel-resort' },
         { id: 'homestay-villa', name: 'Homestay & Villa', href: '/homestay-villa' },
         { id: 'teambuilding', name: 'Teambuilding & Gala Dinner', href: '/teambuilding' },
         { id: 'mice', name: 'MICE', href: '/mice' },

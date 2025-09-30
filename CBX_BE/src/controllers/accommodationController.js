@@ -1,3 +1,4 @@
+// Thêm 2 functions mới vào controller
 const Accommodation = require('../models/Accommodation');
 const AccommodationDetail = require('../models/AccommodationDetail');
 const { slugify, generateUniqueSlug } = require('../utils/slugify');
@@ -387,9 +388,96 @@ const cleanupOldDeleted = async (req, res) => {
   }
 };
 
+// Get deleted accommodations
+const getDeletedAccommodations = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+
+    const filter = { isDeleted: true };
+
+    const accommodations = await Accommodation.find(filter)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ deletedAt: -1 }); // Sort by deletion date, newest first
+
+    const total = await Accommodation.countDocuments(filter);
+
+    res.json({
+      success: true,
+      data: accommodations,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching deleted accommodations',
+      error: error.message
+    });
+  }
+};
+
+// Get accommodations by type
+const getAccommodationsByType = async (req, res) => {
+  try {
+    const { type } = req.params;
+    const { page = 1, limit = 10, location, minRating } = req.query;
+
+    // Validate type
+    const validTypes = ['Hotel', 'Homestay', 'Resort', 'Villa', 'Apartment'];
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid type. Must be one of: ${validTypes.join(', ')}`
+      });
+    }
+
+    const filter = { 
+      type, 
+      isDeleted: false 
+    };
+
+    if (location) filter.location = { $regex: location, $options: 'i' };
+    if (minRating) filter.rating = { $gte: parseFloat(minRating) };
+
+    const accommodations = await Accommodation.find(filter)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ rating: -1, reviewCount: -1 }); // Sort by rating and reviews
+
+    const total = await Accommodation.countDocuments(filter);
+
+    res.json({
+      success: true,
+      data: accommodations,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total
+      },
+      filter: {
+        type,
+        location: location || 'all',
+        minRating: minRating || 0
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching accommodations by type',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createAccommodation,
   getAllAccommodations,
+  getDeletedAccommodations, // NEW
+  getAccommodationsByType,  // NEW
   getAccommodationBySlug,
   updateAccommodation,
   deleteAccommodation,
