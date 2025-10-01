@@ -1,5 +1,6 @@
-import { useState } from 'react';
 import { Plus, Search, Edit2, Trash2, Eye, MapPin, Clock, Users, Star, X, Calendar } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import transportAPI from '../../api/transportApi'; // Đường dẫn tùy thuộc vào cấu trúc project của bạn
 
 // Transport Modal Component
 const TransportModal = ({ transport, onClose, onSave }) => {
@@ -26,7 +27,7 @@ const TransportModal = ({ transport, onClose, onSave }) => {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.company.trim()) newErrors.company = 'Vui lòng nhập tên công ty';
     if (!formData.fromCity.trim()) newErrors.fromCity = 'Vui lòng nhập điểm đi';
     if (!formData.toCity.trim()) newErrors.toCity = 'Vui lòng nhập điểm đến';
@@ -47,7 +48,7 @@ const TransportModal = ({ transport, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     // Transform form data to match the original structure
@@ -73,11 +74,12 @@ const TransportModal = ({ transport, onClose, onSave }) => {
         dropoffPoint: formData.dropoffPoint.trim()
       },
       price: parseInt(formData.price),
-      isActive: formData.isActive,
-      slug: `${formData.company.toLowerCase().replace(/\s+/g, '-')}-${formData.fromCity.toLowerCase().replace(/\s+/g, '-')}-${formData.toCity.toLowerCase().replace(/\s+/g, '-')}`,
-      updatedAt: new Date().toISOString()
+      rating: 0,
+      reviews: 0,
+      isActive: formData.isActive
     };
 
+    console.log('Transport Data:', transportData);
     onSave(transportData);
   };
 
@@ -117,9 +119,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="text"
                   value={formData.company}
                   onChange={(e) => handleChange('company', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.company ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.company ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="VD: Hà Nội Travel"
                 />
                 {errors.company && <p className="text-red-500 text-sm mt-1">{errors.company}</p>}
@@ -139,9 +140,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="text"
                   value={formData.fromCity}
                   onChange={(e) => handleChange('fromCity', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.fromCity ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.fromCity ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="VD: Hà Nội"
                 />
                 {errors.fromCity && <p className="text-red-500 text-sm mt-1">{errors.fromCity}</p>}
@@ -154,9 +154,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="text"
                   value={formData.toCity}
                   onChange={(e) => handleChange('toCity', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.toCity ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.toCity ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="VD: Đà Nẵng"
                 />
                 {errors.toCity && <p className="text-red-500 text-sm mt-1">{errors.toCity}</p>}
@@ -191,9 +190,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="number"
                   value={formData.totalSeats}
                   onChange={(e) => handleChange('totalSeats', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.totalSeats ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.totalSeats ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="40"
                   min="1"
                 />
@@ -239,9 +237,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="date"
                   value={formData.departDate}
                   onChange={(e) => handleChange('departDate', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.departDate ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.departDate ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {errors.departDate && <p className="text-red-500 text-sm mt-1">{errors.departDate}</p>}
               </div>
@@ -253,9 +250,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="date"
                   value={formData.returnDate}
                   onChange={(e) => handleChange('returnDate', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.returnDate ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.returnDate ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {errors.returnDate && <p className="text-red-500 text-sm mt-1">{errors.returnDate}</p>}
                 <p className="text-sm text-gray-500 mt-1">Tùy chọn - dành cho vé khứ hồi</p>
@@ -268,9 +264,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="time"
                   value={formData.departTime}
                   onChange={(e) => handleChange('departTime', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.departTime ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.departTime ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {errors.departTime && <p className="text-red-500 text-sm mt-1">{errors.departTime}</p>}
               </div>
@@ -282,9 +277,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="time"
                   value={formData.arrivalTime}
                   onChange={(e) => handleChange('arrivalTime', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.arrivalTime ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.arrivalTime ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {errors.arrivalTime && <p className="text-red-500 text-sm mt-1">{errors.arrivalTime}</p>}
               </div>
@@ -308,9 +302,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="text"
                   value={formData.pickupPoint}
                   onChange={(e) => handleChange('pickupPoint', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.pickupPoint ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.pickupPoint ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="VD: Bến xe Miền Đông"
                 />
                 {errors.pickupPoint && <p className="text-red-500 text-sm mt-1">{errors.pickupPoint}</p>}
@@ -323,9 +316,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="text"
                   value={formData.dropoffPoint}
                   onChange={(e) => handleChange('dropoffPoint', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.dropoffPoint ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.dropoffPoint ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="VD: Bến xe Đà Lạt"
                 />
                 {errors.dropoffPoint && <p className="text-red-500 text-sm mt-1">{errors.dropoffPoint}</p>}
@@ -345,9 +337,8 @@ const TransportModal = ({ transport, onClose, onSave }) => {
                   type="number"
                   value={formData.price}
                   onChange={(e) => handleChange('price', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.price ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.price ? 'border-red-300' : 'border-gray-300'
+                    }`}
                   placeholder="180000"
                   min="0"
                 />
@@ -407,92 +398,15 @@ const TransportModal = ({ transport, onClose, onSave }) => {
 
 const TransportManagement = () => {
   // Dữ liệu mẫu - cập nhật với returnDate
-  const [transports, setTransports] = useState([
-    {
-      _id: "68c1479fa3a1fc44f2de4c4a",
-      company: "Phương Trang",
-      route: {
-        fromCity: "TP. Hồ Chí Minh",
-        toCity: "Đà Lạt"
-      },
-      bus: {
-        seatType: "Ghế VIP - 24 chỗ",
-        totalSeats: 24,
-        features: "Ghế da cao cấp, có massage, màn hình giải trí",
-        amenities: ["Wifi", "Điều hòa", "Nước uống"]
-      },
-      schedule: {
-        departDate: "2025-09-04T00:00:00.000Z",
-        returnDate: "2025-09-07T00:00:00.000Z",
-        departTime: "08:00",
-        arrivalTime: "12:30",
-        duration: "4h 30m",
-        pickupPoint: "Bến xe Miền Đông",
-        dropoffPoint: "Bến xe Đà Lạt"
-      },
-      price: 180000,
-      rating: 4.5,
-      reviews: 234,
-      isActive: true,
-      createdAt: "2025-09-10T09:40:47.546Z"
-    },
-    {
-      _id: "68c1479fa3a1fc44f2de4c4b",
-      company: "Hà Nội Travel",
-      route: {
-        fromCity: "Hà Nội",
-        toCity: "Đà Nẵng"
-      },
-      bus: {
-        seatType: "Ghế ngồi",
-        totalSeats: 40,
-        features: "Wifi, điều hòa",
-        amenities: ["Khăn lạnh", "Nước uống"]
-      },
-      schedule: {
-        departDate: "2025-09-15T00:00:00.000Z",
-        returnDate: null, // Không có ngày về
-        departTime: "08:00",
-        arrivalTime: "20:00",
-        duration: "12h",
-        pickupPoint: "Bến xe Giáp Bát",
-        dropoffPoint: "Bến xe Trung tâm Đà Nẵng"
-      },
-      price: 350000,
-      rating: 4.5,
-      reviews: 25,
-      isActive: true,
-      createdAt: "2025-09-10T09:40:47.546Z"
-    },
-    {
-      _id: "68c1479fa3a1fc44f2de4c4c",
-      company: "Sài Gòn Express",
-      route: {
-        fromCity: "TP.HCM",
-        toCity: "Nha Trang"
-      },
-      bus: {
-        seatType: "Giường nằm",
-        totalSeats: 32,
-        features: "Wifi, điều hòa, TV",
-        amenities: ["Khăn lạnh", "Nước uống", "Bánh kẹo"]
-      },
-      schedule: {
-        departDate: "2025-09-16T00:00:00.000Z",
-        returnDate: "2025-09-18T00:00:00.000Z",
-        departTime: "22:00",
-        arrivalTime: "06:00",
-        duration: "8h",
-        pickupPoint: "Bến xe Miền Đông",
-        dropoffPoint: "Bến xe Nha Trang"
-      },
-      price: 280000,
-      rating: 4.2,
-      reviews: 18,
-      isActive: true,
-      createdAt: "2025-09-11T10:30:20.123Z"
-    }
-  ]);
+  const [transports, setTransports] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10
+  });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -508,11 +422,8 @@ const TransportManagement = () => {
   );
 
   // Pagination
-  const totalPages = Math.ceil(filteredTransports.length / itemsPerPage);
-  const currentTransports = filteredTransports.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = pagination.totalPages;
+  const currentTransports = transports; // API đã trả về đúng số lượng items
 
   // Format currency
   const formatCurrency = (amount) => {
@@ -527,10 +438,64 @@ const TransportManagement = () => {
     return new Date(dateString).toLocaleDateString('vi-VN');
   };
 
+  useEffect(() => {
+    fetchTransports(currentPage);
+  }, [currentPage]); // Reload khi đổi trang
+
+  // Thêm debounce cho search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setCurrentPage(1); // Reset về trang 1 khi search
+      fetchTransports(1);
+    }, 500); // Đợi 500ms sau khi user ngừng gõ
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
+
+  const fetchTransports = async (page = 1) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const params = {
+        page: page,
+        limit: itemsPerPage,
+        search: searchTerm || undefined,
+        isActive: undefined // hoặc lọc theo trạng thái nếu cần
+      };
+
+      const response = await transportAPI.getAllTransports(params);
+
+      if (response.success) {
+        setTransports(response.data);
+        setPagination(response.pagination);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Có lỗi xảy ra khi tải dữ liệu');
+      console.error('Error fetching transports:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Handle delete
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa chuyến xe này?')) {
-      setTransports(transports.filter(t => t._id !== id));
+      try {
+        setLoading(true);
+        const response = await transportAPI.deleteTransport(id);
+
+        if (response.success) {
+          // Reload lại danh sách sau khi xóa
+          await fetchTransports(currentPage);
+          alert('Xóa chuyến xe thành công');
+        }
+      } catch (err) {
+        alert(err.response?.data?.message || 'Có lỗi xảy ra khi xóa');
+        console.error('Error deleting transport:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -547,10 +512,27 @@ const TransportManagement = () => {
   };
 
   // Toggle active status
-  const toggleActive = (id) => {
-    setTransports(transports.map(t => 
-      t._id === id ? { ...t, isActive: !t.isActive } : t
-    ));
+  const toggleActive = async (id) => {
+    try {
+      setLoading(true);
+      const transport = transports.find(t => t._id === id);
+
+      const response = await transportAPI.patchTransport(id, {
+        isActive: !transport.isActive
+      });
+
+      if (response.success) {
+        // Cập nhật state local
+        setTransports(transports.map(t =>
+          t._id === id ? { ...t, isActive: !t.isActive } : t
+        ));
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Có lỗi xảy ra');
+      console.error('Error toggling active status:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -572,6 +554,18 @@ const TransportManagement = () => {
             </button>
           </div>
         </div>
+
+        {loading && (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
 
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
@@ -630,23 +624,13 @@ const TransportManagement = () => {
               </div>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm">
-            <div className="flex items-center">
-              <div className="bg-purple-100 p-3 rounded-lg">
-                <Star className="w-6 h-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Đánh giá TB</p>
-                <p className="text-2xl font-bold text-gray-900">4.4</p>
-              </div>
-            </div>
-          </div>
+
         </div>
 
         {/* Transport List */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {/* Desktop Table */}
-          <div className="hidden lg:block overflow-x-auto">
+          <div div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
@@ -723,11 +707,10 @@ const TransportManagement = () => {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => toggleActive(transport._id)}
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          transport.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${transport.isActive
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                          }`}
                       >
                         {transport.isActive ? 'Hoạt động' : 'Tạm dừng'}
                       </button>
@@ -781,7 +764,7 @@ const TransportManagement = () => {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500">Ngày đi:</span>
@@ -809,7 +792,7 @@ const TransportManagement = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-between items-center mt-3">
                   <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -818,11 +801,10 @@ const TransportManagement = () => {
                   </div>
                   <button
                     onClick={() => toggleActive(transport._id)}
-                    className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                      transport.isActive
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}
+                    className={`px-2 py-1 text-xs font-semibold rounded-full ${transport.isActive
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                      }`}
                   >
                     {transport.isActive ? 'Hoạt động' : 'Tạm dừng'}
                   </button>
@@ -835,7 +817,7 @@ const TransportManagement = () => {
           {totalPages > 1 && (
             <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
               <div className="text-sm text-gray-700">
-                Hiển thị {((currentPage - 1) * itemsPerPage) + 1} đến {Math.min(currentPage * itemsPerPage, filteredTransports.length)} 
+                Hiển thị {((currentPage - 1) * itemsPerPage) + 1} đến {Math.min(currentPage * itemsPerPage, filteredTransports.length)}
                 {' '}trong tổng số {filteredTransports.length} chuyến xe
               </div>
               <div className="flex space-x-1">
@@ -843,11 +825,10 @@ const TransportManagement = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-1 text-sm rounded ${
-                      currentPage === page
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50 border'
-                    }`}
+                    className={`px-3 py-1 text-sm rounded ${currentPage === page
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border'
+                      }`}
                   >
                     {page}
                   </button>
@@ -876,31 +857,45 @@ const TransportManagement = () => {
               setShowModal(false);
               setEditingTransport(null);
             }}
-            onSave={(transportData) => {
-              if (editingTransport) {
-                // Update existing transport
-                setTransports(transports.map(t => 
-                  t._id === editingTransport._id ? { ...t, ...transportData } : t
-                ));
-              } else {
-                // Add new transport
-                const newTransport = {
-                  _id: Date.now().toString(), // Generate temporary ID
-                  ...transportData,
-                  rating: 0,
-                  reviews: 0,
-                  createdAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString()
-                };
-                setTransports([...transports, newTransport]);
+            onSave={async (transportData) => {
+              try {
+                setLoading(true);
+
+                if (editingTransport) {
+                  // Update existing
+                  const response = await transportAPI.updateTransport(
+                    editingTransport._id,
+                    transportData
+                  );
+
+                  if (response.success) {
+                    alert('Cập nhật thành công');
+                    await fetchTransports(currentPage);
+                  }
+                } else {
+                  // Create new
+                  const response = await transportAPI.createTransport(transportData);
+
+                  if (response.success) {
+                    alert('Thêm mới thành công');
+                    await fetchTransports(1); // Quay về trang 1
+                    setCurrentPage(1);
+                  }
+                }
+
+                setShowModal(false);
+                setEditingTransport(null);
+              } catch (err) {
+                alert(err.response?.data?.message || 'Có lỗi xảy ra');
+                console.error('Error saving transport:', err);
+              } finally {
+                setLoading(false);
               }
-              setShowModal(false);
-              setEditingTransport(null);
             }}
           />
         )}
       </div>
-    </div>
+    </div >
   );
 };
 

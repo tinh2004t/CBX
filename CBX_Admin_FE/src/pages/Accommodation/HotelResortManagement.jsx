@@ -43,20 +43,25 @@ const HotelManagement = () => {
       setLoading(true);
       setError(null);
 
-      const response = await accommodationAPI.getAllAccommodations({
-        isDeleted: false  // Lọc các item chưa bị xóa
-      });
+      const [hotels, resorts] = await Promise.all([
+        accommodationAPI.getAccommodationsByType("Hotel", { isDeleted: false }),
+        accommodationAPI.getAccommodationsByType("Resort", { isDeleted: false })
+      ]);
 
-      if (response.success) {
-        setAccommodations(response.data);
-      }
+      const merged = [
+        ...(hotels.success ? hotels.data : []),
+        ...(resorts.success ? resorts.data : [])
+      ];
+
+      setAccommodations(merged);
     } catch (err) {
-      console.error('Error fetching accommodations:', err);
-      setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+      console.error("Error fetching accommodations:", err);
+      setError("Không thể tải dữ liệu. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleSoftDelete = async (id) => {
     if (window.confirm('Bạn có chắc chắn muốn xóa mục này?')) {
@@ -86,9 +91,9 @@ const HotelManagement = () => {
   };
 
   const handleEdit = (item) => {
-  navigate(`/hotel-resort/edit/${item.slug}`);
-  // Hoặc navigate(`/hotel-resort/edit/${item.slug}`);
-};
+    navigate(`/hotel-resort/edit/${item.slug}`);
+    // Hoặc navigate(`/hotel-resort/edit/${item.slug}`);
+  };
 
   const handleAdd = () => {
     navigate('/hotel-resort/add');
@@ -294,91 +299,91 @@ const HotelManagement = () => {
                 </tbody>
               </table>
             </div>
-            
-          
-          {/* Mobile/Tablet Cards */}
-          <div className="lg:hidden">
-            {filteredData.map((item) => (
-              <div key={item._id} className="p-4 border-b border-gray-200 last:border-b-0">
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0">
-                    <img
-                      className="h-20 w-20 sm:h-24 sm:w-28 rounded-lg object-cover"
-                      src={item.image}
-                      alt={item.name}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 flex-1">
-                        {item.name}
-                      </h3>
-                      <div className="flex gap-1.5 flex-shrink-0">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="text-blue-600 hover:text-blue-900 p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Sửa"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleSoftDelete(item._id)}
-                          className="text-red-600 hover:text-red-900 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Xóa"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+
+
+            {/* Mobile/Tablet Cards */}
+            <div className="lg:hidden">
+              {filteredData.map((item) => (
+                <div key={item._id} className="p-4 border-b border-gray-200 last:border-b-0">
+                  <div className="flex gap-3">
+                    <div className="flex-shrink-0">
+                      <img
+                        className="h-20 w-20 sm:h-24 sm:w-28 rounded-lg object-cover"
+                        src={item.image}
+                        alt={item.name}
+                      />
                     </div>
-
-                    <div className="space-y-1.5">
-                      <div className="flex items-start text-xs sm:text-sm text-gray-500">
-                        <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 mt-0.5 flex-shrink-0" />
-                        <span className="line-clamp-1">{item.location}</span>
-                      </div>
-
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <div className="flex">{renderStars(item.stars)}</div>
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                          {item.type}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-xs sm:text-sm flex-wrap">
-                        <span className="font-medium text-gray-900">⭐ {item.rating}</span>
-                        <span className="text-gray-400">•</span>
-                        <div className="flex items-center text-gray-500">
-                          <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-                          <span>{item.reviewCount} đánh giá</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 flex-1">
+                          {item.name}
+                        </h3>
+                        <div className="flex gap-1.5 flex-shrink-0">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="text-blue-600 hover:text-blue-900 p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Sửa"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleSoftDelete(item._id)}
+                            className="text-red-600 hover:text-red-900 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Xóa"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between gap-2 pt-1">
-                        <div className="text-sm sm:text-base font-medium text-gray-900 truncate">
-                          {item.price}
+                      <div className="space-y-1.5">
+                        <div className="flex items-start text-xs sm:text-sm text-gray-500">
+                          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 mt-0.5 flex-shrink-0" />
+                          <span className="line-clamp-1">{item.location}</span>
                         </div>
-                        <div className="text-xs text-gray-500 whitespace-nowrap">
-                          {formatDate(item.createdAt)}
+
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex">{renderStars(item.stars)}</div>
+                          <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                            {item.type}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-xs sm:text-sm flex-wrap">
+                          <span className="font-medium text-gray-900">⭐ {item.rating}</span>
+                          <span className="text-gray-400">•</span>
+                          <div className="flex items-center text-gray-500">
+                            <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
+                            <span>{item.reviewCount} đánh giá</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 pt-1">
+                          <div className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                            {item.price}
+                          </div>
+                          <div className="text-xs text-gray-500 whitespace-nowrap">
+                            {formatDate(item.createdAt)}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-
-          {filteredData.length === 0 && (
-            <div className="text-center py-8 sm:py-12">
-              <div className="text-gray-500 mb-4">
-                <Eye className="w-8 h-8 sm:w-12 sm:h-12 mx-auto opacity-40" />
-              </div>
-              <p className="text-gray-500 text-sm sm:text-base">Không tìm thấy dữ liệu phù hợp</p>
+              ))}
             </div>
-          )}
-        </div>
+
+            {filteredData.length === 0 && (
+              <div className="text-center py-8 sm:py-12">
+                <div className="text-gray-500 mb-4">
+                  <Eye className="w-8 h-8 sm:w-12 sm:h-12 mx-auto opacity-40" />
+                </div>
+                <p className="text-gray-500 text-sm sm:text-base">Không tìm thấy dữ liệu phù hợp</p>
+              </div>
+            )}
+          </div>
         </>
-          )}
+      )}
     </div >
   );
 };

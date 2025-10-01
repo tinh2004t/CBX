@@ -37,7 +37,8 @@ import TeambuildingManagement from './pages/TeambuildingManagement';
 import MiceTourManagement from './pages/MiceTour/MiceTourManagement';
 import MiceTourDeleted from './pages/MiceTour/MiceTourDeleted';
 
-import TransportManagement from './pages/TransportManagement';
+import TransportManagement from './pages/Transport/TransportManagement';
+
 import TravelSettingsPage from './pages/SettingPage';
 import authAPI from './api/auth';
 import BlogDeleted from './pages/Blog/BlogDeleted';
@@ -259,7 +260,8 @@ function App() {
                   <Route path="/hotel-resort/deleted" element={<AccommodationDeleted currentUser={user} />} />
 
                   <Route path="/homestay-villa" element={<HomestayVillaManagement currentUser={user} />} />
-                  <Route path="/homestay-villa/editor" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/homestay-villa/edit/:slug" element={<EditAccommodation currentUser={user} />} />
+                  <Route path="/homestay-villa/add" element={<EditAccommodation currentUser={user} />} />
                   <Route path="/homestay-villa/deleted" element={<AccommodationDeleted currentUser={user} />} />
 
                   <Route path="/teambuilding" element={<TeambuildingManagement currentUser={user} />} />

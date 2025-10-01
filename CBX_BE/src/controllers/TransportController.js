@@ -203,8 +203,19 @@ const getTransportBySlug = async (req, res) => {
 // @access  Private
 const createTransport = async (req, res) => {
   try {
-    const validationError = handleValidationErrors(req, res);
-    if (validationError) return validationError;
+    console.log('===== CREATE TRANSPORT DEBUG =====');
+    console.log('Request Body:', JSON.stringify(req.body, null, 2));
+    
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      console.log('===== VALIDATION ERRORS =====');
+      console.log(JSON.stringify(errors.array(), null, 2)); // ← THÊM LOG NÀY
+      return res.status(400).json({
+        success: false,
+        message: 'Dữ liệu không hợp lệ',
+        errors: errors.array()
+      });
+    }
 
     const transport = await Transport.create(req.body);
 

@@ -8,6 +8,8 @@ const EditAccommodation = () => {
   const { slug } = useParams(); // 
   const navigate = useNavigate();
   const isEditMode = !!slug;
+  const isHomestayVilla = location.pathname.includes('/homestay-villa/');
+  const isHotelResort = location.pathname.includes('/hotel-resort/');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -257,7 +259,13 @@ const EditAccommodation = () => {
         }
 
         alert('Cập nhật thành công!');
-        navigate('/hotel-resort');
+        if (isHomestayVilla) {
+          navigate('/homestay-villa');
+        } else if (isHotelResort) {
+          navigate('/hotel-resort');
+        } else {
+          navigate(-1); // fallback
+        }
       }
       else {
         // ✅ TẠO MỚI - chỉ tạo basic info
@@ -265,7 +273,13 @@ const EditAccommodation = () => {
 
         if (basicResponse.success) {
           alert('Thêm mới thành công!');
-          navigate('/hotel-resort');
+          if (isHomestayVilla) {
+            navigate('/homestay-villa');
+          } else if (isHotelResort) {
+            navigate('/hotel-resort');
+          } else {
+            navigate(-1); // fallback
+          }
         }
       }
     } catch (err) {
@@ -279,7 +293,13 @@ const EditAccommodation = () => {
   };
 
   const handleBack = () => {
-    navigate('/hotel-resort');
+    if (isHomestayVilla) {
+      navigate('/homestay-villa');
+    } else if (isHotelResort) {
+      navigate('/hotel-resort');
+    } else {
+      navigate(-1); // fallback
+    }
   };
 
   const renderStars = (rating) => {
@@ -382,11 +402,19 @@ const EditAccommodation = () => {
                 onChange={(e) => handleBasicInfoChange('type', e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="Hotel">Khách sạn</option>
-                <option value="Resort">Resort</option>
-                <option value="Motel">Motel</option>
-                <option value="Villa">Villa</option>
-                <option value="Homestay">Homestay</option>
+                {isHomestayVilla ? (
+                  <>
+                    <option value="">Chọn loại hình</option>
+                    <option value="Homestay">Homestay</option>
+                    <option value="Villa">Villa</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="">Chọn loại hình</option>
+                    <option value="Hotel">Hotel</option>
+                    <option value="Resort">Resort</option>
+                  </>
+                )}
               </select>
             </div>
 

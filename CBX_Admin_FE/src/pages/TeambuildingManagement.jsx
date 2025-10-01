@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Edit2, Save, X, Star, MapPin, Phone, Mail, Eye, MessageCircle, Plus, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import teamBuildingAPI from '../api/teamBuildingApi'; // Điều chỉnh đường dẫn cho phù hợp
 
 const TeambuildingManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [serviceId, setServiceId] = useState(null); // ID của service đang quản lý
   const [editData, setEditData] = useState({
     service: {
       id: 1,
@@ -52,15 +59,107 @@ const TeambuildingManagement = () => {
     updatedAt: new Date()
   });
 
+  useEffect(() => {
+    fetchTeamBuildingData();
+  }, []); // Chạy 1 lần khi component mount
+
+
+  // Hàm lấy dữ liệu từ API
+  const fetchTeamBuildingData = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const response = await teamBuildingAPI.getAllTeamBuildingServices();
+
+      console.log('API Response:', response);
+
+      if (response.success && response.data && response.data.length > 0) {
+        // Lấy phần tử đầu tiên trong mảng
+        const item = response.data[0];
+
+        setEditData({
+          service: {
+            id: item._id,
+            title: item.service.title,
+            rating: item.service.rating,
+            reviewCount: item.service.reviewCount,
+            viewCount: item.service.viewCount,
+            price: item.service.price,
+            location: Array.isArray(item.service.location)
+              ? item.service.location.join(', ')
+              : item.service.location,
+            description: item.service.description || ""
+          },
+          contact: {
+            phone: item.contact.phone,
+            email: item.contact.email,
+            address: item.contact.address
+          },
+          images: item.images || [],
+          teamBuilding: {
+            definition: item.teamBuilding.definition,
+            roles: item.teamBuilding.roles,
+            types: item.teamBuilding.types
+          },
+          updatedAt: item.updatedAt ? new Date(item.updatedAt) : new Date()
+        });
+
+        // Lưu serviceId để dùng cho update
+        setServiceId(item._id);
+      }
+    } catch (err) {
+      console.error('Error fetching team building data:', err);
+      setError(err.response?.data?.message || 'Không thể tải dữ liệu');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleEdit = () => {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    setEditData(prev => ({ ...prev, updatedAt: new Date() }));
-    // Ở đây sẽ call API để save data
-    console.log('Saved data:', editData);
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Chuẩn bị dữ liệu với cấu trúc đúng
+      const dataToUpdate = {
+        service: {
+          title: editData.service.title,
+          rating: editData.service.rating,
+          location: editData.service.location.split(',').map(loc => loc.trim()), // Convert string về array
+          price: editData.service.price,
+          description: editData.service.description,
+          reviewCount: editData.service.reviewCount,
+          viewCount: editData.service.viewCount
+        },
+        contact: editData.contact,
+        images: editData.images,
+        teamBuilding: editData.teamBuilding
+      };
+
+      console.log('Data to send:', dataToUpdate); // Debug
+
+      const response = await teamBuildingAPI.updateTeamBuildingService(serviceId, dataToUpdate);
+
+      if (response.success) {
+        setIsEditing(false);
+        setEditData(prev => ({ ...prev, updatedAt: new Date() }));
+        alert('Cập nhật thành công!');
+
+        // Tải lại dữ liệu mới từ server
+        await fetchTeamBuildingData(serviceId);
+      }
+    } catch (err) {
+      console.error('Error saving data:', err);
+      setError(err.response?.data?.message || 'Không thể lưu dữ liệu');
+      alert('Lỗi: ' + (err.response?.data?.message || 'Không thể lưu dữ liệu'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -138,10 +237,45 @@ const TeambuildingManagement = () => {
     newImages[index] = value;
     setEditData(prev => ({ ...prev, images: newImages }));
   };
+  const addImage = () => {
+    const newImages = [...editData.images, ""];
+    setEditData(prev => ({ ...prev, images: newImages }));
+  };
+
+  const removeImage = (index) => {
+    if (editData.images.length > 1) {
+      const newImages = editData.images.filter((_, i) => i !== index);
+      setEditData(prev => ({ ...prev, images: newImages }));
+    } else {
+      alert('Phải có ít nhất 1 hình ảnh!');
+    }
+  };
 
   return (
+
+
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-blue-700 text-center">Đang tải dữ liệu...</p>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <p className="text-red-700 text-center">{error}</p>
+            <button
+              onClick={() => fetchTeamBuildingData(serviceId)}
+              className="mt-2 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            >
+              Thử lại
+            </button>
+          </div>
+        )}
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
           <div className="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -155,6 +289,7 @@ const TeambuildingManagement = () => {
               {!isEditing ? (
                 <button
                   onClick={handleEdit}
+                  disabled={isLoading}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Edit2 size={16} />
@@ -164,6 +299,7 @@ const TeambuildingManagement = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={handleSave}
+                    disabled={isLoading}
                     className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     <Save size={16} />
@@ -235,7 +371,7 @@ const TeambuildingManagement = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Đánh giá</label>
@@ -486,8 +622,17 @@ const TeambuildingManagement = () => {
 
             {/* Images */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-              <div className="px-6 py-4 border-b border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Hình Ảnh</h2>
+                {isEditing && (
+                  <button
+                    onClick={addImage}
+                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                  >
+                    <Plus size={16} />
+                    Thêm ảnh
+                  </button>
+                )}
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 gap-4">
@@ -503,11 +648,20 @@ const TeambuildingManagement = () => {
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                             placeholder="URL hình ảnh"
                           />
+                          {editData.images.length > 1 && (
+                            <button
+                              onClick={() => removeImage(index)}
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Xóa ảnh"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       )}
                       <div className="relative">
                         <img
-                          src={image}
+                          src={image || 'https://via.placeholder.com/400x200?text=No+Image'}
                           alt={`Team building ${index + 1}`}
                           className="w-full h-48 object-cover rounded-lg"
                           onError={(e) => {
@@ -524,6 +678,12 @@ const TeambuildingManagement = () => {
                       </div>
                     </div>
                   ))}
+
+                  {editData.images.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      Chưa có hình ảnh nào. Nhấn "Thêm ảnh" để thêm mới.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

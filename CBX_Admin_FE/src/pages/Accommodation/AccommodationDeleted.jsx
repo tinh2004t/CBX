@@ -12,6 +12,9 @@ const AccommodationDeleted = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
 
+  const isHomestayVilla = location.pathname.includes('/homestay-villa/');
+  const isHotelResort = location.pathname.includes('/hotel-resort/');
+
   const navigate = useNavigate();
 
   // Fetch data on component mount
@@ -39,7 +42,13 @@ const AccommodationDeleted = () => {
   }, [deletedItems, searchTerm, typeFilter]);
 
   const handleBackToMain = () => {
-    navigate('/hotel-resort');
+    if (isHomestayVilla) {
+      navigate('/homestay-villa');
+    } else if (isHotelResort) {
+      navigate('/hotel-resort');
+    } else {
+      navigate(-1); // fallback
+    }
   };
 
 
