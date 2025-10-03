@@ -1,9 +1,28 @@
 import React from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
-import contact from '../../data/contact.json';
+import { useEffect, useState } from "react";
+import settingAPI from '../../api/settingApi';
 
 const Footer = () => {
   const { t } = useLanguage();
+
+  const [contact, setContacts] = React.useState({});
+
+   useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await settingAPI.getSettings();
+        if (res.success) {
+          setContacts(res.data);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy settings:", err);
+      }
+    };
+    fetchContacts();
+  }, []);
+
+
 
   return (
     <footer style={{
@@ -191,53 +210,72 @@ const Footer = () => {
 
 // Social Media Links Component
 const SocialLinks = () => {
-  const socialLinks = [
-    {
-      href: "https://www.facebook.com/share/1CgoBQaaHC/?mibextid=wwXIfr",
-      icon: "fab fa-facebook-f"
-    }
-  ];
+  const [socialLinks, setSocialLinks] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await settingAPI.getSettings();
+        if (res.success) {
+          const data = res.data;
+          // 🔹 Tạo mảng link từ dữ liệu API
+          const links = [
+            { href: data.fbLink, icon: "fab fa-facebook-f" },
+            { href: `mailto:${data.email}`, icon: "fas fa-envelope" },
+            { href: `tel:${data.hotline}`, icon: "fas fa-phone" }
+          ];
+          setSocialLinks(links);
+        }
+      } catch (err) {
+        console.error("Lỗi khi gọi settings:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
-      gap: '15px'
-    }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        flexWrap: "wrap",
+        gap: "15px"
+      }}
+    >
       {socialLinks.map((link, index) => (
-        <a 
-          key={index} 
-          href={link.href} 
-          target="_blank" 
+        <a
+          key={index}
+          href={link.href}
+          target="_blank"
           rel="noopener noreferrer"
           style={{
-            display: 'inline-block',
-            width: '40px',
-            height: '40px',
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            textAlign: 'center',
-            lineHeight: '40px',
-            transition: 'all 0.3s ease',
-            border: '1px solid rgba(255,255,255,0.2)'
+            display: "inline-block",
+            width: "40px",
+            height: "40px",
+            backgroundColor: "rgba(255,255,255,0.1)",
+            borderRadius: "50%",
+            textAlign: "center",
+            lineHeight: "40px",
+            transition: "all 0.3s ease",
+            border: "1px solid rgba(255,255,255,0.2)"
           }}
           onMouseOver={(e) => {
-            e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
-            e.target.style.transform = 'translateY(-2px)';
-            e.target.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)';
+            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = "0 4px 15px rgba(0,0,0,0.2)";
           }}
           onMouseOut={(e) => {
-            e.target.style.backgroundColor = 'rgba(255,255,255,0.1)';
-            e.target.style.transform = 'translateY(0)';
-            e.target.style.boxShadow = 'none';
+            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "none";
           }}
         >
-          <i 
-            className={link.icon} 
-            style={{ 
-              color: '#ffffff',
-              fontSize: '18px'
+          <i
+            className={link.icon}
+            style={{
+              color: "#ffffff",
+              fontSize: "18px"
             }}
           ></i>
         </a>

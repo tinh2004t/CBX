@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react'; // Thêm useEffect
+import transportAPI from '../../api/transportApi'; // Thêm dòng này
 import { Search, MapPin, Calendar, Clock, Users, Wifi, Coffee, Car, ChevronDown, ChevronUp, Star, Shield, ArrowRight } from 'lucide-react';
 
 const TransportBooking = () => {
@@ -23,176 +24,155 @@ const TransportBooking = () => {
 
   // State for search results visibility
   const [showResults, setShowResults] = useState(false);
+  // States cho API data
+  const [routes, setRoutes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10
+  });
 
-  // Improved demo data with fromCity and toCity
-  const demoRoutes = [
-    {
-      id: 1,
-      company: 'Phương Trang',
-      fromCity: 'TP. Hồ Chí Minh',
-      toCity: 'Đà Lạt',
-      seatType: 'Ghế VIP - 24 chỗ',
-      departDate: '2025-09-04',
-      returnDate: '2025-09-07',
-      departTime: '08:00',
-      arrivalTime: '12:30',
-      duration: '4h 30m',
-      pickupPoint: 'Bến xe Miền Đông',
-      dropoffPoint: 'Bến xe Đà Lạt',
-      price: 180000,
-      totalSeats: 24,
-      amenities: ['Wifi', 'Điều hòa', 'Nước uống'],
-      features: 'Ghế da cao cấp, có massage, màn hình giải trí',
-      rating: 4.5,
-      reviews: 234
-    },
-    {
-      id: 2,
-      company: 'Thành Bưởi',
-      fromCity: 'TP. Hồ Chí Minh',
-      toCity: 'Nha Trang',
-      seatType: 'Giường nằm VIP - 22 chỗ',
-      departDate: '2025-09-03',
-      returnDate: '2025-09-07',
-      departTime: '21:00',
-      arrivalTime: '05:30',
-      duration: '8h 30m',
-      pickupPoint: 'Bến xe An Sương',
-      dropoffPoint: 'Bến xe Nha Trang',
-      price: 320000,
-      totalSeats: 22,
-      amenities: ['Wifi', 'Điều hòa', 'Chăn gối', 'Nước uống'],
-      features: 'Giường nằm cao cấp, rèm che riêng tư, ổ cắm điện',
-      rating: 4.7,
-      reviews: 189
-    },
-    {
-      id: 3,
-      company: 'Hoàng Long',
-      fromCity: 'Hà Nội',
-      toCity: 'Hải Phòng',
-      seatType: 'Ghế thường - 45 chỗ',
-      departDate: '2024-12-15',
-      returnDate: null,
-      departTime: '14:00',
-      arrivalTime: '17:00',
-      duration: '3h 00m',
-      pickupPoint: 'Bến xe Mỹ Đình',
-      dropoffPoint: 'Bến xe Hải Phòng',
-      price: 85000,
-      totalSeats: 45,
-      amenities: ['Điều hòa', 'Nước uống'],
-      features: 'Ghế ngồi thoải mái, hệ thống âm thanh chất lượng cao',
-      rating: 4.2,
-      reviews: 156
-    },
-    {
-      id: 4,
-      company: 'Mai Linh Express',
-      fromCity: 'TP. Hồ Chí Minh',
-      toCity: 'Vũng Tàu',
-      seatType: 'Ghế VIP - 16 chỗ',
-      departDate: '2024-12-15',
-      returnDate: null,
-      departTime: '09:30',
-      arrivalTime: '15:00',
-      duration: '5h 30m',
-      pickupPoint: 'Sân bay Tân Sơn Nhất',
-      dropoffPoint: 'Trung tâm Vũng Tàu',
-      price: 220000,
-      totalSeats: 16,
-      amenities: ['Wifi', 'Điều hòa', 'Nước uống', 'Bánh kẹo'],
-      features: 'Ghế da thật, khoang hành lý rộng rãi, dịch vụ 5 sao',
-      rating: 4.8,
-      reviews: 312
-    },
-    {
-      id: 5,
-      company: 'Kumho Samco',
-      fromCity: 'TP. Hồ Chí Minh',
-      toCity: 'Cần Thơ',
-      seatType: 'Giường nằm VIP - 20 chỗ',
-      departDate: '2024-12-15',
-      returnDate: null,
-      departTime: '22:30',
-      arrivalTime: '06:00',
-      duration: '7h 30m',
-      pickupPoint: 'Bến xe Miền Tây',
-      dropoffPoint: 'Bến xe Cần Thơ',
-      price: 180000,
-      totalSeats: 20,
-      amenities: ['Wifi', 'Điều hòa', 'Chăn gối', 'Nước uống', 'Tivi'],
-      features: 'Giường nằm 2 tầng, toilet riêng, hệ thống giải trí hiện đại',
-      rating: 4.6,
-      reviews: 278
-    },
-    {
-      id: 6,
-      company: 'Phương Trang',
-      fromCity: 'Hà Nội',
-      toCity: 'Đà Nẵng',
-      seatType: 'Giường nằm VIP - 24 chỗ',
-      departDate: '2024-12-15',
-      returnDate: null,
-      departTime: '20:00',
-      arrivalTime: '08:00',
-      duration: '12h 00m',
-      pickupPoint: 'Bến xe Giáp Bát',
-      dropoffPoint: 'Bến xe Đà Nẵng',
-      price: 450000,
-      totalSeats: 24,
-      amenities: ['Wifi', 'Điều hòa', 'Chăn gối', 'Nước uống', 'Tivi'],
-      features: 'Giường nằm premium, wifi tốc độ cao, dịch vụ 24/7',
-      rating: 4.9,
-      reviews: 421
+  // Hàm fetch dữ liệu từ API
+  // Hàm fetch dữ liệu từ API
+const fetchTransports = async () => {
+  setLoading(true);
+  setError(null);
+  
+  try {
+    const params = {
+      // Params cho API
+      fromCity: searchData.fromCity || undefined,
+      toCity: searchData.toCity || undefined,
+      departDate: searchData.departDate || undefined,
+      company: filters.company || undefined,
+      page: pagination.currentPage,
+      limit: pagination.itemsPerPage
+    };
+
+    // Gọi API search by route nếu có fromCity và toCity
+    let response;
+    if (searchData.fromCity && searchData.toCity) {
+      response = await transportAPI.searchByRoute(params);
+    } else {
+      response = await transportAPI.getAllTransports(params);
     }
-  ];
+
+    console.log('API Response:', response); // Debug log
+
+    if (response.success) {
+      // Transform data trước khi set vào state
+      const transformedData = transformApiData(response.data);
+      console.log('Transformed Data:', transformedData); // Debug log
+      
+      setRoutes(transformedData);
+      
+      // Cập nhật pagination nếu API trả về
+      if (response.pagination) {
+        setPagination(prev => ({
+          ...prev,
+          totalPages: response.pagination.totalPages || 1,
+          totalItems: response.pagination.totalItems || 0,
+          currentPage: response.pagination.currentPage || 1
+        }));
+      }
+    } else {
+      setRoutes([]);
+      setError(response.message || 'Không tìm thấy dữ liệu');
+    }
+  } catch (err) {
+    console.error('Error fetching transports:', err);
+    setError(err.response?.data?.message || 'Không thể tải dữ liệu. Vui lòng thử lại sau.');
+    setRoutes([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const cities = ['TP. Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Nha Trang', 'Đà Lạt', 'Vũng Tàu', 'Cần Thơ', 'Hải Phòng'];
   const companies = ['Phương Trang', 'Thành Bưởi', 'Hoàng Long', 'Mai Linh Express', 'Kumho Samco'];
   const amenitiesList = ['Wifi', 'Điều hòa', 'Nước uống', 'Chăn gối', 'Bánh kẹo', 'Tivi'];
 
   // Filter routes based on search and filters
+  // Filter routes phía client (nếu cần filter thêm)
   const filteredRoutes = useMemo(() => {
-    return demoRoutes.filter(route => {
-      // Apply search filters - required fields
-      if (searchData.fromCity && route.fromCity !== searchData.fromCity) return false;
-      if (searchData.toCity && route.toCity !== searchData.toCity) return false;
-      if (searchData.departDate && new Date(route.departDate).toISOString().split('T')[0] !== searchData.departDate) return false;
-      
-      // For round trip, check return date if provided
-      if (searchData.isRoundTrip && searchData.returnDate && route.returnDate !== searchData.returnDate) return false;
+    return routes.filter(route => {
+      // Filter amenities phía client (nếu API không hỗ trợ)
+      if (filters.amenities.length > 0) {
+        const hasAllAmenities = filters.amenities.every(amenity =>
+          route.amenities?.includes(amenity)
+        );
+        if (!hasAllAmenities) return false;
+      }
 
-      // Apply other filters
-      if (filters.company && route.company !== filters.company) return false;
+      // Filter seat type phía client
       if (filters.seatType === '1-20' && route.totalSeats > 20) return false;
       if (filters.seatType === '21-30' && (route.totalSeats < 21 || route.totalSeats > 30)) return false;
       if (filters.seatType === '31-40' && (route.totalSeats < 31 || route.totalSeats > 40)) return false;
 
-      if (filters.amenities.length > 0) {
-        const hasAllAmenities = filters.amenities.every(amenity => route.amenities.includes(amenity));
-        if (!hasAllAmenities) return false;
-      }
+      // Filter round trip phía client (nếu cần)
+      if (searchData.isRoundTrip && searchData.returnDate && !route.returnDate) return false;
 
       return true;
     });
-  }, [searchData, filters]);
+  }, [routes, filters, searchData.isRoundTrip, searchData.returnDate]);
 
-  const handleSearch = () => {
+  // Fetch lại khi filters thay đổi
+  useEffect(() => {
+    if (showResults) {
+      fetchTransports();
+    }
+  }, [filters.company, pagination.currentPage]); // Chỉ fetch lại khi company filter hoặc page thay đổi
+
+// Hàm chuyển đổi dữ liệu từ API sang format UI
+const transformApiData = (apiData) => {
+  if (!apiData || !Array.isArray(apiData)) return [];
+  
+  return apiData.map(item => ({
+    id: item._id?.$oid || item._id,
+    company: item.company || '',
+    fromCity: item.route?.fromCity || '',
+    toCity: item.route?.toCity || '',
+    seatType: item.bus?.seatType || '',
+    departDate: item.schedule?.departDate?.$date 
+      ? new Date(item.schedule.departDate.$date).toISOString().split('T')[0]
+      : item.schedule?.departDate || '',
+    returnDate: item.schedule?.returnDate?.$date
+      ? new Date(item.schedule.returnDate.$date).toISOString().split('T')[0]
+      : item.schedule?.returnDate || null,
+    departTime: item.schedule?.departTime || '',
+    arrivalTime: item.schedule?.arrivalTime || '',
+    duration: item.schedule?.duration || '',
+    pickupPoint: item.schedule?.pickupPoint || '',
+    dropoffPoint: item.schedule?.dropoffPoint || '',
+    price: item.price || 0,
+    totalSeats: item.bus?.totalSeats || 0,
+    amenities: item.bus?.amenities || [],
+    features: item.bus?.features || '',
+    rating: item.rating || 0,
+    reviews: item.reviews || 0,
+    slug: item.slug || '',
+    isActive: item.isActive !== undefined ? item.isActive : true
+  }));
+};
+
+  const handleSearch = async () => {
     // Validate required fields
     if (!searchData.fromCity || !searchData.toCity || !searchData.departDate) {
       alert('Vui lòng chọn điểm đi, điểm đến và ngày khởi hành!');
       return;
     }
-    
+
     if (searchData.isRoundTrip && !searchData.returnDate) {
       alert('Vui lòng chọn ngày về cho chuyến khứ hồi!');
       return;
     }
-    
-    setShowResults(true);
-  };
 
+    setShowResults(true);
+    await fetchTransports(); // Gọi API
+  };
   const toggleCard = (routeId) => {
     const newExpanded = new Set(expandedCards);
     if (newExpanded.has(routeId)) {
@@ -224,7 +204,46 @@ const TransportBooking = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Form */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
-        
+
+          {/* Results Section */}
+          {showResults && (
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Filters Sidebar - giữ nguyên */}
+
+              {/* Results List */}
+              <div className="lg:col-span-3">
+                {/* Loading State */}
+                {loading && (
+                  <div className="text-center py-16">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Đang tìm kiếm chuyến xe...</p>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {error && !loading && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+                    <p className="text-red-600">{error}</p>
+                    <button
+                      onClick={fetchTransports}
+                      className="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg"
+                    >
+                      Thử lại
+                    </button>
+                  </div>
+                )}
+
+                {/* Results - hiển thị khi không loading và không có error */}
+                {!loading && !error && (
+                  <div className="space-y-6">
+                    {/* Phần hiển thị kết quả - giữ nguyên code cũ */}
+                    {/* ... */}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
@@ -464,9 +483,8 @@ const TransportBooking = () => {
                               </div>
                               {/* Trip Type Tag */}
                               <div className="ml-4">
-                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                                  route.returnDate ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-                                }`}>
+                                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${route.returnDate ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                                  }`}>
                                   {route.returnDate ? 'Khứ hồi' : 'Một chiều'}
                                 </span>
                               </div>
@@ -577,7 +595,7 @@ const TransportBooking = () => {
                                   </div>
                                 </div>
                               )}
-                              
+
                               <div className="flex items-start space-x-3">
                                 <span className="w-4 h-4 text-purple-500 mt-1 flex-shrink-0">✨</span>
                                 <div>
@@ -663,6 +681,30 @@ const TransportBooking = () => {
                   </div>
                 )}
               </div>
+              {/* Pagination */}
+              {filteredRoutes.length > 0 && pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2 mt-8">
+                  <button
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
+                    disabled={pagination.currentPage === 1}
+                    className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Trước
+                  </button>
+
+                  <span className="px-4 py-2">
+                    Trang {pagination.currentPage} / {pagination.totalPages}
+                  </span>
+
+                  <button
+                    onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
+                    disabled={pagination.currentPage === pagination.totalPages}
+                    className="px-4 py-2 bg-white border rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                  >
+                    Sau
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -43,7 +43,7 @@ const validateUpdateSettings = (req, res, next) => {
 
 // Routes
 // GET /api/settings - Lấy thông tin settings
-router.get('/', authenticateToken, getSettings);
+router.get('/', getSettings);
 
 // PUT /api/settings - Cập nhật settings
 router.put('/', authenticateToken, validateUpdateSettings, updateSettings);

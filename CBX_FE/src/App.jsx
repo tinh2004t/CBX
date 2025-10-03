@@ -6,13 +6,11 @@ import LanguageProvider from './components/LanguageProvider';
 
 import HomePage from './pages/HomePage';
 import TourismPage from './pages/TourismPage';
-import DomesticTourPage from './pages/DomensticTour/DomesticTourPage';
 import TourDetailPage from './pages/TourDetailPage';
 import NorthernToursPage from './pages/DomensticTour/NorthernToursPage';
 import CentralToursPage from './pages/DomensticTour/CentralToursPage';
 import SouthernToursPage from './pages/DomensticTour/SouthernToursPage';
 
-import OverseasTourPage from './pages/OverseaTour/OverseasTourPage';
 import AsiaToursPage from './pages/OverseaTour/AsiaToursPage';
 import AmericaToursPage from './pages/OverseaTour/AmericaToursPage';
 import AfricaToursPage from './pages/OverseaTour/AfricaToursPage';
@@ -25,7 +23,6 @@ import HomestayVillaPage from './pages/ComboVoucher/HomstayVillaPage';
 import TeamBuildingBooking from './pages/ComboVoucher/TeambuildingGaladinner';
 import TransportBooking from './pages/ComboVoucher/TransportBookingPage';
 import MiceToursPage from './pages/ComboVoucher/MiceToursPage';
-import MiceToursDetailPage from './pages/ComboVoucher/MiceToursDetailPage';
 
 import TravelBlogPage from './pages/Blog/TravelBlog';
 import TravelBlogPageData from './pages/Blog/TravelBlogPageData';
@@ -69,34 +66,37 @@ function App() {
               <Route path="/TourismPage" element={<TourismPage />} />
 
               {/*DomesticTourPage */}
-              <Route path="/DomesticTourPage" element={<DomesticTourPage />} />
-              <Route path="/DomesticTourPage/NorthernToursPage" element={<NorthernToursPage />} />
-              <Route path="/DomesticTourPage/CentralToursPage" element={<CentralToursPage />} />
-              <Route path="/DomesticTourPage/SouthernToursPage" element={<SouthernToursPage />} />
+              <Route path="/tour-noi-dia/mien-bac" element={<NorthernToursPage />} />
+              <Route path="/tour-noi-dia/mien-trung" element={<CentralToursPage />} />
+              <Route path="/tour-noi-dia/mien-nam" element={<SouthernToursPage />} />
 
               {/* OverseasTourPage */}
-              <Route path="/OverseasTourPage" element={<OverseasTourPage />} />
-              <Route path="/OverseasTourPage/AsiaToursPage" element={<AsiaToursPage />} />
-              <Route path="/OverseasTourPage/AmericaToursPage" element={<AmericaToursPage />} />
-              <Route path="/OverseasTourPage/AfricaToursPage" element={<AfricaToursPage />} />
-              <Route path="/OverseasTourPage/EuropeToursPage" element={<EuropeToursPage />} />
+              <Route path="//tour-quoc-te/chau-a" element={<AsiaToursPage />} />
+              <Route path="//tour-quoc-te/chau-my" element={<AmericaToursPage />} />
+              <Route path="//tour-quoc-te/chau-phi" element={<AfricaToursPage />} />
+              <Route path="//tour-quoc-te/chau-au" element={<EuropeToursPage />} />
 
               {/* Combo & Voucher */}
-              <Route path="/FlightTickets" element={<FlightTicketsPage />} />
-              <Route path="/HotelResorts" element={<HotelResort />} />
-              <Route path="/HotelResortDetail" element={<HotelResortDetailPage />} />
-              <Route path="/HomestayVilla" element={<HomestayVillaPage />} />
-              <Route path="/Teambuilding" element={<TeamBuildingBooking />} />
-              <Route path="/MICE" element={<MiceToursPage />} />
-              <Route path="/MiceDetail" element={<MiceToursDetailPage />} />
-              <Route path="/Transport" element={<TransportBooking />} />
+              <Route path="/ve-may-bay" element={<FlightTicketsPage />} />
+
+              <Route path="/hotel-resorts" element={<HotelResort />} />
+              <Route path="/hotel-resorts/:slug" element={<HotelResortDetailPage />} />
+
+              <Route path="/homestay-villa" element={<HomestayVillaPage />} />
+              <Route path="/homestay-villa/:slug" element={<HomestayVillaPage />} />
+
+              <Route path="/team-building" element={<TeamBuildingBooking />} />
+
+              <Route path="/mice" element={<MiceToursPage />} />
+
+              <Route path="/dich-vu-van-tai" element={<TransportBooking />} />
 
               {/* Tralvel Blog */}
-              <Route path="/TravelBlog" element={<TravelBlogPage />} />
-              <Route path="/TravelBlogData" element={<TravelBlogPageData />} />
+              <Route path="/blog" element={<TravelBlogPage />} />
+              <Route path="/blog/:slug" element={<TravelBlogPageData />} />
 
               {/* TourDetailPage */}
-              <Route path="/TourDetailPage" element={<TourDetailPage />} />
+              <Route path="/tours/:slug" element={<TourDetailPage />} />
 
               <Route path="*" element={<NotFound />} />
             </Routes>

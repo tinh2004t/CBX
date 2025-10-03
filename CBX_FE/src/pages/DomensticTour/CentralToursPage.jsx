@@ -1,109 +1,35 @@
-import React from 'react';
-import TourCard from '../../components/TourSection/TourCard'; // Import TourCard component của bạn
+import React, { useState, useEffect } from 'react';
+import TourCard from '../../components/TourSection/TourCard';
 import { useLanguage } from '../../hooks/useLanguage';
-
-// Mock useLanguage hook for demo
+import tourAPI from '../../api/tourApi';
 
 const CentralToursPage = () => {
   const { t } = useLanguage();
+  const [centralTours, setCentralTours] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample data for Miền Bắc tours
-  const centralTours = [
-    {
-      id: 1,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Hà Nội - Hạ Long - Sapa",
-      departure: "Khởi hành từ Hà Nội",
-      price: "4.500.000 đ",
-      duration: "Chương trình 4 ngày 3 đêm",
-      airline: "Vietnam Airlines",
-      scheduleInfo: "Khởi hành hàng ngày",
-      href: "/TourDetailPage"
-    },
-    {
-      id: 2,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Ninh Bình - Tràng An - Tam Cốc",
-      departure: "Hà Nội",
-      price: "2.800.000 đ",
-      duration: "Chương trình 2 ngày 1 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Thứ 7, Chủ nhật",
-      href: "/TourDetailPage"
-      
-    },
-    {
-      id: 3,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Hà Giang - Đồng Văn - Mèo Vạc",
-      departure: "Hà Nội",
-      price: "3.200.000 đ",
-      duration: "Chương trình 3 ngày 2 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Cuối tuần",
-      href: "/TourDetailPage"
-    },
-    {
-      id: 4,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Mai Châu - Pù Luông",
-      departure: "Hà Nội",
-      price: "2.500.000 đ",
-      duration: "Chương trình 2 ngày 1 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Hàng ngày",
-      href: "/TourDetailPage"
+  useEffect(() => {
+    const fetchNorthernTours = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Gọi API lấy tour Miền Bắc
+        // region có thể là: 'mien_bac', 'north', hoặc tùy theo backend của bạn định nghĩa
+        const response = await tourAPI.getToursByRegion('Miền Trung');
+        
+        setCentralTours(response.data || response);
+      } catch (err) {
+        console.error('Error fetching northern tours:', err);
+        setError(err.message || 'Không thể tải dữ liệu tour');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    },
-    {
-      id: 5,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Cao Bằng - Bắc Kạn",
-      departure: "Hà Nội",
-      price: "3.800.000 đ",
-      duration: "Chương trình 3 ngày 2 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Thứ 6 hàng tuần",
-      href: "/TourDetailPage"
-
-    },
-    {
-      id: 6,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Cao Bằng - Bắc Kạn",
-      departure: "Hà Nội",
-      price: "3.800.000 đ",
-      duration: "Chương trình 3 ngày 2 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Thứ 6 hàng tuần",
-      href: "/TourDetailPage"
-
-    },
-    {
-      id: 7,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Cao Bằng - Bắc Kạn",
-      departure: "Hà Nội",
-      price: "3.800.000 đ",
-      duration: "Chương trình 3 ngày 2 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Thứ 6 hàng tuần",
-      href: "/TourDetailPage"
-
-    },
-    {
-      id: 8,
-      image: "https://media.vov.vn/sites/default/files/styles/large/public/2020-09/99-thuyen_hoa.jpg",
-      title: "Tour Cao Bằng - Bắc Kạn",
-      departure: "Hà Nội",
-      price: "3.800.000 đ",
-      duration: "Chương trình 3 ngày 2 đêm",
-      airline: "Xe du lịch",
-      scheduleInfo: "Thứ 6 hàng tuần",
-      href: "/TourDetailPage"
-
-    }
-  ];
+    fetchNorthernTours();
+  }, []);
 
   return (
     <section className="ss-about margin-top-50">
@@ -119,11 +45,20 @@ const CentralToursPage = () => {
             <div className="card-container">
               {centralTours.map(tour => (
                 <TourCard 
-                  key={tour.id} 
-                  tour={tour} 
-                  type="bestselling"
-                  href={tour.href}
-                />
+                      key={tour._id || tour.id} 
+                      tour={{
+                        id: tour._id || tour.id,
+                        image: tour.images?.[0] || tour.image,
+                        title: tour.title,
+                        departure: tour.departure,
+                        price: tour.adultPrice || tour.price,
+                        duration: tour.duration,
+                        airline: tour.airline,
+                        scheduleInfo: tour.schedule || tour.scheduleInfo,
+                        href: `/tours/${tour.slug || tour._id}`
+                      }} 
+                      type="bestselling"
+                    />
               ))}
             </div>
           </section>

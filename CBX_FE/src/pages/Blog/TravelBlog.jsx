@@ -1,30 +1,29 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Filter, Calendar, Eye, MapPin, User, Clock } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Search, Filter, Calendar, Eye, MapPin, User } from "lucide-react";
+import blogAPI from "../../api/blogApi"; // chỉnh lại đường dẫn theo project của bạn
 
-// ... giữ nguyên mockBlogPosts, categories, cities, sortOptions
-
-const POSTS_PER_PAGE = 3; // số bài mỗi trang
+const POSTS_PER_PAGE = 6; // số bài mỗi trang (giống backend)
 
 const BlogCard = ({ post }) => {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+    return date.toLocaleDateString("vi-VN");
   };
 
   const formatViews = (views) => {
     if (views >= 1000) {
-      return (views / 1000).toFixed(1) + 'k';
+      return (views / 1000).toFixed(1) + "k";
     }
     return views.toString();
   };
 
-  const handleViewDetailsTest = () => {
-  window.location.href = "/TravelBlogData";
-};
+  const handleViewDetails = () => {
+    window.location.href = `/blog/${post.slug}`;
+  };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col h-full" >
-      <div className="relative overflow-hidden" onClick={handleViewDetailsTest}>
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group flex flex-col h-full">
+      <div className="relative overflow-hidden" onClick={handleViewDetails}>
         <img
           src={post.image}
           alt={post.title}
@@ -46,21 +45,18 @@ const BlogCard = ({ post }) => {
           {post.excerpt}
         </p>
 
-        {/* Thông tin mỗi cái 1 dòng */}
         <div className="text-sm text-gray-500 space-y-2">
-          {/* Dòng 1: Tác giả và Địa điểm */}
           <div className="flex justify-between w-full">
             <div className="flex items-center space-x-2">
               <User className="w-4 h-4 flex-shrink-0" />
-              <span>{post.author}</span>
+              <span>{post.author?.name}</span>
             </div>
             <div className="flex items-center space-x-2">
               <MapPin className="w-4 h-4 flex-shrink-0" />
-              <span>{post.city}</span>
+              <span>{post.location?.city}</span>
             </div>
           </div>
 
-          {/* Dòng 2: Ngày đăng và Số lượt xem */}
           <div className="flex justify-between w-full">
             <div className="flex items-center space-x-2">
               <Calendar className="w-4 h-4 flex-shrink-0" />
@@ -68,7 +64,7 @@ const BlogCard = ({ post }) => {
             </div>
             <div className="flex items-center space-x-2">
               <Eye className="w-4 h-4 flex-shrink-0" />
-              <span>{formatViews(post.views)} lượt xem</span>
+              <span>{formatViews(post.stats?.views)} lượt xem</span>
             </div>
           </div>
         </div>
@@ -84,125 +80,47 @@ const TravelBlogPage = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState(null);
 
-  // Filter and sort logic
-  const filteredAndSortedPosts = useMemo(() => {
-    const mockBlogPosts = [
-      {
-        id: 1,
-        title: "Khám phá vẻ đẹp Hạ Long Bay",
-        author: "Nguyễn Văn A",
-        views: 1250,
-        publishDate: "2024-08-15",
-        category: "Thiên nhiên",
-        city: "Quảng Ninh",
-        image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=250&fit=crop",
-        excerpt: "Khám phá vẻ đẹp huyền bí của Vịnh Hạ Long với những hang động tuyệt đẹp..."
-      },
-      {
-        id: 2,
-        title: "Ẩm thực đường phố Sài Gòn",
-        author: "Trần Thị B",
-        views: 890,
-        publishDate: "2024-08-20",
-        category: "Ẩm thực",
-        city: "TP.HCM",
-        image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=250&fit=crop",
-        excerpt: "Hành trình khám phá những món ăn đường phố đặc sắc nhất Sài Gòn..."
-      },
-      {
-        id: 3,
-        title: "Phố cổ Hội An về đêm",
-        author: "Lê Văn C",
-        views: 2100,
-        publishDate: "2024-08-10",
-        category: "Văn hóa",
-        city: "Quảng Nam",
-        image: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=400&h=250&fit=crop",
-        excerpt: "Đắm chìm trong không gian cổ kính của phố cổ Hội An lúc đêm về..."
-      },
-      {
-        id: 4,
-        title: "Trekking Sapa - Chinh phục đỉnh Fansipan",
-        author: "Phạm Thị D",
-        views: 1680,
-        publishDate: "2024-08-05",
-        category: "Phiêu lưu",
-        city: "Lào Cai",
-        image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop",
-        excerpt: "Hành trình chinh phục nóc nhà Đông Dương và khám phá văn hóa H'Mông..."
-      },
-      {
-        id: 5,
-        title: "Bãi biển Nha Trang xanh ngắt",
-        author: "Hoàng Văn E",
-        views: 950,
-        publishDate: "2024-08-25",
-        category: "Biển đảo",
-        city: "Khánh Hòa",
-        image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=250&fit=crop",
-        excerpt: "Tận hưởng những bãi biển tuyệt đẹp và hoạt động thể thao dưới nước..."
-      },
-      {
-        id: 6,
-        title: "Khám phá động Phong Nha",
-        author: "Vũ Thị F",
-        views: 1420,
-        publishDate: "2024-08-12",
-        category: "Thiên nhiên",
-        city: "Quảng Bình",
-        image: "https://images.unsplash.com/photo-1540979388789-6cee28a1cdc9?w=400&h=250&fit=crop",
-        excerpt: "Hành trình khám phá hệ thống hang động kỳ vĩ tại Quảng Bình..."
+  // Fetch posts từ backend (có phân trang & filter)
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const cleanParams = Object.fromEntries(
+        Object.entries({
+          page: currentPage,
+          limit: POSTS_PER_PAGE,
+          search: searchTerm,
+          category: selectedCategory !== "Tất cả" ? selectedCategory : null,
+          city: selectedCity !== "Tất cả" ? selectedCity : null,
+          sortBy,
+        }).filter(([_, v]) => v != null && v !== "")
+      );
+
+
+      const response = await blogAPI.getPosts(cleanParams);
+
+      if (response.success) {
+        setPosts(response.data.blogPosts);      // ✅ mảng bài viết
+        setPagination(response.data.pagination); // ✅ object phân trang
       }
-    ];
 
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+      setError("Không thể tải bài viết. Vui lòng thử lại sau.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    let filtered = mockBlogPosts.filter(post => {
-      const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.author.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === "Tất cả" || post.category === selectedCategory;
-      const matchesCity = selectedCity === "Tất cả" || post.city === selectedCity;
-
-      return matchesSearch && matchesCategory && matchesCity;
-    });
-
-    // Sort posts
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case "newest":
-          return new Date(b.publishDate) - new Date(a.publishDate);
-        case "oldest":
-          return new Date(a.publishDate) - new Date(b.publishDate);
-        case "mostViewed":
-          return b.views - a.views;
-        case "leastViewed":
-          return a.views - b.views;
-        default:
-          return 0;
-      }
-    });
-
-    return filtered;
-  }, [searchTerm, selectedCategory, selectedCity, sortBy]);
-
-  const categories = ["Tất cả", "Thiên nhiên", "Ẩm thực", "Văn hóa", "Phiêu lưu", "Biển đảo"];
-  const cities = ["Tất cả", "Hà Nội", "TP.HCM", "Quảng Ninh", "Quảng Nam", "Lào Cai", "Khánh Hòa", "Quảng Bình"];
-  const sortOptions = [
-    { value: "newest", label: "Mới nhất" },
-    { value: "oldest", label: "Cũ nhất" },
-    { value: "mostViewed", label: "Xem nhiều nhất" },
-    { value: "leastViewed", label: "Xem ít nhất" }
-  ];
-
-  // Tính tổng trang
-  const totalPages = Math.ceil(filteredAndSortedPosts.length / POSTS_PER_PAGE);
-
-  // Lấy bài viết cho trang hiện tại
-  const currentPosts = filteredAndSortedPosts.slice(
-    (currentPage - 1) * POSTS_PER_PAGE,
-    currentPage * POSTS_PER_PAGE
-  );
+  useEffect(() => {
+    fetchPosts();
+  }, [currentPage, searchTerm, selectedCategory, selectedCity, sortBy]);
 
   const resetFilters = () => {
     setSearchTerm("");
@@ -212,24 +130,24 @@ const TravelBlogPage = () => {
     setCurrentPage(1);
   };
 
-  // Khi filter thay đổi, reset trang về 1
-  React.useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedCategory, selectedCity, sortBy]);
+  const categories = ["Tất cả", "Thiên nhiên", "Ẩm thực", "Văn hóa", "Phiêu lưu", "Biển đảo"];
+  const cities = ["Tất cả", "Hà Nội", "TP.HCM", "Quảng Ninh", "Quảng Nam", "Lào Cai", "Khánh Hòa", "Quảng Bình"];
+  const sortOptions = [
+    { value: "newest", label: "Mới nhất" },
+    { value: "oldest", label: "Cũ nhất" },
+    { value: "mostViewed", label: "Xem nhiều nhất" },
+    { value: "leastViewed", label: "Xem ít nhất" },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Blog Du Lịch Việt Nam
-            </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Khám phá những điểm đến tuyệt vời và trải nghiệm độc đáo trên khắp đất nước hình chữ S
-            </p>
-          </div>
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog Du Lịch Việt Nam</h1>
+          <p className="text-xl opacity-90 max-w-2xl mx-auto">
+            Khám phá những điểm đến tuyệt vời và trải nghiệm độc đáo trên khắp đất nước hình chữ S
+          </p>
         </div>
       </div>
 
@@ -243,84 +161,73 @@ const TravelBlogPage = () => {
               type="text"
               placeholder="Tìm kiếm bài viết..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* Filter Toggle Button (Mobile) */}
-          <div className="md:hidden mb-4">
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-200 transition-colors"
-            >
-              <Filter className="w-4 h-4" />
-              <span>Bộ lọc</span>
-            </button>
-          </div>
-
-          {/* Filters */}
-          <div className={`${showFilters ? 'block' : 'hidden'} md:block`}>
+          {/* Bộ lọc */}
+          <div className={`${showFilters ? "block" : "hidden"} md:block`}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              {/* Category Filter */}
+              {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Thể loại
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Thể loại</label>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg"
                 >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
               </div>
 
-              {/* City Filter */}
+              {/* City */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Thành phố
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Thành phố</label>
                 <select
                   value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => {
+                    setSelectedCity(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg"
                 >
-                  {cities.map(city => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
+                  {cities.map((c) => (
+                    <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Sort By */}
+              {/* Sort */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sắp xếp theo
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Sắp xếp theo</label>
                 <select
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => {
+                    setSortBy(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg"
                 >
-                  {sortOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
+                  {sortOptions.map((o) => (
+                    <option key={o.value} value={o.value}>{o.label}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Reset Button */}
+              {/* Reset */}
               <div className="flex items-end">
                 <button
                   onClick={resetFilters}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors"
+                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg"
                 >
                   Đặt lại
                 </button>
@@ -329,77 +236,54 @@ const TravelBlogPage = () => {
           </div>
         </div>
 
-        {/* Results Info */}
-        <div className="flex flex-wrap items-center justify-between mb-6 gap-2">
-          <div className="text-gray-600">
-            Tìm thấy <span className="font-semibold">{filteredAndSortedPosts.length}</span> bài viết
-          </div>
-
-          {(searchTerm || selectedCategory !== "Tất cả" || selectedCity !== "Tất cả") && (
-            <div className="flex flex-wrap items-center space-x-2 gap-2">
-              <span className="text-sm text-gray-500">Bộ lọc đang áp dụng:</span>
-              {searchTerm && (
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs select-none">
-                  "{searchTerm}"
-                </span>
-              )}
-              {selectedCategory !== "Tất cả" && (
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs select-none">
-                  {selectedCategory}
-                </span>
-              )}
-              {selectedCity !== "Tất cả" && (
-                <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs select-none">
-                  {selectedCity}
-                </span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Blog Posts Grid */}
-        {currentPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentPosts.map(post => (
-              <BlogCard key={post.id} post={post} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <div className="text-gray-400 mb-4">
-              <Search className="w-16 h-16 mx-auto mb-4" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Không tìm thấy bài viết nào
-            </h3>
-            <p className="text-gray-500 mb-4">
-              Hãy thử thay đổi từ khóa tìm kiếm hoặc bộ lọc
-            </p>
-            <button
-              onClick={resetFilters}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Đặt lại bộ lọc
-            </button>
+        {/* Loading */}
+        {loading && (
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           </div>
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-12 space-x-3">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
-              <button
-                key={pageNum}
-                onClick={() => setCurrentPage(pageNum)}
-                className={`px-4 py-2 rounded-lg border transition-colors ${pageNum === currentPage
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-100'
-                  }`}
-              >
-                {pageNum}
-              </button>
-            ))}
+        {/* Error */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
+            {error}
           </div>
+        )}
+
+        {/* Posts */}
+        {!loading && !error && (
+          <>
+            {posts.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {posts.map((p) => (
+                  <BlogCard key={p._id || p.id} post={p} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 text-gray-500">
+                Không tìm thấy bài viết nào.
+              </div>
+            )}
+
+            {/* Pagination */}
+            {pagination?.total > 1 && (
+              <div className="flex justify-center mt-12 space-x-3">
+                {Array.from({ length: pagination.total }, (_, i) => i + 1).map((pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`px-4 py-2 rounded-lg border transition-colors ${pageNum === currentPage
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-700 border-gray-300 hover:bg-blue-100"
+                      }`}
+                  >
+                    {pageNum}
+                  </button>
+                ))}
+              </div>
+            )}
+
+          </>
         )}
       </div>
     </div>

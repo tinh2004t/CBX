@@ -568,6 +568,20 @@ const EditTour = () => { // Bỏ tourData prop, lấy từ URL params
     });
   };
 
+  const addLandscapeImage = () => {
+    setFormData({
+      ...formData,
+      landscapeImages: [...formData.landscapeImages, '']
+    });
+  };
+
+  const addFoodImage = () => {
+    setFormData({
+      ...formData,
+      foodImages: [...formData.foodImages, '']
+    });
+  };
+
   const handleApiError = (error, operation) => {
     console.error(`Error during ${operation}:`, error);
 
@@ -808,7 +822,7 @@ const EditTour = () => { // Bỏ tourData prop, lấy từ URL params
                       >
                         <option value="Châu Á">Châu Á</option>
                         <option value="Châu Âu">Châu Âu</option>
-                        <option value="Châu Úc">Châu Úc</option>
+                        {/* <option value="Châu Úc">Châu Úc</option> */}
                         <option value="Châu Mỹ">Châu Mỹ</option>
                         <option value="Châu Phi">Châu Phi</option>
                       </select>
@@ -1249,6 +1263,110 @@ const EditTour = () => { // Bỏ tourData prop, lấy từ URL params
               </div>
             )
             }
+
+            {/* Hình ảnh cảnh quan */}
+            {mode === 'edit' && (
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Hình ảnh cảnh quan</h2>
+                  <button
+                    type="button"
+                    onClick={addLandscapeImage}
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm"
+                  >
+                    <Plus size={16} />
+                    Thêm hình
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {formData.landscapeImages.map((imageUrl, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="url"
+                        value={imageUrl}
+                        onChange={(e) => {
+                          const newImages = [...formData.landscapeImages];
+                          newImages[index] = e.target.value;
+                          setFormData({ ...formData, landscapeImages: newImages });
+                        }}
+                        className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        placeholder="URL hình ảnh cảnh quan..."
+                      />
+                      {imageUrl && (
+                        <img
+                          src={imageUrl}
+                          alt={`Landscape ${index + 1}`}
+                          className="w-16 h-16 object-cover rounded"
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = formData.landscapeImages.filter((_, i) => i !== index);
+                          setFormData({ ...formData, landscapeImages: newImages });
+                        }}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Hình ảnh món ăn */}
+            {mode === 'edit' && (
+              <div className="mb-8">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-semibold">Hình ảnh món ăn</h2>
+                  <button
+                    type="button"
+                    onClick={addFoodImage}
+                    className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-3 py-2 rounded text-sm"
+                  >
+                    <Plus size={16} />
+                    Thêm hình
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  {formData.foodImages.map((imageUrl, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="url"
+                        value={imageUrl}
+                        onChange={(e) => {
+                          const newImages = [...formData.foodImages];
+                          newImages[index] = e.target.value;
+                          setFormData({ ...formData, foodImages: newImages });
+                        }}
+                        className="flex-1 p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                        placeholder="URL hình ảnh món ăn..."
+                      />
+                      {imageUrl && (
+                        <img
+                          src={imageUrl}
+                          alt={`Food ${index + 1}`}
+                          className="w-16 h-16 object-cover rounded"
+                          onError={(e) => e.target.style.display = 'none'}
+                        />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = formData.foodImages.filter((_, i) => i !== index);
+                          setFormData({ ...formData, foodImages: newImages });
+                        }}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">

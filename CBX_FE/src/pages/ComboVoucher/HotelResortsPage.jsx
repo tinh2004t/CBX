@@ -1,100 +1,209 @@
-import React, { useState } from 'react';
-import { MapPin } from 'react-feather'; // icon MapPin
+import React, { useState, useEffect } from 'react';
+import { MapPin, Home } from 'react-feather';
+import accommodationAPI from '../../api/accommodationApi';
 import HotelCard from '../../components/HotelCard/HotelCard';
 
-const cityTabs = ['Hà Nội', 'Đà Nẵng', 'TP. Hồ Chí Minh'];
-
-const hotelsData = {
-  'Hà Nội': [
-    {
-      id: 1,
-      location: 'Hà Nội',
-      image: 'https://ik.imagekit.io/tvlk/apr-asset/Ixf4aptF5N2Qdfmh4fGGYhTN274kJXuNMkUAzpL5HuD9jzSxIGG5kZNhhHY-p7nw/hotel/asset/20050636-b02da2d82245b290beb4e8284828bee4.jpeg?_src=imagekit&tr=dpr-2,c-at_max,f-jpg,fo-auto,h-332,pr-true,q-80,w-480',
-      name: 'Khách sạn Hà Nội 1',
-      rating: 4.5,
-      reviewCount: 120,
-      stars: 4,
-      price: '1,200,000 VND',
-    },
-    {
-      id: 2,
-      location: 'Hà Nội',
-      image: 'https://ik.imagekit.io/tvlk/apr-asset/Ixf4aptF5N2Qdfmh4fGGYhTN274kJXuNMkUAzpL5HuD9jzSxIGG5kZNhhHY-p7nw/hotel/asset/20050636-b02da2d82245b290beb4e8284828bee4.jpeg?_src=imagekit&tr=dpr-2,c-at_max,f-jpg,fo-auto,h-332,pr-true,q-80,w-480',
-      name: 'Khách sạn Hà Nội 2',
-      rating: 4.0,
-      reviewCount: 80,
-      stars: 3,
-      price: '900,000 VND',
-    },
-  ],
-  'Đà Nẵng': [
-    {
-      id: 3,
-      location: 'Đà Nẵng',
-      image: 'https://ik.imagekit.io/tvlk/apr-asset/Ixf4aptF5N2Qdfmh4fGGYhTN274kJXuNMkUAzpL5HuD9jzSxIGG5kZNhhHY-p7nw/hotel/asset/20050636-b02da2d82245b290beb4e8284828bee4.jpeg?_src=imagekit&tr=dpr-2,c-at_max,f-jpg,fo-auto,h-332,pr-true,q-80,w-480',
-      name: 'Khách sạn Đà Nẵng 1',
-      rating: 4.8,
-      reviewCount: 200,
-      stars: 5,
-      price: '2,000,000 VND',
-    },
-  ],
-  'TP. Hồ Chí Minh': [
-    {
-      id: 4,
-      location: 'TP. Hồ Chí Minh',
-      image: 'https://ik.imagekit.io/tvlk/apr-asset/Ixf4aptF5N2Qdfmh4fGGYhTN274kJXuNMkUAzpL5HuD9jzSxIGG5kZNhhHY-p7nw/hotel/asset/20050636-b02da2d82245b290beb4e8284828bee4.jpeg?_src=imagekit&tr=dpr-2,c-at_max,f-jpg,fo-auto,h-332,pr-true,q-80,w-480',
-      name: 'Khách sạn HCM 1',
-      rating: 4.3,
-      reviewCount: 150,
-      stars: 4,
-      price: '1,500,000 VND',
-    },
-  ],
-};
-
 const HotelResortsPage = () => {
-  const [activeTab, setActiveTab] = useState(cityTabs[0]);
+  const [allAccommodations, setAllAccommodations] = useState([]);
+  const [filteredAccommodations, setFilteredAccommodations] = useState([]);
+  const [activeType, setActiveType] = useState('all'); // 'all', 'hotel', 'resort'
+  const [activeLocation, setActiveLocation] = useState('all'); // 'all', 'Hà Nội', 'Đà Nẵng', etc.
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch hotels và resorts khi component mount
+  useEffect(() => {
+    const fetchAccommodations = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Gọi API lấy hotels
+        const hotelResponse = await accommodationAPI.getAccommodationsByType('Hotel');
+        
+        // Gọi API lấy resorts
+        const resortResponse = await accommodationAPI.getAccommodationsByType('Resort');
+        
+        const hotels = hotelResponse.success ? (hotelResponse.data || []) : [];
+        const resorts = resortResponse.success ? (resortResponse.data || []) : [];
+        
+        // Gộp cả 2 mảng
+        const combined = [...hotels, ...resorts];
+        setAllAccommodations(combined);
+        setFilteredAccommodations(combined);
+        
+        // Lấy danh sách địa điểm unique
+        const uniqueLocations = [...new Set(combined.map(item => item.location).filter(Boolean))];
+        setLocations(uniqueLocations);
+        
+      } catch (err) {
+        console.error('Error fetching accommodations:', err);
+        setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccommodations();
+  }, []);
+
+  // Áp dụng bộ lọc khi activeType hoặc activeLocation thay đổi
+  useEffect(() => {
+    let filtered = [...allAccommodations];
+
+    // Lọc theo loại hình
+    if (activeType !== 'all') {
+      filtered = filtered.filter(item => 
+        item.type?.toLowerCase() === activeType.toLowerCase()
+      );
+    }
+
+    // Lọc theo địa điểm
+    if (activeLocation !== 'all') {
+      filtered = filtered.filter(item => 
+        item.location === activeLocation
+      );
+    }
+
+    setFilteredAccommodations(filtered);
+  }, [activeType, activeLocation, allAccommodations]);
+
+  // Đếm số lượng theo loại
+  const hotelCount = allAccommodations.filter(item => 
+    item.type?.toLowerCase() === 'hotel'
+  ).length;
+  const resortCount = allAccommodations.filter(item => 
+    item.type?.toLowerCase() === 'resort'
+  ).length;
+
+  // Đếm số lượng theo địa điểm (đã áp dụng lọc type)
+  const getLocationCount = (location) => {
+    let items = allAccommodations;
+    if (activeType !== 'all') {
+      items = items.filter(item => item.type?.toLowerCase() === activeType.toLowerCase());
+    }
+    if (location === 'all') return items.length;
+    return items.filter(item => item.location === location).length;
+  };
 
   return (
     <div className="hotel-resort container mt-5 mb-5">
-      {/* City Tabs Navigation */}
-      <nav className="tabs-section" aria-label="City selection tabs">
+      {/* Type Filter */}
+      <nav className="tabs-section mb-3" aria-label="Accommodation type selection">
         <ul className="tabs-container">
-          {cityTabs.map((city) => (
-            <li key={city}>
-              <button
-                onClick={() => setActiveTab(city)}
-                className={`tab-button ${activeTab === city ? 'tab-button--active' : ''}`}
-                aria-selected={activeTab === city}
-                role="tab"
-              >
-                <MapPin className="tab-icon" aria-hidden="true" />
-                <span className="tab-label">{city}</span>
-              </button>
-            </li>
-          ))}
+          <li>
+            <button
+              onClick={() => setActiveType('all')}
+              className={`tab-button ${activeType === 'all' ? 'tab-button--active' : ''}`}
+              aria-selected={activeType === 'all'}
+              role="tab"
+            >
+              <Home className="tab-icon" aria-hidden="true" />
+              <span className="tab-label">Tất cả ({allAccommodations.length})</span>
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setActiveType('hotel')}
+              className={`tab-button ${activeType === 'hotel' ? 'tab-button--active' : ''}`}
+              aria-selected={activeType === 'hotel'}
+              role="tab"
+            >
+              <Home className="tab-icon" aria-hidden="true" />
+              <span className="tab-label">Khách sạn ({hotelCount})</span>
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => setActiveType('resort')}
+              className={`tab-button ${activeType === 'resort' ? 'tab-button--active' : ''}`}
+              aria-selected={activeType === 'resort'}
+              role="tab"
+            >
+              <Home className="tab-icon" aria-hidden="true" />
+              <span className="tab-label">Resort ({resortCount})</span>
+            </button>
+          </li>
         </ul>
       </nav>
 
-      {/* Hotel Cards */}
-      <section className="hotel-cards-container" role="tabpanel">
-        {hotelsData[activeTab].map((hotel) => (
-          <HotelCard
-            key={hotel.id}
-            location={hotel.location}
-            image={hotel.image}
-            name={hotel.name}
-            rating={hotel.rating}
-            reviewCount={hotel.reviewCount}
-            stars={hotel.stars}
-            price={hotel.price}
-            href={`/HotelResortDetail`}
-          />
-        ))}
-      </section>
-    </div>
+      {/* Location Filter */}
+      {locations.length > 0 && (
+        <nav className="tabs-section mb-4" aria-label="Location selection">
+          <ul className="tabs-container">
+            <li>
+              <button
+                onClick={() => setActiveLocation('all')}
+                className={`tab-button ${activeLocation === 'all' ? 'tab-button--active' : ''}`}
+                aria-selected={activeLocation === 'all'}
+                role="tab"
+              >
+                <MapPin className="tab-icon" aria-hidden="true" />
+                <span className="tab-label">Tất cả địa điểm ({getLocationCount('all')})</span>
+              </button>
+            </li>
+            {locations.map((location) => (
+              <li key={location}>
+                <button
+                  onClick={() => setActiveLocation(location)}
+                  className={`tab-button ${activeLocation === location ? 'tab-button--active' : ''}`}
+                  aria-selected={activeLocation === location}
+                  role="tab"
+                >
+                  <MapPin className="tab-icon" aria-hidden="true" />
+                  <span className="tab-label">{location} ({getLocationCount(location)})</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Đang tải...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
+
+      {/* Accommodation Cards */}
+      {!loading && !error && (
+        <section className="hotel-cards-container" role="tabpanel">
+          {filteredAccommodations.length > 0 ? (
+            filteredAccommodations.map((item) => (
+              <HotelCard
+                key={item._id}
+                location={item.location || 'Việt Nam'}
+                image={item.images?.[0] || 'https://via.placeholder.com/480x332'}
+                name={item.name}
+                rating={item.rating || 0}
+                reviewCount={item.reviewCount || 0}
+                stars={item.stars || 0}
+                price={item.pricePerNight ? `${item.pricePerNight.toLocaleString('vi-VN')} VND` : 'Liên hệ'}
+                href={`/hotel-resorts/${item.slug}`}
+              />
+            ))
+          ) : (
+            <div className="text-center py-5 w-100">
+              <p className="text-muted">
+                Không tìm thấy {activeType === 'hotel' ? 'khách sạn' : activeType === 'resort' ? 'resort' : 'chỗ nghỉ'} nào
+                {activeLocation !== 'all' && ` tại ${activeLocation}`}.
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+    </div>
   );
 };
 

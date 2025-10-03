@@ -1,69 +1,53 @@
-import React, { useState } from 'react';
-import { Star, Eye, Phone, Mail, MapPin, Clock, Users, Calendar, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, Eye, Phone, Mail, MapPin, Clock, Users, Calendar, ChevronLeft, ChevronRight, Play, Loader } from 'lucide-react';
+import teamBuildingAPI from '../../api/teamBuildingApi';
 import '../../styles/TeamBuilding.css';
 
-// Mock data - sẽ được thay thế bằng data từ database
-const mockData = {
-    service: {
-        id: 1,
-        title: "Tổ chức Team Building & Gala Dinner",
-        rating: 4.8,
-        reviewCount: 156,
-        viewCount: 2341,
-        price: "Liên hệ",
-        location: "Hà Nội, Hồ Chí Minh",
-        description: "Tổ chức g."
-    },
-    contact: {
-        phone: "024 36760 888",
-        email: "dulichcanhbuomxanh@gmail.com",
-        address: "123 Đường ABC, Quận 1, TP.HCM"
-    },
-    images: [
-        "https://dulichviet.com.vn/images/bandidau/images/Khach-Doan/Slide-400/a10-du-lich-viet.jpg",
-        "https://dulichviet.com.vn/images/bandidau/images/Khach-Doan/Slide-400/a10-du-lich-viet.jpg",
-        "https://dulichviet.com.vn/images/bandidau/images/Khach-Doan/Slide-400/a10-du-lich-viet.jpg",
-        "https://dulichviet.com.vn/images/bandidau/images/Khach-Doan/Slide-400/a10-du-lich-viet.jpg",
-        "https://dulichviet.com.vn/images/bandidau/images/Khach-Doan/Slide-400/a10-du-lich-viet.jpg"
-    ],
-    teamBuilding: {
-        definition: "Team building là hoạt động tập thể nhằm tăng cường sự gắn kết, hợp tác và hiểu biết lẫn nhau giữa các thành viên trong tổ chức.",
-        roles: [
-            "Tăng cường tinh thần đoàn kết",
-            "Cải thiện kỹ năng giao tiếp",
-            "Phát triển khả năng làm việc nhóm",
-            "Giảm stress và tạo động lực làm việc"
-        ],
-        types: [
-            {
-                name: "Team Building Ngoài Trời",
-                description: "Các hoạt động thể thao, trò chơi ngoài trời"
-            },
-            {
-                name: "Team Building Trong Nhà",
-                description: "Các trò chơi trí tuệ, workshop"
-            },
-            {
-                name: "Gala Dinner",
-                description: "Tiệc tối trang trọng kết hợp entertainment"
-            }
-        ]
-    }
-};
-
 export default function TeamBuildingBooking() {
+    const [serviceData, setServiceData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [selectedTab, setSelectedTab] = useState('overview');
     const [expandedCards, setExpandedCards] = useState(new Set());
 
+    // Fetch data from API
+    useEffect(() => {
+        const fetchTeamBuildingData = async () => {
+            try {
+                setLoading(true);
+                const response = await teamBuildingAPI.getAllTeamBuildingServices();
+                console.log('API Response:', response);
+
+                if (response.success && response.data && response.data.length > 0) {
+                    // Lấy service đầu tiên hoặc bạn có thể lấy theo ID cụ thể
+                    setServiceData(response.data[0]);
+                } else {
+                    setError('Không tìm thấy dữ liệu dịch vụ');
+                }
+            } catch (err) {
+                console.error('Error fetching team building data:', err);
+                setError('Không thể tải dữ liệu. Vui lòng thử lại sau.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTeamBuildingData();
+    }, []);
 
     const nextImage = () => {
-        setCurrentImageIndex((prev) => (prev + 1) % mockData.images.length);
+        if (serviceData?.images && serviceData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev + 1) % serviceData.images.length);
+        }
     };
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => (prev - 1 + mockData.images.length) % mockData.images.length);
+        if (serviceData?.images && serviceData.images.length > 0) {
+            setCurrentImageIndex((prev) => (prev - 1 + serviceData.images.length) % serviceData.images.length);
+        }
     };
+
     const toggleExpanded = (index) => {
         const newExpandedCards = new Set(expandedCards);
         if (newExpandedCards.has(index)) {
@@ -75,9 +59,64 @@ export default function TeamBuildingBooking() {
     };
 
     const truncateText = (text, maxLength = 150) => {
-        if (text.length <= maxLength) return text;
+        if (!text || text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';
     };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="app">
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '400px',
+                    flexDirection: 'column',
+                    gap: '1rem'
+                }}>
+                    <Loader className="icon" style={{ animation: 'spin 1s linear infinite' }} />
+                    <p>Đang tải dữ liệu...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error || !serviceData) {
+        return (
+            <div className="app">
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: '400px',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    color: '#ef4444'
+                }}>
+                    <p>{error || 'Không thể tải dữ liệu'}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        style={{
+                            padding: '0.5rem 1rem',
+                            background: '#3b82f6',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '0.375rem',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Thử lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    const images = serviceData.images || [];
+    const contact = serviceData.contact || {};
+    const teamBuilding = serviceData.teamBuilding || {};
 
     return (
         <div className="app">
@@ -87,22 +126,26 @@ export default function TeamBuildingBooking() {
                     <div className="header-content">
                         <div className="header-info">
                             <h1 className="main-title">
-                                {mockData.service.title}
+                                {serviceData.service?.title || 'Team Building Service'}
                             </h1>
                             <div className="header-meta">
                                 <div className="meta-item">
                                     <MapPin className="icon" />
-                                    <span>{mockData.service.location}</span>
+                                    <span>{serviceData.service?.location || 'Chưa cập nhật'}</span>
                                 </div>
-                                <div className="meta-item rating">
-                                    <Star className="icon star-icon" />
-                                    <span className="rating-value">{mockData.service.rating}</span>
-                                    <span>({mockData.service.reviewCount} đánh giá)</span>
-                                </div>
-                                <div className="meta-item">
-                                    <Eye className="icon" />
-                                    <span>{mockData.service.viewCount.toLocaleString()} lượt xem</span>
-                                </div>
+                                {serviceData.service?.rating && (
+                                    <div className="meta-item rating">
+                                        <Star className="icon star-icon" />
+                                        <span className="rating-value">{serviceData.service.rating}</span>
+                                        <span>({serviceData.service.reviewCount || 0} đánh giá)</span>
+                                    </div>
+                                )}
+                                {serviceData.viewCount && (
+                                    <div className="meta-item">
+                                        <Eye className="icon" />
+                                        <span>{serviceData.viewCount.toLocaleString()} lượt xem</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -110,18 +153,22 @@ export default function TeamBuildingBooking() {
                         <div className="contact-card">
                             <h3 className="contact-title">Liên hệ đặt lịch</h3>
                             <div className="contact-info">
-                                <div className="contact-item">
-                                    <Phone className="contact-icon" />
-                                    <a href={`tel:${mockData.contact.phone}`} className="contact-link">
-                                        {mockData.contact.phone}
-                                    </a>
-                                </div>
-                                <div className="contact-item">
-                                    <Mail className="contact-icon" />
-                                    <a href={`mailto:${mockData.contact.email}`} className="contact-email">
-                                        {mockData.contact.email}
-                                    </a>
-                                </div>
+                                {contact.phone && (
+                                    <div className="contact-item">
+                                        <Phone className="contact-icon" />
+                                        <a href={`tel:${contact.phone}`} className="contact-link">
+                                            {contact.phone}
+                                        </a>
+                                    </div>
+                                )}
+                                {contact.email && (
+                                    <div className="contact-item">
+                                        <Mail className="contact-icon" />
+                                        <a href={`mailto:${contact.email}`} className="contact-email">
+                                            {contact.email}
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                             <button className="book-button">
                                 Đặt lịch ngay
@@ -132,49 +179,56 @@ export default function TeamBuildingBooking() {
             </div>
 
             {/* Image Gallery Section */}
-            <div className="gallery-section">
-                <div className="container">
-                    <div className="gallery-wrapper">
-                        <div className="main-image-container">
-                            <img
-                                src={mockData.images[currentImageIndex]}
-                                alt={`Team Building ${currentImageIndex + 1}`}
-                                className="main-image"
-                            />
-                            <div className="image-overlay">
-                                <Play className="play-icon" />
+            {images.length > 0 && (
+                <div className="gallery-section">
+                    <div className="container">
+                        <div className="gallery-wrapper">
+                            <div className="main-image-container">
+                                <img
+                                    src={images[currentImageIndex]}
+                                    alt={`Team Building ${currentImageIndex + 1}`}
+                                    className="main-image"
+                                />
+                                <div className="image-overlay">
+                                    <Play className="play-icon" />
+                                </div>
+
+                                {images.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={prevImage}
+                                            className="nav-arrow prev-arrow"
+                                        >
+                                            <ChevronLeft className="arrow-icon" />
+                                        </button>
+                                        <button
+                                            onClick={nextImage}
+                                            className="nav-arrow next-arrow"
+                                        >
+                                            <ChevronRight className="arrow-icon" />
+                                        </button>
+                                    </>
+                                )}
                             </div>
 
-                            {/* Navigation Arrows */}
-                            <button
-                                onClick={prevImage}
-                                className="nav-arrow prev-arrow"
-                            >
-                                <ChevronLeft className="arrow-icon" />
-                            </button>
-                            <button
-                                onClick={nextImage}
-                                className="nav-arrow next-arrow"
-                            >
-                                <ChevronRight className="arrow-icon" />
-                            </button>
-                        </div>
-
-                        {/* Thumbnail Strip */}
-                        <div className="thumbnail-strip">
-                            {mockData.images.map((image, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                    className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
-                                >
-                                    <img src={image} alt={`Thumbnail ${index + 1}`} className="thumbnail-image" />
-                                </button>
-                            ))}
+                            {/* Thumbnail Strip */}
+                            {images.length > 1 && (
+                                <div className="thumbnail-strip">
+                                    {images.map((image, index) => (
+                                        <button
+                                            key={index}
+                                            onClick={() => setCurrentImageIndex(index)}
+                                            className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                                        >
+                                            <img src={image} alt={`Thumbnail ${index + 1}`} className="thumbnail-image" />
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Content Tabs */}
             <div className="content-section">
@@ -207,7 +261,7 @@ export default function TeamBuildingBooking() {
                                     <div className="overview-description">
                                         <h2 className="section-title">Về dịch vụ của chúng tôi</h2>
                                         <p className="description-text">
-                                            {mockData.service.description}
+                                            {serviceData.service?.description || 'Chưa có mô tả'}
                                         </p>
                                     </div>
 
@@ -238,20 +292,11 @@ export default function TeamBuildingBooking() {
                                     <div className="definition-section">
                                         <h2 className="section-title">Team Building là gì?</h2>
                                         <p className="definition-text">
-                                            {mockData.teamBuilding.definition}
+                                            {teamBuilding.definition || 'Team building là hoạt động tập thể nhằm tăng cường sự gắn kết, hợp tác và hiểu biết lẫn nhau giữa các thành viên trong tổ chức.'}
                                         </p>
                                     </div>
 
-                                    <div className="importance-card">
-                                        <h3 className="importance-title">
-                                            Tại sao Team Building quan trọng?
-                                        </h3>
-                                        <p className="importance-text">
-                                            Team Building không chỉ là những hoạt động giải trí đơn thuần, mà còn là công cụ
-                                            quản lý hiệu quả giúp doanh nghiệp xây dựng văn hóa làm việc tích cực và nâng cao
-                                            hiệu suất làm việc của toàn bộ tổ chức.
-                                        </p>
-                                    </div>
+
                                 </div>
                             )}
 
@@ -262,7 +307,7 @@ export default function TeamBuildingBooking() {
                                     </div>
 
                                     <div className="roles-grid">
-                                        {mockData.teamBuilding.roles.map((role, index) => (
+                                        {(teamBuilding.roles || []).map((role, index) => (
                                             <div key={index} className="role-card">
                                                 <div className="role-number">
                                                     {index + 1}
@@ -283,9 +328,9 @@ export default function TeamBuildingBooking() {
                                     </div>
 
                                     <div className="types-list">
-                                        {mockData.teamBuilding.types.map((type, index) => {
+                                        {(teamBuilding.types || []).map((type, index) => {
                                             const isExpanded = expandedCards.has(index);
-                                            const shouldTruncate = type.description.length > 150;
+                                            const shouldTruncate = type.description && type.description.length > 150;
 
                                             return (
                                                 <div key={index} className="type-card">
@@ -325,9 +370,11 @@ export default function TeamBuildingBooking() {
                             Liên hệ ngay để được tư vấn miễn phí và báo giá chi tiết
                         </p>
                         <div className="cta-buttons">
-                            <button className="cta-btn primary">
-                                Gọi ngay: {mockData.contact.phone}
-                            </button>
+                            {contact.phone && (
+                                <button className="cta-btn primary">
+                                    Gọi ngay: {contact.phone}
+                                </button>
+                            )}
                             <button className="cta-btn secondary">
                                 Gửi yêu cầu báo giá
                             </button>

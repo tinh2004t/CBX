@@ -1,57 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import accommodationDetailAPI from '../../api/accommodationDetailApi';
 
 const HotelDetailCard = () => {
-    // Sample data - replace with your actual props
+    const { slug } = useParams(); // Lấy slug từ URL
+    const [hotelData, setHotelData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [selectedRoom, setSelectedRoom] = useState('deluxe');
+    const [selectedRoom, setSelectedRoom] = useState('');
     const [showFullDescription, setShowFullDescription] = useState(false);
 
-    const hotelData = {
-        name: "Grand Luxury Hotel",
-        location: "Hà Nội, Việt Nam",
-        address: "123 Phố Cổ, Hoàn Kiếm, Hà Nội",
-        description:"Khách sạn Hoàn Kiếm Charm tọa lạc ngay trung tâm phố cổ Hà Nội, chỉ cách Hồ Hoàn Kiếm vài phút đi bộ. Với kiến trúc kết hợp giữa phong cách cổ điển Pháp và hiện đại, khách sạn mang đến không gian sang trọng nhưng vẫn ấm cúng. Khách sạn có hơn 50 phòng nghỉ được trang bị đầy đủ tiện nghi: điều hòa, TV màn hình phẳng, minibar, Wi-Fi tốc độ cao và ban công riêng nhìn ra phố phường Hà Nội. Nhà hàng trong khách sạn phục vụ ẩm thực Việt Nam và quốc tế, đặc biệt là các món ăn truyền thống Hà Nội. Ngoài ra, khách sạn còn có dịch vụ spa thư giãn, quầy bar trên tầng thượng với tầm nhìn toàn cảnh phố cổ, và đội ngũ nhân viên thân thiện, sẵn sàng hỗ trợ 24/7. Đây là lựa chọn lý tưởng cho cả du khách nghỉ dưỡng lẫn chuyến công tác.",
-        stars: 5,
-        rating: 4.8,
-        reviewCount: 1247,
-        amenities: ["WiFi miễn phí", "Hồ bơi", "Spa & Wellness", "Nhà hàng", "Phòng gym", "Dịch vụ phòng 24/7"],
-        distances: {
-            airport: "25km",
-            beach: "5km",
-            mall: "2km",
-            cityCenter: "1km"
+    // Fetch data from API
+    useEffect(() => {
+        const fetchHotelData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await accommodationDetailAPI.getAccommodationDetailBySlug(slug);
+                
+                if (response.success && response.data) {
+                    setHotelData(response.data);
+                    // Set default room selection to first available room
+                    if (response.data.roomTypes && response.data.roomTypes.length > 0) {
+                        setSelectedRoom(response.data.roomTypes[0].type);
+                    }
+                } else {
+                    setError('Không tìm thấy thông tin khách sạn');
+                }
+            } catch (err) {
+                console.error('Error fetching hotel data:', err);
+                setError('Có lỗi xảy ra khi tải thông tin khách sạn');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (slug) {
+            fetchHotelData();
         }
-    };
-
-    const images = [
-        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&h=500&fit=crop",
-        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=500&fit=crop",
-        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800&h=500&fit=crop"
-    ];
-
-    const roomTypes = {
-        standard: { name: "Phòng Standard", price: 1500000, description: "Phòng tiêu chuẩn với đầy đủ tiện nghi cơ bản" },
-        deluxe: { name: "Phòng Deluxe", price: 2500000, description: "Phòng cao cấp với view thành phố và tiện nghi hiện đại" },
-        suite: { name: "Suite Premium", price: 4000000, description: "Suite sang trọng với không gian rộng rãi và dịch vụ VIP" }
-    };
-
-    const basePrice = 1200000;
-    const roomPrice = roomTypes[selectedRoom]?.price || 0;
-    const totalPrice = basePrice + roomPrice;
+    }, [slug]);
 
     const prevImage = () => {
-        setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+        if (!hotelData?.images) return;
+        setCurrentImageIndex((prev) => (prev === 0 ? hotelData.images.length - 1 : prev - 1));
     };
 
     const nextImage = () => {
-        setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+        if (!hotelData?.images) return;
+        setCurrentImageIndex((prev) => (prev === hotelData.images.length - 1 ? 0 : prev + 1));
     };
+
     const truncateDescription = (text, maxLength = 300) => {
-        if (!text) return ""; // hoặc return "Không có mô tả"
+        if (!text) return "";
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + "...";
     };
 
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN').format(amount);
+    };
+
+    // Convert roomTypes array to object for easier access
+    const getRoomTypesObject = () => {
+        if (!hotelData?.roomTypes) return {};
+        return hotelData.roomTypes.reduce((acc, room) => {
+            acc[room.type] = room;
+            return acc;
+        }, {});
+    };
+
+    const roomTypes = getRoomTypesObject();
+    const selectedRoomData = roomTypes[selectedRoom];
+    const totalPrice = selectedRoomData?.price || 0;
 
     const styles = {
         container: {
@@ -62,6 +83,37 @@ const HotelDetailCard = () => {
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             overflow: 'hidden',
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+        },
+        loadingContainer: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '400px',
+            fontSize: '18px',
+            color: '#6b7280'
+        },
+        errorContainer: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '400px',
+            fontSize: '18px',
+            color: '#dc2626',
+            padding: '32px',
+            textAlign: 'center',
+            gap: '16px'
+        },
+        backButton: {
+            padding: '12px 24px',
+            backgroundColor: '#4f46e5',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '16px',
+            fontWeight: '600',
+            transition: 'background-color 0.2s'
         },
         heroSection: {
             position: 'relative',
@@ -204,10 +256,7 @@ const HotelDetailCard = () => {
         mainGrid: {
             display: 'grid',
             gridTemplateColumns: '2fr 1fr',
-            gap: '32px',
-            '@media (max-width: 768px)': {
-                gridTemplateColumns: '1fr'
-            }
+            gap: '32px'
         },
         leftColumn: {
             display: 'flex',
@@ -227,6 +276,21 @@ const HotelDetailCard = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '12px'
+        },
+        descriptionText: {
+            color: '#374151',
+            lineHeight: '1.6',
+            margin: '0'
+        },
+        readMoreButton: {
+            marginTop: '12px',
+            background: 'none',
+            border: 'none',
+            color: '#4f46e5',
+            fontWeight: '600',
+            cursor: 'pointer',
+            fontSize: '14px',
+            padding: '0'
         },
         amenitiesGrid: {
             display: 'grid',
@@ -328,18 +392,6 @@ const HotelDetailCard = () => {
             color: '#1f2937',
             margin: '0 0 12px 0'
         },
-        priceItem: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            fontSize: '14px',
-            marginBottom: '8px'
-        },
-        priceLabel: {
-            color: '#6b7280'
-        },
-        priceValue: {
-            fontWeight: '500'
-        },
         totalPrice: {
             display: 'flex',
             justifyContent: 'space-between',
@@ -427,54 +479,82 @@ const HotelDetailCard = () => {
         },
         blueDot: {
             backgroundColor: '#3b82f6'
-        },
-        icon: {
-            width: '20px',
-            height: '20px'
         }
     };
+
+    if (loading) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.loadingContainer}>
+                    <div>Đang tải thông tin khách sạn...</div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !hotelData) {
+        return (
+            <div style={styles.container}>
+                <div style={styles.errorContainer}>
+                    <div>{error || 'Không tìm thấy thông tin khách sạn'}</div>
+                    <button 
+                        style={styles.backButton}
+                        onClick={() => window.history.back()}
+                        onMouseEnter={(e) => e.target.style.backgroundColor = '#4338ca'}
+                        onMouseLeave={(e) => e.target.style.backgroundColor = '#4f46e5'}
+                    >
+                        Quay lại
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div style={styles.container}>
             {/* Hero Section */}
             <div style={styles.heroSection}>
                 <img
-                    src={images[currentImageIndex]}
-                    alt={`${hotelData.name} - Luxury hotel interior`}
+                    src={hotelData.images?.[currentImageIndex] || 'https://via.placeholder.com/800x500'}
+                    alt={`${hotelData.name}`}
                     style={styles.heroImage}
                 />
 
-                {/* Navigation Buttons */}
-                <button
-                    onClick={prevImage}
-                    style={{ ...styles.navButton, ...styles.navButtonLeft }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#ffffff'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
-                >
-                    ‹
-                </button>
-                <button
-                    onClick={nextImage}
-                    style={{ ...styles.navButton, ...styles.navButtonRight }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#ffffff'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
-                >
-                    ›
-                </button>
-
-                {/* Image Indicators */}
-                <div style={styles.indicators}>
-                    {images.map((_, index) => (
+                {/* Navigation Buttons - Only show if multiple images */}
+                {hotelData.images && hotelData.images.length > 1 && (
+                    <>
                         <button
-                            key={index}
-                            onClick={() => setCurrentImageIndex(index)}
-                            style={{
-                                ...styles.indicator,
-                                ...(index === currentImageIndex ? styles.indicatorActive : styles.indicatorInactive)
-                            }}
-                        />
-                    ))}
-                </div>
+                            onClick={prevImage}
+                            style={{ ...styles.navButton, ...styles.navButtonLeft }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#ffffff'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
+                        >
+                            ‹
+                        </button>
+                        <button
+                            onClick={nextImage}
+                            style={{ ...styles.navButton, ...styles.navButtonRight }}
+                            onMouseEnter={(e) => e.target.style.backgroundColor = '#ffffff'}
+                            onMouseLeave={(e) => e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'}
+                        >
+                            ›
+                        </button>
+
+                        {/* Image Indicators */}
+                        <div style={styles.indicators}>
+                            {hotelData.images.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => setCurrentImageIndex(index)}
+                                    style={{
+                                        ...styles.indicator,
+                                        ...(index === currentImageIndex ? styles.indicatorActive : styles.indicatorInactive)
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 {/* Hotel Badge */}
                 <div style={styles.starBadge}>
@@ -520,7 +600,7 @@ const HotelDetailCard = () => {
                     {/* Left Column - Hotel Info */}
                     <div style={styles.leftColumn}>
                         {/* Hotel Description */}
-                        <div style={styles.descriptionCard}>
+                        <div style={styles.infoCard}>
                             <h2 style={styles.sectionTitle}>
                                 <span>📖</span>
                                 Mô Tả Khách Sạn
@@ -530,7 +610,7 @@ const HotelDetailCard = () => {
                                     ? hotelData.description
                                     : truncateDescription(hotelData.description)}
                             </p>
-                            {hotelData.description.length > 300 && (
+                            {hotelData.description && hotelData.description.length > 300 && (
                                 <button
                                     style={styles.readMoreButton}
                                     onClick={() => setShowFullDescription(!showFullDescription)}
@@ -543,20 +623,22 @@ const HotelDetailCard = () => {
                         </div>
 
                         {/* Amenities */}
-                        <div style={styles.infoCard}>
-                            <h2 style={styles.sectionTitle}>
-                                <span>☕</span>
-                                Tiện Ích Khách Sạn
-                            </h2>
-                            <div style={styles.amenitiesGrid}>
-                                {hotelData.amenities.map((amenity, index) => (
-                                    <div key={index} style={styles.amenityItem}>
-                                        <div style={styles.bullet}></div>
-                                        <span>{amenity}</span>
-                                    </div>
-                                ))}
+                        {hotelData.amenities && hotelData.amenities.length > 0 && (
+                            <div style={styles.infoCard}>
+                                <h2 style={styles.sectionTitle}>
+                                    <span>☕</span>
+                                    Tiện Ích Khách Sạn
+                                </h2>
+                                <div style={styles.amenitiesGrid}>
+                                    {hotelData.amenities.map((amenity, index) => (
+                                        <div key={index} style={styles.amenityItem}>
+                                            <div style={styles.bullet}></div>
+                                            <span>{amenity}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Location Details */}
                         <div style={styles.infoCard}>
@@ -568,28 +650,30 @@ const HotelDetailCard = () => {
                                 <p style={styles.addressText}>Địa chỉ:</p>
                                 <p style={styles.addressValue}>{hotelData.address}</p>
                             </div>
-                            <div style={styles.distanceGrid}>
-                                <div>
-                                    <div style={styles.distanceItem}>
-                                        <span style={styles.distanceLabel}>Sân bay</span>
-                                        <span style={styles.distanceValue}>{hotelData.distances.airport}</span>
+                            {hotelData.distances && (
+                                <div style={styles.distanceGrid}>
+                                    <div>
+                                        <div style={styles.distanceItem}>
+                                            <span style={styles.distanceLabel}>Sân bay</span>
+                                            <span style={styles.distanceValue}>{hotelData.distances.airport}</span>
+                                        </div>
+                                        <div style={styles.distanceItem}>
+                                            <span style={styles.distanceLabel}>Bãi biển</span>
+                                            <span style={styles.distanceValue}>{hotelData.distances.beach}</span>
+                                        </div>
                                     </div>
-                                    <div style={styles.distanceItem}>
-                                        <span style={styles.distanceLabel}>Bãi biển</span>
-                                        <span style={styles.distanceValue}>{hotelData.distances.beach}</span>
+                                    <div>
+                                        <div style={styles.distanceItem}>
+                                            <span style={styles.distanceLabel}>Trung tâm mua sắm</span>
+                                            <span style={styles.distanceValue}>{hotelData.distances.mall}</span>
+                                        </div>
+                                        <div style={styles.distanceItem}>
+                                            <span style={styles.distanceLabel}>Trung tâm thành phố</span>
+                                            <span style={styles.distanceValue}>{hotelData.distances.cityCenter}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div style={styles.distanceItem}>
-                                        <span style={styles.distanceLabel}>Trung tâm mua sắm</span>
-                                        <span style={styles.distanceValue}>{hotelData.distances.mall}</span>
-                                    </div>
-                                    <div style={styles.distanceItem}>
-                                        <span style={styles.distanceLabel}>Trung tâm thành phố</span>
-                                        <span style={styles.distanceValue}>{hotelData.distances.cityCenter}</span>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
 
@@ -599,42 +683,42 @@ const HotelDetailCard = () => {
                             <h2 style={styles.bookingTitle}>Đặt Phòng Ngay</h2>
 
                             {/* Room Selection */}
-                            <div style={styles.formGroup}>
-                                <label style={styles.label}>Chọn loại phòng</label>
-                                <select
-                                    value={selectedRoom}
-                                    onChange={(e) => setSelectedRoom(e.target.value)}
-                                    style={styles.select}
-                                    onFocus={(e) => e.target.style.borderColor = '#4f46e5'}
-                                    onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
-                                >
-                                    {Object.entries(roomTypes).map(([key, room]) => (
-                                        <option key={key} value={key}>
-                                            {room.name} - {room.price.toLocaleString()} VND
-                                        </option>
-                                    ))}
-                                </select>
-                                <p style={styles.description}>
-                                    {roomTypes[selectedRoom]?.description}
-                                </p>
-                            </div>
+                            {hotelData.roomTypes && hotelData.roomTypes.length > 0 ? (
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Chọn loại phòng</label>
+                                    <select
+                                        value={selectedRoom}
+                                        onChange={(e) => setSelectedRoom(e.target.value)}
+                                        style={styles.select}
+                                        onFocus={(e) => e.target.style.borderColor = '#4f46e5'}
+                                        onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                                    >
+                                        {hotelData.roomTypes.map((room) => (
+                                            <option key={room.type} value={room.type}>
+                                                {room.name} - {formatCurrency(room.price)} VND
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {selectedRoomData && (
+                                        <p style={styles.description}>
+                                            {selectedRoomData.description}
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <p style={styles.description}>Hiện chưa có thông tin phòng</p>
+                            )}
 
                             {/* Price Breakdown */}
-                            <div style={styles.priceBreakdown}>
-                                <h3 style={styles.priceTitle}>Chi tiết giá</h3>
-                                <div style={styles.priceItem}>
-                                    <span style={styles.priceLabel}>Giá cơ bản:</span>
-                                    <span style={styles.priceValue}>{basePrice.toLocaleString()} VND</span>
+                            {selectedRoomData && (
+                                <div style={styles.priceBreakdown}>
+                                    <h3 style={styles.priceTitle}>Chi tiết giá</h3>
+                                    <div style={styles.totalPrice}>
+                                        <span style={styles.totalLabel}>Tổng cộng/đêm:</span>
+                                        <span style={styles.totalValue}>{formatCurrency(totalPrice)} VND</span>
+                                    </div>
                                 </div>
-                                <div style={styles.priceItem}>
-                                    <span style={styles.priceLabel}>Phí phòng:</span>
-                                    <span style={styles.priceValue}>{roomPrice.toLocaleString()} VND</span>
-                                </div>
-                                <div style={styles.totalPrice}>
-                                    <span style={styles.totalLabel}>Tổng cộng/đêm:</span>
-                                    <span style={styles.totalValue}>{totalPrice.toLocaleString()} VND</span>
-                                </div>
-                            </div>
+                            )}
 
                             {/* Contact Buttons */}
                             <div style={styles.buttonGroup}>
@@ -642,6 +726,7 @@ const HotelDetailCard = () => {
                                     style={styles.primaryButton}
                                     onMouseEnter={(e) => e.target.style.transform = 'scale(1.02)'}
                                     onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                                    onClick={() => alert('Chức năng đặt phòng sẽ được triển khai')}
                                 >
                                     <span>📅</span>
                                     <span>Đặt Phòng Ngay</span>
@@ -652,6 +737,7 @@ const HotelDetailCard = () => {
                                         style={{ ...styles.secondaryButton, ...styles.phoneButton }}
                                         onMouseEnter={(e) => e.target.style.backgroundColor = '#bbf7d0'}
                                         onMouseLeave={(e) => e.target.style.backgroundColor = '#dcfce7'}
+                                        onClick={() => alert('Chức năng gọi điện sẽ được triển khai')}
                                     >
                                         <span>📞</span>
                                         <span>Gọi ngay</span>
@@ -660,6 +746,7 @@ const HotelDetailCard = () => {
                                         style={{ ...styles.secondaryButton, ...styles.emailButton }}
                                         onMouseEnter={(e) => e.target.style.backgroundColor = '#bfdbfe'}
                                         onMouseLeave={(e) => e.target.style.backgroundColor = '#dbeafe'}
+                                        onClick={() => alert('Chức năng email sẽ được triển khai')}
                                     >
                                         <span>✉️</span>
                                         <span>Email</span>

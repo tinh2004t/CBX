@@ -11,10 +11,22 @@ const PORT = process.env.PORT || 5000;
 // Tạo HTTP server và Socket.IO
 const server = http.createServer(app);
 
+// Xử lý danh sách FRONTEND_URLS trong .env
+const allowedOrigins = process.env.FRONTEND_URLS
+  ? process.env.FRONTEND_URLS.split(',').map(url => url.trim())
+  : [process.env.FRONTEND_URL || "http://localhost:5173"];
+
 // Cấu hình Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.warn(`❌ CORS blocked request from origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true
   },
@@ -42,4 +54,5 @@ connectDB();
 server.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
   console.log(`📡 Socket.IO server is ready`);
+  console.log(`🌐 Allowed origins: ${allowedOrigins.join(', ')}`);
 });

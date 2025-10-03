@@ -42,39 +42,37 @@ const Navigation = () => {
     {
       title: t('tour_noi_dia'),
       type: 'dropdown',
-      href : '/DomesticTourPage',
       items: [
-        { title: t('mien_bac'), href: '/DomesticTourPage/NorthernToursPage' },
-        { title: t('mien_trung'), href: '/DomesticTourPage/CentralToursPage' },
-        { title: t('mien_nam'), href: '/DomesticTourPage/SouthernToursPage' }
+        { title: t('mien_bac'), href: '/tour-noi-dia/mien-bac' },
+        { title: t('mien_trung'), href: '/tour-noi-dia/mien-trung' },
+        { title: t('mien_nam'), href: '/tour-noi-dia/mien-nam' }
       ]
     },
     {
       title: t('tour_quoc_te'),
       type: 'dropdown',
-      href : '/OverseasTourPage',
       items: [
-        { title: t('chau_a'), href: '/OverseasTourPage/AsiaToursPage' },
-        { title: t('chau_au'), href: '/OverseasTourPage/EuropeToursPage' },
-        { title: t('chau_phi'), href: '/OverseasTourPage/AfricaToursPage' },
-        { title: t('chau_mi'), href: '/OverseasTourPage/AmericaToursPage' }
+        { title: t('chau_a'), href: '/tour-quoc-te/chau-a' },
+        { title: t('chau_au'), href: '/tour-quoc-te/chau-au' },
+        { title: t('chau_phi'), href: '/tour-quoc-te/chau-phi' },
+        { title: t('chau_mi'), href: '/tour-quoc-te/chau-my' }
       ]
     },
     {
       title: t('combo_voucher'),
       type: 'dropdown',
       items: [
-        { title: t('ve_may_bay'), href: '/FlightTickets' },
-        { title: t('khach_san_resort'), href: '/HotelResorts' },
-        { title: t('homestay'), href: '/HomestayVilla' },
-        { title: t('teambuilding'), href: '/Teambuilding' },
-        { title: t('mice'), href: '/Mice' },
-        { title: t('dich_vu_van_tai'), href: 'Transport' }
+        { title: t('ve_may_bay'), href: '/ve-may-bay' },
+        { title: t('khach_san_resort'), href: '/hotel-resorts' },
+        { title: t('homestay'), href: '/homestay-villa' },
+        { title: t('teambuilding'), href: '/team-building' },
+        { title: t('mice'), href: '/mice' },
+        { title: t('dich_vu_van_tai'), href: '/dich-vu-van-tai' }
       ]
     },
     {
       title: t('blog_du_lich'),
-      href: '/TravelBlog',
+      href: '/blog',
       type: 'link'
     }
   ];

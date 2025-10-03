@@ -11,8 +11,8 @@ const {
 
 
 router.get('/', getAllTeamBuildingServices);
-router.use(authenticateToken);
 router.get('/:id', getTeamBuildingServiceById);
+router.use(authenticateToken);
 router.put('/:id', updateTeamBuildingService);
 
 module.exports = router;

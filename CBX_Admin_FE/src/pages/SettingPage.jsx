@@ -1,23 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Settings, Edit, Save, X, Phone, Mail, MapPin, Facebook, Image, Calendar } from 'lucide-react';
+import settingAPI from '../api/settingApi';
 
 const TravelSettingsPage = () => {
-  // Dữ liệu mẫu
-  const [settings, setSettings] = useState({
-    _id: "68bbd191776872470a508d77",
-    bannerImage: "um ba la",
-    footerImage: "sdasd",
-    logoImage: "sdfdf",
-    hotline: "123131",
-    email: "jsdisfd",
-    address: "ádasd",
-    fbLink: "sadad",
-    updatedAt: "2025-09-12T08:37:27.798Z"
-  });
-
+  const [settings, setSettings] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedSettings, setEditedSettings] = useState({...settings});
+  const [editedSettings, setEditedSettings] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+
+  // Fetch settings khi component mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      setIsFetching(true);
+      try {
+        const response = await settingAPI.getSettings();
+        if (response.success && response.data) {
+          setSettings(response.data);
+          setEditedSettings(response.data);
+        }
+      } catch (error) {
+        console.error('Lỗi khi tải cài đặt:', error);
+        alert('Không thể tải cài đặt. Vui lòng thử lại!');
+      } finally {
+        setIsFetching(false);
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   const handleEdit = () => {
     setEditedSettings({...settings});
@@ -27,13 +38,34 @@ const TravelSettingsPage = () => {
   const handleSave = async () => {
     setIsLoading(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      setSettings({...editedSettings, updatedAt: new Date().toISOString()});
-      setIsEditing(false);
+    try {
+      // Chuẩn bị dữ liệu gửi lên
+      const dataToUpdate = {
+        bannerImages: editedSettings.bannerImages,
+        footerImage: editedSettings.footerImage,
+        logoImage: editedSettings.logoImage,
+        hotline: editedSettings.hotline,
+        email: editedSettings.email,
+        address: editedSettings.address,
+        fbLink: editedSettings.fbLink,
+      };
+
+      const response = await settingAPI.updateSettings(dataToUpdate);
+      
+      if (response.success) {
+        setSettings(response.data);
+        setEditedSettings(response.data);
+        setIsEditing(false);
+        alert('Cập nhật cài đặt thành công!');
+      } else {
+        throw new Error(response.message || 'Cập nhật thất bại');
+      }
+    } catch (error) {
+      console.error('Lỗi khi cập nhật cài đặt:', error);
+      alert(`Không thể cập nhật cài đặt: ${error.message || 'Lỗi không xác định'}`);
+    } finally {
       setIsLoading(false);
-      // Có thể thêm toast notification ở đây
-    }, 1000);
+    }
   };
 
   const handleCancel = () => {
@@ -41,11 +73,24 @@ const TravelSettingsPage = () => {
     setIsEditing(false);
   };
 
-  const handleInputChange = (field, value) => {
-    setEditedSettings(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  const handleInputChange = (field, value, index) => {
+    setEditedSettings(prev => {
+      // Nếu là bannerImages (mảng)
+      if (field === 'bannerImages') {
+        const newBannerImages = [...(prev.bannerImages || ['', '', ''])];
+        newBannerImages[index || 0] = value;
+        return {
+          ...prev,
+          bannerImages: newBannerImages
+        };
+      }
+      
+      // Các field khác
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
   };
 
   const formatDate = (dateString) => {
@@ -60,7 +105,6 @@ const TravelSettingsPage = () => {
 
   const settingsFields = [
     { key: 'logoImage', label: 'Logo Website', icon: Image, type: 'text' },
-    { key: 'bannerImage', label: 'Hình Banner', icon: Image, type: 'text' },
     { key: 'footerImage', label: 'Hình Footer', icon: Image, type: 'text' },
     { key: 'hotline', label: 'Số Hotline', icon: Phone, type: 'tel' },
     { key: 'email', label: 'Email Liên Hệ', icon: Mail, type: 'email' },
@@ -71,59 +115,103 @@ const TravelSettingsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-3 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
-                <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
-              </div>
-              <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Cài Đặt Website</h1>
-                <p className="text-sm sm:text-base text-gray-600 hidden sm:block">Quản lý thông tin cấu hình website du lịch</p>
-                <p className="text-xs text-gray-600 sm:hidden">Quản lý cấu hình website</p>
-              </div>
-            </div>
-            <button
-              onClick={handleEdit}
-              className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
-            >
-              <Edit className="h-4 w-4" />
-              <span className="sm:inline">Chỉnh Sửa</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Settings Display */}
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {settingsFields.map(({ key, label, icon: Icon }) => (
-              <div key={key} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow duration-200">
-                <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
-                  <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
-                  <label className="font-medium sm:font-semibold text-gray-700 text-sm sm:text-base truncate">{label}</label>
-                </div>
-                <div className="bg-gray-50 rounded-md p-2 sm:p-3">
-                  <p className="text-gray-800 break-words text-sm sm:text-base">{settings[key] || 'Chưa có dữ liệu'}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Last Updated */}
-          <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
-            <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm text-gray-600">
-              <div className="flex items-center space-x-2">
-                <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
-                <span className="font-medium">Cập nhật lần cuối:</span>
-              </div>
-              <span className="sm:ml-0 ml-5">{formatDate(settings.updatedAt)}</span>
+        {/* Loading State */}
+        {(isFetching || !settings) && (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Đang tải cài đặt...</p>
             </div>
           </div>
-        </div>
+        )}
+
+        {!isFetching && settings && (
+          <>
+            {/* Header */}
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 sm:p-3 bg-blue-100 rounded-lg flex-shrink-0">
+                    <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 truncate">Cài Đặt Website</h1>
+                    <p className="text-sm sm:text-base text-gray-600 hidden sm:block">Quản lý thông tin cấu hình website du lịch</p>
+                    <p className="text-xs text-gray-600 sm:hidden">Quản lý cấu hình website</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleEdit}
+                  className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base w-full sm:w-auto"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span className="sm:inline">Chỉnh Sửa</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Settings Display */}
+            <div className="bg-white rounded-lg sm:rounded-xl shadow-lg p-4 sm:p-6 mb-4 sm:mb-6">
+              {/* Banner Images Section */}
+              <div className="mb-6 pb-6 border-b border-gray-200">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
+                  <Image className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600 flex-shrink-0" />
+                  <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Hình Ảnh Banner</h3>
+                  <span className="text-xs sm:text-sm text-gray-500">(3 ảnh)</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                  {[0, 1, 2].map((index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs sm:text-sm font-medium text-gray-600">Banner {index + 1}</span>
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">#{index + 1}</span>
+                      </div>
+                      <div className="bg-gray-50 rounded-md p-2">
+                        <p className="text-gray-800 break-words text-xs sm:text-sm">
+                          {settings?.bannerImages?.[index] || 'Chưa có dữ liệu'}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Settings */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {settingsFields.map((field, idx) => {
+                  const { key, label, icon: Icon } = field;
+                  const displayValue = settings?.[key] || 'Chưa có dữ liệu';
+
+                  return (
+                    <div key={`${key}-${idx}`} className="border border-gray-200 rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow duration-200">
+                      <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600 flex-shrink-0" />
+                        <label className="font-medium sm:font-semibold text-gray-700 text-sm sm:text-base truncate">{label}</label>
+                      </div>
+                      <div className="bg-gray-50 rounded-md p-2 sm:p-3">
+                        <p className="text-gray-800 break-words text-sm sm:text-base">{displayValue}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Last Updated */}
+              <div className="mt-4 sm:mt-6 pt-4 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 text-xs sm:text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="font-medium">Cập nhật lần cuối:</span>
+                  </div>
+                  <span className="sm:ml-0 ml-5">{formatDate(settings.updatedAt)}</span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Edit Modal */}
-        {isEditing && (
+        {isEditing && editedSettings && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start sm:items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
             <div className="bg-white rounded-lg sm:rounded-xl shadow-2xl w-full max-w-5xl my-4 sm:my-0 max-h-full sm:max-h-[90vh] overflow-hidden flex flex-col">
               {/* Modal Header */}
@@ -141,22 +229,53 @@ const TravelSettingsPage = () => {
 
               {/* Modal Body */}
               <div className="p-4 sm:p-6 overflow-y-auto flex-1">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                  {settingsFields.map(({ key, label, icon: Icon, type }) => (
-                    <div key={key} className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Icon className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                        <label className="font-medium text-gray-700 text-sm sm:text-base">{label}</label>
+                {/* Banner Images Section */}
+                <div className="mb-6 pb-6 border-b border-gray-200">
+                  <div className="flex items-center space-x-2 mb-4">
+                    <Image className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                    <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Hình Ảnh Banner (3 ảnh)</h3>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {[0, 1, 2].map((index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="font-medium text-gray-700 text-sm">Banner {index + 1}</label>
+                          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">#{index + 1}</span>
+                        </div>
+                        <input
+                          type="text"
+                          value={editedSettings?.bannerImages?.[index] || ''}
+                          onChange={(e) => handleInputChange('bannerImages', e.target.value, index)}
+                          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm sm:text-base"
+                          placeholder={`Nhập URL banner ${index + 1}`}
+                        />
                       </div>
-                      <input
-                        type={type}
-                        value={editedSettings[key] || ''}
-                        onChange={(e) => handleInputChange(key, e.target.value)}
-                        className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm sm:text-base"
-                        placeholder={`Nhập ${label.toLowerCase()}`}
-                      />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                {/* Other Settings */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                  {settingsFields.map((field, idx) => {
+                    const { key, label, icon: Icon, type } = field;
+                    const inputValue = editedSettings?.[key] || '';
+
+                    return (
+                      <div key={`${key}-${idx}`} className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Icon className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                          <label className="font-medium text-gray-700 text-sm sm:text-base">{label}</label>
+                        </div>
+                        <input
+                          type={type}
+                          value={inputValue}
+                          onChange={(e) => handleInputChange(key, e.target.value)}
+                          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm sm:text-base"
+                          placeholder={`Nhập ${label.toLowerCase()}`}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -37,9 +37,12 @@ router.get('/', transportController.getAllTransports);
 router.get('/search/route', transportController.searchByRoute);
 
 // GET /api/transports/:id - Lấy thông tin một chuyến xe theo ID hoặc slug
+
+router.post('/cleanup', authenticateToken, transportController.cleanupTransports);
+router.get('/deleted', authenticateToken, transportController.getDeletedTransports);
+
 router.get('/:id', authenticateToken, transportController.getTransportById);
 router.get('/slug/:slug', transportController.getTransportBySlug);
-router.get('/deleted', authenticateToken, transportController.getDeletedTransports);
 router.get('/cleanup/preview', authenticateToken, transportController.previewCleanup);
 
 
@@ -49,7 +52,6 @@ router.get('/cleanup/preview', authenticateToken, transportController.previewCle
 router.get('/admin/stats', authenticateToken, transportController.getTransportStats);
 
 // POST /api/transports - Tạo chuyến xe mới
-router.post('/cleanup', authenticateToken, transportController.cleanupTransports);
 router.post('/', authenticateToken, transportValidation, transportController.createTransport);
 
 // PUT /api/transports/:id - Cập nhật thông tin chuyến xe

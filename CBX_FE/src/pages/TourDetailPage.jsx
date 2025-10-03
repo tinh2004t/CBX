@@ -1,13 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'; // Để lấy slug từ URL
+import tourDetailAPI from '../api/tourDetailApi'; // Đường dẫn tùy theo cấu trúc project của bạn
 import { MapPin, Calendar, Users, Star, Clock, Phone, Mail, User, X } from 'lucide-react';
+import contact from '../data/contact.json'; 
 
 const TourDetailPage = () => {
   const [activeTab, setActiveTab] = useState('schedule');
   const [activeImageTab, setActiveImageTab] = useState('landscape'); // Thêm state cho tab hình ảnh
   const [showConsultForm, setShowConsultForm] = useState(false);
 
+  const [tourData, setTourData] = useState(null);
+  const [scheduleData, setScheduleData] = useState([]);
+  const [priceIncludes, setPriceIncludes] = useState([]);
+  const [priceExcludes, setPriceExcludes] = useState([]);
+  const [landscapeImages, setLandscapeImages] = useState([]);
+  const [foodImages, setFoodImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const { slug } = useParams(); // Lấy slug từ URL
+
   const [imagePage, setImagePage] = useState(0);
   const IMAGES_PER_PAGE = 3;
+
+
   const handleImageTabClick = (tab) => {
     setActiveImageTab(tab);
     setImagePage(0);
@@ -20,102 +36,108 @@ const TourDetailPage = () => {
     message: ''
   });
 
-  // Sample tour data
-  const tourData = {
-    title: "Hà Nội - Sapa - Lào Cai 3N2Đ",
-    location: "Sapa, Lào Cai",
-    duration: "3 ngày 2 đêm",
-    price: "2900000",
-    originalPrice: "3500000",
-    rating: 4.8,
-    reviews: 127,
-    groupSize: "15-20 người",
-    highlights: [
-      "Chinh phục đỉnh Fansipan",
-      "Thăm bản Cát Cát",
-      "Ngắm ruộng bậc thang Mường Hoa",
-      "Trải nghiệm tàu hỏa leo núi"
-    ]
-  };
+  useEffect(() => {
+    const fetchTourDetail = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const scheduleData = [
-    {
-      day: "Ngày 1",
-      title: "Hà Nội - Sapa",
-      activities: [
-        "06:00 - Xe đón tại điểm hẹn, khởi hành đi Sapa",
-        "12:00 - Dùng cơm trưa tại Yên Bái",
-        "15:00 - Đến Sapa, nhận phòng khách sạn",
-        "16:00 - Tham quan thị trấn Sapa",
-        "19:00 - Dùng cơm tối, nghỉ ngơi"
-      ]
-    },
-    {
-      day: "Ngày 2",
-      title: "Chinh phục Fansipan - Bản Cát Cát",
-      activities: [
-        "07:00 - Ăn sáng tại khách sạn",
-        "08:00 - Lên cáp treo chinh phục đỉnh Fansipan",
-        "12:00 - Dùng cơm trưa tại nhà hàng",
-        "14:00 - Tham quan bản Cát Cát",
-        "17:00 - Về khách sạn nghỉ ngơi",
-        "19:00 - Dùng cơm tối, tự do khám phá"
-      ]
-    },
-    {
-      day: "Ngày 3",
-      title: "Ruộng bậc thang - Về Hà Nội",
-      activities: [
-        "07:00 - Ăn sáng, trả phòng khách sạn",
-        "08:00 - Tham quan ruộng bậc thang Mường Hoa",
-        "10:00 - Mua sắm đặc sản địa phương",
-        "12:00 - Dùng cơm trưa, khởi hành về Hà Nội",
-        "19:00 - Về đến Hà Nội, kết thúc chuyến đi"
-      ]
+        const response = await tourDetailAPI.getTourDetailBySlug(slug);
+
+        if (response.success && response.data) {
+          const data = response.data;
+
+          // Set dữ liệu vào các state
+          setTourData(data.tourData);
+          setScheduleData(data.scheduleData || []);
+          setPriceIncludes(data.priceIncludes || []);
+          setPriceExcludes(data.priceExcludes || []);
+          setLandscapeImages(data.landscapeImages || []);
+          setFoodImages(data.foodImages || []);
+        } else {
+          setError('Không tìm thấy thông tin tour');
+        }
+      } catch (err) {
+        console.error('Error fetching tour detail:', err);
+        setError('Có lỗi xảy ra khi tải thông tin tour');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchTourDetail();
     }
-  ];
-
-  const priceIncludes = [
-    "Xe ô tô đời mới, máy lạnh",
-    "Khách sạn 3* (phòng đôi, có điều hòa)",
-    "Các bữa ăn theo chương trình",
-    "Vé tham quan các điểm theo chương trình",
-    "Hướng dẫn viên kinh nghiệm",
-    "Bảo hiểm du lịch",
-    "Nước uống trên xe"
-  ];
-
-  const priceExcludes = [
-    "Chi phí cá nhân",
-    "Đồ uống có cồn",
-    "Tip cho hướng dẫn viên và tài xế",
-    "Phụ thu phòng đơn: 500,000 VNĐ",
-    "Chi phí phát sinh ngoài chương trình"
-  ];
-
-  // Ảnh mẫu cho 2 tab
-  const landscapeImages = [
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80 ",
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80"
-  ];
-
-  const foodImages = [
-    "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80"
-  ];
+  }, [slug]);
 
   const images = activeImageTab === 'landscape' ? landscapeImages : foodImages;
-  const maxPage = Math.floor((images.length - 1) / IMAGES_PER_PAGE);
-  const currentImages = images.slice(imagePage * IMAGES_PER_PAGE, (imagePage + 1) * IMAGES_PER_PAGE);
+
+  // Thêm kiểm tra nếu không có ảnh
+  const hasImages = images.length > 0;
+  const maxPage = hasImages ? Math.floor((images.length - 1) / IMAGES_PER_PAGE) : 0;
+  const currentImages = hasImages ? images.slice(imagePage * IMAGES_PER_PAGE, (imagePage + 1) * IMAGES_PER_PAGE) : [];
+  // Xử lý trạng thái loading
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        fontSize: '18px',
+        color: '#6b7280'
+      }}>
+        Đang tải thông tin tour...
+      </div>
+    );
+  }
+
+  // Xử lý trạng thái error
+  if (error) {
+    return (
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        fontSize: '18px',
+        color: '#dc2626'
+      }}>
+        <p>{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            marginTop: '16px',
+            padding: '8px 16px',
+            backgroundColor: '#2563eb',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer'
+          }}
+        >
+          Thử lại
+        </button>
+      </div>
+    );
+  }
+
+  // Kiểm tra tourData có tồn tại không
+  if (!tourData) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        fontSize: '18px',
+        color: '#6b7280'
+      }}>
+        Không tìm thấy thông tin tour
+      </div>
+    );
+  }
 
   const handleFormSubmit = () => {
     if (!formData.name || !formData.phone) {
@@ -218,22 +240,36 @@ const TourDetailPage = () => {
               &#8592;
             </button>
 
-            {/* Ảnh */}
-            <div style={{ display: 'flex', gap: '16px', flex: 1, justifyContent: 'center' }}>
-              {currentImages.map((src, index) => (
-                <img
-                  key={index}
-                  src={src}
-                  alt={activeImageTab === 'landscape' ? `Phong cảnh ${imagePage * IMAGES_PER_PAGE + index + 1}` : `Ẩm thực ${imagePage * IMAGES_PER_PAGE + index + 1}`}
-                  style={{
-                    width: 'calc((100% / 3) - 10.66px)',
-                    borderRadius: '8px',
-                    objectFit: 'cover',
-                    height: '180px'
-                  }}
-                />
-              ))}
-            </div>
+            {hasImages ? (
+              <div style={{ display: 'flex', gap: '16px', flex: 1, justifyContent: 'center' }}>
+                {currentImages.map((src, index) => (
+                  <img
+                    key={index}
+                    src={src}
+                    alt={activeImageTab === 'landscape' ? `Phong cảnh ${imagePage * IMAGES_PER_PAGE + index + 1}` : `Ẩm thực ${imagePage * IMAGES_PER_PAGE + index + 1}`}
+                    style={{
+                      width: 'calc((100% / 3) - 10.66px)',
+                      borderRadius: '8px',
+                      objectFit: 'cover',
+                      height: '180px'
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '180px',
+                color: '#6b7280',
+                border: '2px dashed #d1d5db',
+                borderRadius: '8px',
+                flex: 1
+              }}>
+                Chưa có hình ảnh
+              </div>
+            )}
 
             {/* Nút mũi tên phải */}
             <button
@@ -296,11 +332,17 @@ const TourDetailPage = () => {
                   <Users size={16} style={{ marginRight: '4px' }} />
                   <span>{tourData.groupSize}</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', color: '#eab308' }}>
-                  <Star size={16} style={{ marginRight: '4px', fill: 'currentColor' }} />
-                  <span style={{ fontWeight: '600' }}>{tourData.rating}</span>
-                  <span style={{ color: '#6b7280', marginLeft: '4px' }}>({tourData.reviews} đánh giá)</span>
-                </div>
+                {tourData.rating > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#eab308' }}>
+                    <Star size={16} style={{ marginRight: '4px', fill: 'currentColor' }} />
+                    <span style={{ fontWeight: '600' }}>{tourData.rating}</span>
+                    {tourData.reviews > 0 && (
+                      <span style={{ color: '#6b7280', marginLeft: '4px' }}>
+                        ({tourData.reviews} đánh giá)
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div style={{ marginBottom: '24px' }}>
@@ -355,7 +397,7 @@ const TourDetailPage = () => {
                   >
                     Giá chi tiết
                   </button>
-                  <button
+                  {/* <button 
                     onClick={() => setActiveTab('comments')}
                     style={{
                       padding: '16px 4px',
@@ -369,7 +411,7 @@ const TourDetailPage = () => {
                     }}
                   >
                     Bình luận
-                  </button>
+                  </button>*/}
                 </nav>
               </div>
 
@@ -502,34 +544,43 @@ const TourDetailPage = () => {
               top: '16px'
             }}>
               <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                <div style={{
-                  color: '#6b7280',
-                  textDecoration: 'line-through',
-                  fontSize: '18px',
-                  marginBottom: '4px'
-                }}>
-                  {parseInt(tourData.originalPrice).toLocaleString()} VNĐ
-                </div>
+                {/* Giá gốc */}
+                {tourData.originalPrice && (
+                  <div style={{
+                    color: '#6b7280',
+                    textDecoration: 'line-through',
+                    fontSize: '18px',
+                    marginBottom: '4px'
+                  }}>
+                    {parseInt(tourData.originalPrice).toLocaleString()} VNĐ
+                  </div>
+                )}
+
+                {/* Giá hiện tại */}
                 <div style={{
                   fontSize: '30px',
                   fontWeight: 'bold',
                   color: '#dc2626',
                   marginBottom: '8px'
                 }}>
-                  {parseInt(tourData.price).toLocaleString()} VNĐ
+                  {parseInt(tourData.price || 0).toLocaleString()} VNĐ
                 </div>
                 <div style={{ fontSize: '14px', color: '#6b7280' }}>/ người</div>
-                <div style={{
-                  backgroundColor: '#fef2f2',
-                  color: '#dc2626',
-                  fontSize: '14px',
-                  padding: '4px 12px',
-                  borderRadius: '9999px',
-                  display: 'inline-block',
-                  marginTop: '8px'
-                }}>
-                  Tiết kiệm {(parseInt(tourData.originalPrice) - parseInt(tourData.price)).toLocaleString()} VNĐ
-                </div>
+
+                {/* Tiết kiệm */}
+                {tourData.originalPrice && parseInt(tourData.originalPrice) > parseInt(tourData.price) && (
+                  <div style={{
+                    backgroundColor: '#fef2f2',
+                    color: '#dc2626',
+                    fontSize: '14px',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    display: 'inline-block',
+                    marginTop: '8px'
+                  }}>
+                    Tiết kiệm {(parseInt(tourData.originalPrice) - parseInt(tourData.price)).toLocaleString()} VNĐ
+                  </div>
+                )}
               </div>
 
               <button
@@ -555,8 +606,8 @@ const TourDetailPage = () => {
                 fontSize: '14px',
                 color: '#6b7280'
               }}>
-                <div style={{ marginBottom: '4px' }}>Hotline: 1900 1234</div>
-                <div style={{ marginBottom: '4px' }}>Email: info@travel.com</div>
+                <div style={{ marginBottom: '4px' }}>{`Hotline: ${contact.hotline}`}</div>
+                <div style={{ marginBottom: '4px' }}>Email: {contact.email}</div>
                 <div style={{ color: '#059669', fontWeight: '600' }}>Tư vấn miễn phí 24/7</div>
               </div>
             </div>

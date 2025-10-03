@@ -28,21 +28,27 @@ const autoCleanupLogs = require('./cronJobs/cleanupLogs');
 
 const app = express();
 
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
+
 autoCleanupLogs();
 
-// Middleware
+const allowedOrigins = process.env.FRONTEND_URLS
+  ? process.env.FRONTEND_URLS.split(',').map(url => url.trim())
+  : ["http://localhost:5173"]; // fallback mặc định
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: function (origin, callback) {
+    // Cho phép request không có origin (Postman, curl) hoặc nằm trong danh sách
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.warn(`❌ Blocked by CORS: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Middleware để inject socketManager vào req (phải đặt trước routes)
-app.use((req, res, next) => {
-  req.socketManager = app.get('socketManager');
-  next();
-});
 
 // Routes hiện tại
 app.use('/api/auth', authRoutes);

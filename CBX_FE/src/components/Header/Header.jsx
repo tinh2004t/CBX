@@ -1,10 +1,28 @@
 import React from 'react';
+import { useEffect, useState } from "react";
 import Navigation from './Navigation';
 import { useLanguage } from '../../hooks/useLanguage';
-import contact from '../../data/contact.json';
+import settingAPI from '../../api/settingApi';
 
 const Header = () => {
   const { t } = useLanguage();
+  const [contact, setContacts] = React.useState({});
+
+   useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const res = await settingAPI.getSettings();
+        if (res.success) {
+          setContacts(res.data);
+        }
+      } catch (err) {
+        console.error("Lỗi lấy settings:", err);
+      }
+    };
+    fetchContacts();
+  }, []);
+
+
   return (
     <header>
       {/* Header Top Section */}

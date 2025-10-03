@@ -1,6 +1,7 @@
 import { Plus, Search, Edit2, Trash2, Eye, MapPin, Clock, Users, Star, X, Calendar } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import transportAPI from '../../api/transportApi'; // Đường dẫn tùy thuộc vào cấu trúc project của bạn
+import { useNavigate } from 'react-router-dom';
 
 // Transport Modal Component
 const TransportModal = ({ transport, onClose, onSave }) => {
@@ -24,6 +25,7 @@ const TransportModal = ({ transport, onClose, onSave }) => {
   });
 
   const [errors, setErrors] = useState({});
+
 
   const validateForm = () => {
     const newErrors = {};
@@ -414,6 +416,8 @@ const TransportManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const navigate = useNavigate();
+
   // Filter transports based on search
   const filteredTransports = transports.filter(transport =>
     transport.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -511,6 +515,11 @@ const TransportManagement = () => {
     setShowModal(true);
   };
 
+  const handleDeleted = () => {
+    navigate('/dich-vu-van-tai/deleted');
+
+  }
+
   // Toggle active status
   const toggleActive = async (id) => {
     try {
@@ -545,13 +554,22 @@ const TransportManagement = () => {
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Quản lý chuyến xe</h1>
               <p className="text-gray-600 mt-1">Quản lý tất cả chuyến xe trong hệ thống</p>
             </div>
-            <button
-              onClick={handleAddNew}
-              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              Thêm chuyến xe
-            </button>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <button
+                onClick={handleDeleted}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors w-full sm:w-auto justify-center"
+              >
+                <Trash2 className="w-5 h-5" />
+                Thùng rác
+              </button>
+              <button
+                onClick={handleAddNew}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="w-5 h-5" />
+                Thêm chuyến xe
+              </button>
+            </div>
           </div>
         </div>
 

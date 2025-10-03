@@ -457,7 +457,7 @@ useEffect(() => {
         </div>
 
         {/* Navigation */}
-        <nav className={`flex-1 overflow-y-auto ${isCollapsed ? 'px-2' : 'px-4'}`}>
+        <nav className={`flex-1 overflow-y-auto sidebar-scroll ${isCollapsed ? 'px-2' : 'px-4'}`}>
           <ul className="space-y-1 py-4">
             {menuItems.map((item) => (
               <li key={item.id}>

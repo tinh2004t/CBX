@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const overseaTourController = require('../controllers/overseaTourController');
+const overseaTourController = require('../controllers/OverseaTourController');
 const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 
 // GET routes

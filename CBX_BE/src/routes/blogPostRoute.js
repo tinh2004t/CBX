@@ -1,7 +1,7 @@
 // routes/blogPostRoutes.js
 const express = require('express');
 const router = express.Router();
-const blogPostController = require('../controllers/blogPostController');
+const blogPostController = require('../controllers/BlogPostController');
 const { authenticateToken, requireSuperAdmin } = require('../middleware/auth');
 
 // Validation middleware (tùy chọn)

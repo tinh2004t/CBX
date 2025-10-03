@@ -38,6 +38,7 @@ import MiceTourManagement from './pages/MiceTour/MiceTourManagement';
 import MiceTourDeleted from './pages/MiceTour/MiceTourDeleted';
 
 import TransportManagement from './pages/Transport/TransportManagement';
+import TransportDeleted from './pages/Transport/TransportDeleted';
 
 import TravelSettingsPage from './pages/SettingPage';
 import authAPI from './api/auth';
@@ -272,6 +273,7 @@ function App() {
                   <Route path="/mice/deleted" element={<MiceTourDeleted currentUser={user} />} />
 
                   <Route path="/dich-vu-van-tai" element={<TransportManagement currentUser={user} />} />
+                  <Route path="/dich-vu-van-tai/deleted" element={<TransportDeleted currentUser={user} />} />
 
                   <Route path="/settings" element={<TravelSettingsPage currentUser={user} />} />
 

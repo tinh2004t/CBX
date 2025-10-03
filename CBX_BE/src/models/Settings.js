@@ -2,10 +2,16 @@
 const mongoose = require('mongoose');
 
 const settingsSchema = new mongoose.Schema({
-  bannerImage: {
-    type: String,
-    required: true,
-    trim: true
+  // Thay đổi bannerImage thành mảng chứa 3 hình
+  bannerImages: {
+    type: [String],
+    default: ['', '', ''],
+    validate: {
+      validator: function(v) {
+        return v.length === 3;
+      },
+      message: 'Banner phải có đúng 3 hình ảnh'
+    }
   },
   footerImage: {
     type: String,
@@ -49,7 +55,7 @@ settingsSchema.statics.getSingleSettings = async function() {
   if (!settings) {
     // Tạo settings mặc định nếu chưa có
     settings = await this.create({
-      bannerImage: '',
+      bannerImages: ['', '', ''],
       footerImage: '',
       logoImage: '',
       hotline: '',
