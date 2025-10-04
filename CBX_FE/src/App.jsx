@@ -5,6 +5,7 @@ import Footer from './components/Footer/Footer';
 import LanguageProvider from './components/LanguageProvider';
 
 import HomePage from './pages/HomePage';
+import SearchPage from './pages/SearchPage';
 import TourismPage from './pages/TourismPage';
 import TourDetailPage from './pages/TourDetailPage';
 import NorthernToursPage from './pages/DomensticTour/NorthernToursPage';
@@ -64,6 +65,8 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/TourismPage" element={<TourismPage />} />
+
+              <Route path="search" element={<SearchPage />} />
 
               {/*DomesticTourPage */}
               <Route path="/tour-noi-dia/mien-bac" element={<NorthernToursPage />} />

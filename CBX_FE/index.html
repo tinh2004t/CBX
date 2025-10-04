@@ -5,12 +5,10 @@
   <!-- Basic Page Needs -->
   <meta charset="utf-8">
   <title>Du Lịch Cánh Buồm Xanh</title>
-  <!--<meta name="robots" content="index, follow">-->
   <meta name="robots" content="noindex">
   <meta name="keywords">
-  <meta name="description"
-    content="Du Lịch Cánh Buồm Xanh">
-  <link rel="icon" href="/files/images/logo/logo.jpg" >
+  <meta name="description" content="Du Lịch Cánh Buồm Xanh">
+  <link rel="icon" href="/files/images/logo/logo.jpg">
 
   <!-- Mobile Specific Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -26,6 +24,8 @@
   <link rel="stylesheet" href="./src/styles/footer.css">
   <link rel="stylesheet" href="./src/styles/responsive.css">
   <link rel="stylesheet" href="./src/styles/latolatinfonts.css">
+  <link rel="stylesheet" href="./src/styles/maps.css">
+
   <style>
     img.img-loca {
       opacity: 0.7;
@@ -56,54 +56,245 @@
     .footer-pad {
       font-size: 14px;
     }
+
+    /* Custom Chat Button Styles */
+    .custom-chat-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #0084ff, #00c6ff);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 132, 255, 0.4);
+      transition: all 0.3s ease;
+      z-index: 9999;
+      border: none;
+    }
+
+    .custom-chat-button:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(0, 132, 255, 0.6);
+    }
+
+    .custom-chat-button i {
+      color: white;
+      font-size: 28px;
+    }
+
+    /* Chat Popup Styles */
+    .chat-popup {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 350px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+      display: none;
+      flex-direction: column;
+      z-index: 9998;
+      overflow: hidden;
+      animation: slideUp 0.3s ease;
+    }
+
+    .chat-popup.active {
+      display: flex;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .chat-popup-header {
+      background: linear-gradient(135deg, #0084ff, #00c6ff);
+      padding: 20px;
+      color: white;
+      position: relative;
+    }
+
+    .chat-popup-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .chat-popup-header p {
+      margin: 5px 0 0 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .chat-close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .chat-close-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .chat-popup-body {
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .chat-popup-body i {
+      font-size: 50px;
+      color: #0084ff;
+      margin-bottom: 15px;
+    }
+
+    .chat-popup-body h4 {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .chat-popup-body p {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .chat-start-btn {
+      background: linear-gradient(135deg, #0084ff, #00c6ff);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .chat-start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 132, 255, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+
+    /* Notification Badge */
+    .notification-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: #ff4757;
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 480px) {
+      .chat-popup {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+      }
+    }
   </style>
 
-  <style>
-
-  </style>
-
-
-  <link rel="stylesheet" href="./src/styles/maps.css">
-
-
-
-
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js "></script>
-
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js"></script>
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
-  <!-- Messenger Plugin chat Code -->
-<div id="fb-root"></div>
-<div id="fb-customer-chat" class="fb-customerchat"></div>
 
-<script>
-  var chatbox = document.getElementById('fb-customer-chat');
-  chatbox.setAttribute("page_id", "61581900531389"); 
-  chatbox.setAttribute("attribution", "biz_inbox");
-</script>
+  <!-- Custom Chat Button -->
+  <button class="custom-chat-button" id="chatButton" onclick="toggleChatPopup()">
+    <i class="fab fa-facebook-messenger"></i>
+    <span class="notification-badge">1</span>
+  </button>
 
-<!-- Load Facebook SDK for JavaScript -->
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      xfbml            : true,
-      version          : 'v20.0'  // phiên bản Graph API mới nhất
+  <!-- Chat Popup -->
+  <div class="chat-popup" id="chatPopup">
+    <div class="chat-popup-header">
+      <button class="chat-close-btn" onclick="toggleChatPopup()">
+        <i class="fas fa-times"></i>
+      </button>
+      <h3>Du Lịch Cánh Buồm Xanh</h3>
+      <p>Thường trả lời ngay lập tức</p>
+    </div>
+    <div class="chat-popup-body">
+      <i class="fab fa-facebook-messenger"></i>
+      <h4>Xin chào! 👋</h4>
+      <p>Bạn cần hỗ trợ thông tin du lịch? Hãy chat với chúng tôi qua Messenger!</p>
+      <a href="https://m.me/61581900531389?text=Xin%20chào" target="_blank" class="chat-start-btn">
+        <i class="fab fa-facebook-messenger"></i> Bắt đầu chat
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function toggleChatPopup() {
+      const popup = document.getElementById('chatPopup');
+      const badge = document.querySelector('.notification-badge');
+      
+      popup.classList.toggle('active');
+      
+      // Hide notification badge when popup is opened
+      if (popup.classList.contains('active') && badge) {
+        badge.style.display = 'none';
+      }
+    }
+
+    // Close popup when clicking outside
+    document.addEventListener('click', function(event) {
+      const popup = document.getElementById('chatPopup');
+      const button = document.getElementById('chatButton');
+      
+      if (!popup.contains(event.target) && !button.contains(event.target)) {
+        popup.classList.remove('active');
+      }
     });
-  };
-
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
+  </script>
 
 </body>
 

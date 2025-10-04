@@ -1,154 +1,131 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
 import TourCard from './TourCard';
+import tourAPI from '../../api/TourApi.js';
 
 const TourSection = () => {
   const { t } = useLanguage();
+  
+  // State để lưu trữ dữ liệu tours
+  const [popularTours, setPopularTours] = useState([]);
+  const [featuredTours, setFeaturedTours] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sample tour data - this would normally come from an API or props
-  const bestSellingTours = [
-    {
-      id: 1,
-      image: "files/images/Tours/1.jpg",
-      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
-      price: "34.980.000 đ",
-      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
-      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
-      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
-      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
-    },
-    {
-      id: 2,
-      image: "files/images/Tours/1.jpg",
-      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
-      price: "34.980.000 đ",
-      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
-      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
-      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
-      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
-    },
-    {
-      id: 3,
-      image: "files/images/Tours/1.jpg",
-      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
-      price: "34.980.000 đ",
-      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
-      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
-      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
-      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
-    },
-    {
-      id: 4,
-      image: "files/images/Tours/1.jpg",
-      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
-      price: "34.980.000 đ",
-      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
-      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
-      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
-      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
-    },
-    {
-      id: 5,
-      image: "files/images/Tours/1.jpg",
-      title: t('thao_nguyen_mong_co') || "THẢO NGUYÊN MÔNG CỔ",
-      price: "34.980.000 đ",
-      duration: t('chuong_trinh_7_ngay_6_dem') || "Chương trình 7 ngày 6 đêm",
-      airline: t('hang_hang_khong_air_china') || "Hãng hàng không Air China",
-      departure: t('khoi_hanh_tu_viet_tri') || "Khởi hành từ VIỆT TRÌ >>",
-      scheduleInfo: t('khoi_hanh_28_12_6_2') || "Khởi hành 28/12, 6/2"
-    },
-    // Add more tours as needed
-  ];
+  // Fetch dữ liệu khi component mount
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const comboVouchers = [
-    {
-      id: 1,
-      image: "files/images/Tours/1.jpg",
-      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
-      price: "6.990.000 đ",
-      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
-      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
-      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
-      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
-    },
-    {
-      id: 2,
-      image: "files/images/Tours/1.jpg",
-      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
-      price: "6.990.000 đ",
-      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
-      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
-      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
-      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
-    },
-    {
-      id: 3,
-      image: "files/images/Tours/1.jpg",
-      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
-      price: "6.990.000 đ",
-      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
-      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
-      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
-      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
-    },
-    {
-      id: 4,
-      image: "files/images/Tours/1.jpg",
-      title: t('ha_noi_can_tho_soc_trang') || "HÀ NỘI - CẦN THƠ - SÓC TRĂNG...",
-      price: "6.990.000 đ",
-      duration: t('lo_trinh_4_ngay_3_dem') || "Lộ trình 4 ngày 3 đêm",
-      departure: t('khoi_hanh_tu_ha_noi') || "Khởi hành từ Hà Nội",
-      destination: t('diem_den_can_tho') || "Điểm đến Cần Thơ",
-      schedule: t('lich_khoi_hanh_thu_5_hang_tuan') || "Lịch khởi hành thứ 5 hàng tuần"
-    },
-    // Add more combo tours as needed
-  ];
+        // Gọi API để lấy tour phổ biến và tour nổi bật
+        const [popularResponse, featuredResponse] = await Promise.all([
+          tourAPI.getPopularTours(),
+          tourAPI.getFeaturedTours()
+        ]);
+
+        setPopularTours(popularResponse.data || popularResponse);
+        setFeaturedTours(featuredResponse.data || featuredResponse);
+      } catch (err) {
+        console.error('Error fetching tours:', err);
+        setError(err.message || 'Không thể tải dữ liệu tours');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTours();
+  }, []);
+
+  // Hàm chuyển đổi dữ liệu API sang format của TourCard
+  const formatTourData = (tour, type) => {
+    if (type === 'bestselling') {
+      return {
+        id: tour._id || tour.id,
+        image: tour.images?.[0] || tour.image || "files/images/Tours/1.jpg",
+        title: tour.name || tour.title,
+        price: tour.price ? `${tour.price.toLocaleString('vi-VN')} đ` : "Liên hệ",
+        duration: tour.duration || t('chuong_trinh_7_ngay_6_dem'),
+        airline: tour.airline || t('hang_hang_khong_air_china'),
+        departure: tour.departure_point ? `${t('khoi_hanh_tu')} ${tour.departure_point} >>` : t('khoi_hanh_tu_viet_tri'),
+        scheduleInfo: tour.departure_dates?.[0] ? `${t('khoi_hanh')} ${new Date(tour.departure_dates[0]).toLocaleDateString('vi-VN')}` : t('khoi_hanh_28_12_6_2'),
+        slug: tour.slug,
+        href: `/tours/${tour.slug || tour._id}`
+      };
+    } else {
+      return {
+        id: tour._id || tour.id,
+        image: tour.images?.[0] || tour.image || "files/images/Tours/1.jpg",
+        title: tour.name || tour.title,
+        price: tour.price ? `${tour.price.toLocaleString('vi-VN')} đ` : "Liên hệ",
+        duration: tour.duration || t('lo_trinh_4_ngay_3_dem'),
+        departure: tour.departure_point ? `${t('khoi_hanh_tu')} ${tour.departure_point}` : t('khoi_hanh_tu_ha_noi'),
+        destination: tour.destination ? `${t('diem_den')} ${tour.destination}` : t('diem_den_can_tho'),
+        schedule: tour.schedule || t('lich_khoi_hanh_thu_5_hang_tuan'),
+        slug: tour.slug
+      };
+    }
+  };
+
+  // Hiển thị loading state
+  if (loading) {
+    return (
+      <section className="ss-about margin-top-50">
+        <div className="introduction">
+          <div className="container">
+            <div style={{ textAlign: 'center', padding: '50px 0' }}>
+              <p>{t('loading') || 'Đang tải...'}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Hiển thị error state
+  if (error) {
+    return (
+      <section className="ss-about margin-top-50">
+        <div className="introduction">
+          <div className="container">
+            <div style={{ textAlign: 'center', padding: '50px 0', color: 'red' }}>
+              <p>{t('error') || 'Đã xảy ra lỗi'}: {error}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="ss-about margin-top-50">
       <div className="introduction wow fadeInUp">
         <div className="container">
-          {/* TOUR BÁN CHẠY NHẤT */}
-          <section className="tour-section">
-            <div className="section-header">
-              <h2 className="section-title">
-                {t('tour_ban_chay') || 'TOUR BÁN CHẠY NHẤT'}
-              </h2>
-              <a href="xem-them.html" className="view-more">
-                {t('more') || 'Xem thêm'} &gt;&gt;
-              </a>
-            </div>
-            <div className="card-container">
-              {bestSellingTours.map(tour => (
-                <TourCard 
-                  key={tour.id} 
-                  tour={tour} 
-                  type="bestselling"
-                />
-              ))}
-            </div>
-          </section>
+          {/* TOUR BÁN CHẠY NHẤT (Tour Phổ Biến) */}
+          {popularTours && popularTours.length > 0 && (
+            <section className="tour-section">
+              <div className="section-header">
+                <h2 className="section-title">
+                  {t('tour_ban_chay') || 'TOUR BÁN CHẠY NHẤT'}
+                </h2>
+                <a href="#" className="view-more">
+                  {t('more') || 'Xem thêm'} &gt;&gt;
+                </a>
+              </div>
+              <div className="card-container">
+                {popularTours.slice(0, 5).map(tour => (
+                  <TourCard 
+                    key={tour._id || tour.id} 
+                    tour={formatTourData(tour, 'bestselling')} 
+                    type="bestselling"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
-          {/* COMBO & VOUCHER */}
-          <section className="tour-section">
-            <div className="section-header">
-              <h2 className="section-title">
-                {t('combo_voucher') || 'COMBO & VOUCHER'}
-              </h2>
-              <a href="xem-them.html" className="view-more">
-                {t('more') || 'Xem thêm'} &gt;&gt;
-              </a>
-            </div>
-            <div className="card-container">
-              {comboVouchers.map(tour => (
-                <TourCard 
-                  key={tour.id} 
-                  tour={tour} 
-                  type="combo"
-                />
-              ))}
-            </div>
-          </section>
+          
         </div>
       </div>
     </section>

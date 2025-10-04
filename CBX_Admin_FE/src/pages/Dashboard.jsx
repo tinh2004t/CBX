@@ -21,98 +21,53 @@ const Dashboard = ({ user }) => {
   const [selectedAction, setSelectedAction] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
 
+
+
   // Refs
   const socketConnectedRef = useRef(false);
 
   // Initialize Socket Connection
+  // THAY ĐỔI useEffect khởi tạo socket
+  // Lắng nghe socket events (socket đã được connect ở App.jsx)
   useEffect(() => {
-    const initializeSocket = () => {
-      const token = authAPI.getToken();
-      if (!token) {
-        console.log('No token available for socket connection');
-        return;
-      }
+    // Check socket connection status
+    const checkConnection = () => {
+      const connected = socketAPI.isConnected();
+      setIsSocketConnected(connected);
+      socketConnectedRef.current = connected;
 
-      try {
-        // Kết nối socket
-        const socket = socketAPI.connect(token);
-
-        // Lắng nghe các sự kiện socket
-        socketAPI.on('connect', () => {
-          console.log('✅ Socket connected successfully');
-          setIsSocketConnected(true);
-          socketConnectedRef.current = true;
-
-          // Fetch initial online users khi connect
-          fetchOnlineUsers();
-        });
-
-        socketAPI.on('disconnect', (reason) => {
-          console.log('❌ Socket disconnected:', reason);
-          setIsSocketConnected(false);
-          socketConnectedRef.current = false;
-        });
-
-        // Lắng nghe cập nhật users online
-        socketAPI.on('user_online', (data) => {
-          console.log('👤 User came online:', data);
-          setOnlineUsers(prev => {
-            const updated = [...prev];
-            const index = updated.findIndex(u => u.userId === data.userId);
-            if (index === -1) {
-              updated.push(data);
-            } else {
-              updated[index] = data;
-            }
-            return updated;
-          });
-          setOnlineCount(prev => prev + 1);
-        });
-
-        socketAPI.on('user_offline', (data) => {
-          console.log('👤 User went offline:', data);
-          setOnlineUsers(prev => prev.filter(u => u.userId !== data.userId));
-          setOnlineCount(prev => Math.max(0, prev - 1));
-        });
-
-        // Lắng nghe cập nhật danh sách users online
-        socketAPI.on('users_online_update', (data) => {
-          console.log('📊 Online users updated:', data);
-          setOnlineUsers(data.users || []);
-          setOnlineCount(data.count || 0);
-        });
-
-
-        // Lắng nghe thông báo từ admin khác
-        socketAPI.on('notification', (data) => {
-          console.log('🔔 Received notification:', data);
-          // Có thể hiển thị toast notification ở đây
-        });
-
-        socketAPI.on('broadcast', (data) => {
-          console.log('📢 Received broadcast:', data);
-          // Có thể hiển thị toast notification ở đây
-        });
-
-        socketAPI.on('connect_error', (error) => {
-          console.error('Socket connection error:', error);
-          setIsSocketConnected(false);
-          socketConnectedRef.current = false;
-        });
-
-      } catch (error) {
-        console.error('Error initializing socket:', error);
-        setIsSocketConnected(false);
+      if (connected) {
+        fetchOnlineUsers();
       }
     };
 
-    initializeSocket();
+    checkConnection();
 
-    // Cleanup khi component unmount
-    return () => {
-      socketAPI.disconnect();
+    // Lắng nghe events
+    socketAPI.on('connect', () => {
+      console.log('✅ Dashboard: Socket connected');
+      setIsSocketConnected(true);
+      socketConnectedRef.current = true;
+      fetchOnlineUsers();
+    });
+
+    socketAPI.on('disconnect', (reason) => {
+      console.log('❌ Dashboard: Socket disconnected:', reason);
       setIsSocketConnected(false);
       socketConnectedRef.current = false;
+    });
+
+    socketAPI.on('users_online_update', (data) => {
+      console.log('📊 Online users updated:', data);
+      setOnlineUsers(data.users || []);
+      setOnlineCount(data.count || 0);
+    });
+
+    // Cleanup: chỉ remove listeners, KHÔNG disconnect
+    return () => {
+      socketAPI.off('connect');
+      socketAPI.off('disconnect');
+      socketAPI.off('users_online_update');
     };
   }, []);
 
@@ -183,15 +138,15 @@ const Dashboard = ({ user }) => {
   }, [searchTerm]);
 
   // Auto refresh online users mỗi 30 giây
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (socketConnectedRef.current) {
-        fetchOnlineUsers();
-      }
-    }, 30000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (socketConnectedRef.current) {
+  //       fetchOnlineUsers();
+  //     }
+  //   }, 30000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // Xử lý thay đổi action filter
   const handleActionChange = (action) => {
@@ -223,7 +178,6 @@ const Dashboard = ({ user }) => {
       }, 1000);
     }
   };
-
 
   // Format date
   const formatDate = (dateString) => {
@@ -280,16 +234,16 @@ const Dashboard = ({ user }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 lg:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 lg:space-y-6">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Dashboard Quản Trị</h1>
-              <p className="text-gray-600 mt-1">Quản lý hoạt động và theo dõi hệ thống real-time</p>
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Dashboard Quản Trị</h1>
+              <p className="text-sm lg:text-base text-gray-600 mt-1">Quản lý hoạt động và theo dõi hệ thống real-time</p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center gap-2 lg:gap-4">
               {/* Connection Status */}
               <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${isSocketConnected ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                 }`}>
@@ -328,7 +282,7 @@ const Dashboard = ({ user }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Tổng Hoạt Động</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {loading ? '...' : pagination.total}
                 </p>
               </div>
@@ -342,7 +296,7 @@ const Dashboard = ({ user }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Admin Online</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {adminUsers.length}
                 </p>
               </div>
@@ -356,7 +310,7 @@ const Dashboard = ({ user }) => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Hoạt Động Hôm Nay</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-xl lg:text-2xl font-bold text-gray-900">
                   {loading ? '...' : adminLogs.length}
                 </p>
               </div>
@@ -371,20 +325,11 @@ const Dashboard = ({ user }) => {
           {/* Admin Logs Table */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100">
             <div className="p-6 border-b border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Nhật Ký Hoạt Động</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Nhật Ký Hoạt Động</h2>
                 <div className="flex items-center space-x-2">
-                  <select
-                    value={selectedAction}
-                    onChange={(e) => handleActionChange(e.target.value)}
-                    disabled={loading}
-                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="Tạo">Tạo</option>
-                    <option value="Cập nhật">Cập nhật</option>
-                    <option value="Xóa">Xóa</option>
-                    <option value="Khôi phục">Khôi phục</option>
+                  <select className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                    {/* ... */}
                   </select>
                 </div>
               </div>
@@ -428,7 +373,8 @@ const Dashboard = ({ user }) => {
 
             {!loading && !error && (
               <div className="overflow-x-auto">
-                <table className="w-full">
+                {/* Desktop Table */}
+                <table className="hidden md:table w-full">
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -488,6 +434,51 @@ const Dashboard = ({ user }) => {
                     ))}
                   </tbody>
                 </table>
+                {/* Mobile Card List */}
+                <div className="md:hidden space-y-3 p-4">
+                  {adminLogs.map((log) => (
+                    <div key={log._id} className="bg-gray-50 rounded-lg p-4 space-y-3 border border-gray-200">
+                      {/* Admin Info */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="relative flex-shrink-0">
+                            <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
+                              <span className="text-sm font-medium text-white">
+                                {log.adminUsername.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                            {onlineUsers.some(u => u.username === log.adminUsername) && (
+                              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                            )}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-900 truncate">
+                              {log.adminUsername}
+                            </div>
+                            <div className="text-xs text-gray-500 flex items-center mt-1">
+                              <Calendar className="h-3 w-3 mr-1 flex-shrink-0" />
+                              <span className="truncate">{formatDate(log.createdAt)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Badge */}
+                      <div>
+                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getActionBadgeColor(log.action)}`}>
+                          {log.action}
+                        </span>
+                      </div>
+
+                      {/* Details */}
+                      <div className="text-sm text-gray-700 break-words">
+                        <span className="font-medium text-gray-500">Chi tiết: </span>
+                        {log.targetUser}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
               </div>
             )}
 
@@ -502,10 +493,10 @@ const Dashboard = ({ user }) => {
             )}
 
             {!loading && !error && pagination.total > pagination.limit && (
-              <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-                <div className="text-sm text-gray-500">
+              <div className="px-4 lg:px-6 py-4 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="text-xs sm:text-sm text-gray-500">
                   Hiển thị {((currentPage - 1) * pagination.limit) + 1} - {Math.min(currentPage * pagination.limit, pagination.total)}
-                  trong tổng số {pagination.total} kết quả
+                  <span className="hidden sm:inline"> trong tổng số {pagination.total} kết quả</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
@@ -572,18 +563,26 @@ const Dashboard = ({ user }) => {
                     <div className="mb-4">
                       <h3 className="text-sm font-medium text-gray-700 mb-2">Quản trị viên ({adminUsers.length})</h3>
                       {adminUsers.map((userItem) => (
-                        <div key={userItem.userId} className="flex items-center justify-between p-3 border border-blue-200 rounded-lg mb-2 bg-blue-50">
-                          <div className="flex items-center space-x-3">
-                            <div className="relative">
+                        <div
+                          key={userItem.userId}
+                          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 border border-blue-200 rounded-lg mb-2 bg-blue-50"
+                        >
+                          {/* Avatar + Username */}
+                          <div className="flex items-center space-x-3 min-w-0 flex-1">
+                            <div className="relative flex-shrink-0">
                               <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center">
                                 <span className="text-xs font-medium text-white">
                                   {(userItem.username || '').charAt(0).toUpperCase()}
                                 </span>
                               </div>
-                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(true)}`}></div>
+                              <div
+                                className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(
+                                  true
+                                )}`}
+                              ></div>
                             </div>
-                            <div>
-                              <div className="text-sm font-medium text-gray-900">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium text-gray-900 truncate">
                                 {userItem.username}
                               </div>
                               <div className="text-xs text-blue-600 font-medium">
@@ -591,7 +590,9 @@ const Dashboard = ({ user }) => {
                               </div>
                             </div>
                           </div>
-                          <div className="text-right">
+
+                          {/* Status + Time */}
+                          <div className="text-right sm:text-right flex-shrink-0">
                             <div className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               Online
                             </div>
@@ -601,6 +602,7 @@ const Dashboard = ({ user }) => {
                           </div>
                         </div>
                       ))}
+
                     </div>
                   )}
 

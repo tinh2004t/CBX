@@ -19,6 +19,8 @@ const blogPostData = require('./routes/blogPostDataRoute');
 const settingsRoute = require('./routes/settingRoute');
 const adminLogRoutes = require('./routes/adminLogRoutes');
 
+const getOnlineUsersManager = require('./services/onlineUsersManager');
+
 const TourRoute = require('./routes/TourRoute');
 
 // Thêm socket routes
@@ -82,34 +84,8 @@ app.get('/', (req, res) => {
 });
 
 // API endpoint để lấy thông tin users online
-app.get('/api/online-users', (req, res) => {
-  try {
-    if (!req.socketManager) {
-      return res.status(503).json({
-        success: false,
-        message: 'Socket.IO chưa được khởi tạo'
-      });
-    }
-
-    const onlineUsers = req.socketManager.getOnlineUsers();
-    const onlineCount = req.socketManager.getOnlineCount();
-    
-    res.json({
-      success: true,
-      data: {
-        users: onlineUsers,
-        count: onlineCount,
-        timestamp: new Date()
-      }
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Lỗi khi lấy thông tin users online',
-      error: error.message
-    });
-  }
-});
+const onlineUsersRoute = require('./routes/onlineUsersRoute');
+app.use('/api/online-users', onlineUsersRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

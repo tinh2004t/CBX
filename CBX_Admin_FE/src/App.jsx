@@ -96,7 +96,17 @@ function App() {
           setIsLoggedIn(true);
 
           // kết nối socket
-          const socket = socketAPI.connect(token);
+          // ✅ Khởi tạo socket connection toàn cục
+          socketAPI.connect(token);
+
+          // Lắng nghe các events toàn cục
+          socketAPI.on("connect", () => {
+            console.log("✅ Socket connected globally");
+          });
+
+          socketAPI.on("disconnect", (reason) => {
+            console.log("❌ Socket disconnected:", reason);
+          });
 
           socketAPI.on("force_disconnect", (data) => {
             alert(`Bạn đã bị ngắt kết nối: ${data.reason}`);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Settings, Edit, Save, X, Phone, Mail, MapPin, Facebook, Image, Calendar } from 'lucide-react';
 import settingAPI from '../api/settingApi';
+import { Settings, Edit, Save, X, Phone, Mail, MapPin, Facebook, Image, Calendar, Video, Plus, Trash2 } from 'lucide-react';
 
 const TravelSettingsPage = () => {
   const [settings, setSettings] = useState(null);
@@ -31,19 +31,20 @@ const TravelSettingsPage = () => {
   }, []);
 
   const handleEdit = () => {
-    setEditedSettings({...settings});
+    setEditedSettings({ ...settings });
     setIsEditing(true);
   };
 
   const handleSave = async () => {
     setIsLoading(true);
-    
+
     try {
       // Chuẩn bị dữ liệu gửi lên
       const dataToUpdate = {
         bannerImages: editedSettings.bannerImages,
         footerImage: editedSettings.footerImage,
         logoImage: editedSettings.logoImage,
+        videoUrls: editedSettings.videoUrls || [],
         hotline: editedSettings.hotline,
         email: editedSettings.email,
         address: editedSettings.address,
@@ -51,7 +52,7 @@ const TravelSettingsPage = () => {
       };
 
       const response = await settingAPI.updateSettings(dataToUpdate);
-      
+
       if (response.success) {
         setSettings(response.data);
         setEditedSettings(response.data);
@@ -69,7 +70,7 @@ const TravelSettingsPage = () => {
   };
 
   const handleCancel = () => {
-    setEditedSettings({...settings});
+    setEditedSettings({ ...settings });
     setIsEditing(false);
   };
 
@@ -84,7 +85,7 @@ const TravelSettingsPage = () => {
           bannerImages: newBannerImages
         };
       }
-      
+
       // Các field khác
       return {
         ...prev,
@@ -93,6 +94,30 @@ const TravelSettingsPage = () => {
     });
   };
 
+  const handleAddVideoUrl = () => {
+    setEditedSettings(prev => ({
+      ...prev,
+      videoUrls: [...(prev.videoUrls || []), '']
+    }));
+  };
+
+  const handleRemoveVideoUrl = (index) => {
+    setEditedSettings(prev => ({
+      ...prev,
+      videoUrls: prev.videoUrls.filter((_, i) => i !== index)
+    }));
+  };
+
+  const handleVideoUrlChange = (index, value) => {
+    setEditedSettings(prev => {
+      const newVideoUrls = [...(prev.videoUrls || [])];
+      newVideoUrls[index] = value;
+      return {
+        ...prev,
+        videoUrls: newVideoUrls
+      };
+    });
+  };
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString('vi-VN', {
       year: 'numeric',
@@ -106,6 +131,7 @@ const TravelSettingsPage = () => {
   const settingsFields = [
     { key: 'logoImage', label: 'Logo Website', icon: Image, type: 'text' },
     { key: 'footerImage', label: 'Hình Footer', icon: Image, type: 'text' },
+    { key: 'videoUrl', label: 'Video YouTube URL', icon: Image, type: 'url' },
     { key: 'hotline', label: 'Số Hotline', icon: Phone, type: 'tel' },
     { key: 'email', label: 'Email Liên Hệ', icon: Mail, type: 'email' },
     { key: 'address', label: 'Địa Chỉ', icon: MapPin, type: 'text' },
@@ -174,6 +200,39 @@ const TravelSettingsPage = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Video URLs Section */}
+              <div className="mb-6 pb-6 border-b border-gray-200">
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-4">
+                  <Video className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 flex-shrink-0" />
+                  <h3 className="font-semibold text-gray-800 text-base sm:text-lg">Video YouTube URLs</h3>
+                  <span className="text-xs sm:text-sm text-gray-500">
+                    ({settings?.videoUrls?.length || 0} video)
+                  </span>
+                </div>
+                {settings?.videoUrls && settings.videoUrls.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                    {settings.videoUrls.map((url, index) => (
+                      <div key={index} className="border border-gray-200 rounded-lg p-3 hover:shadow-md transition-shadow duration-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs sm:text-sm font-medium text-gray-600">Video {index + 1}</span>
+                          <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">#{index + 1}</span>
+                        </div>
+                        <div className="bg-gray-50 rounded-md p-2">
+                          <p className="text-gray-800 break-words text-xs sm:text-sm">
+                            {url || 'Chưa có dữ liệu'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 bg-gray-50 rounded-lg">
+                    <Video className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500 text-sm">Chưa có video nào</p>
+                  </div>
+                )}
               </div>
 
               {/* Other Settings */}
@@ -252,6 +311,67 @@ const TravelSettingsPage = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Video URLs Section */}
+                <div className="mb-6 pb-6 border-b border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Video className="h-5 w-5 text-red-600 flex-shrink-0" />
+                      <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Video YouTube URLs</h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddVideoUrl}
+                      className="flex items-center space-x-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 text-xs sm:text-sm"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Thêm Video</span>
+                    </button>
+                  </div>
+
+                  {editedSettings?.videoUrls && editedSettings.videoUrls.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4">
+                      {editedSettings.videoUrls.map((url, index) => (
+                        <div key={index} className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="font-medium text-gray-700 text-sm">Video {index + 1}</label>
+                            <div className="flex items-center space-x-2">
+                              <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">#{index + 1}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveVideoUrl(index)}
+                                className="p-1.5 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors duration-200"
+                                title="Xóa video này"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                          <input
+                            type="url"
+                            value={url}
+                            onChange={(e) => handleVideoUrlChange(index, e.target.value)}
+                            className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200 text-sm sm:text-base"
+                            placeholder={`https://www.youtube.com/watch?v=...`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                      <Video className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 text-sm mb-3">Chưa có video nào</p>
+                      <button
+                        type="button"
+                        onClick={handleAddVideoUrl}
+                        className="inline-flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 text-sm"
+                      >
+                        <Plus className="h-4 w-4" />
+                        <span>Thêm Video Đầu Tiên</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Other Settings */}

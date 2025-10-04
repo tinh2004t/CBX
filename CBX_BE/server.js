@@ -34,18 +34,18 @@ const io = new Server(server, {
 });
 
 // Setup Socket.IO handlers
-const socketManager = setupSocketHandlers(io);
-console.log('✅ SocketManager created:', !!socketManager);
+// const socketManager = setupSocketHandlers(io);
+// console.log('✅ SocketManager created:', !!socketManager);
 
-// Thêm socketManager vào app để sử dụng trong routes
-app.set('socketManager', socketManager);
-console.log('✅ SocketManager set to app');
+// // Thêm socketManager vào app để sử dụng trong routes
+// app.set('socketManager', socketManager);
+// console.log('✅ SocketManager set to app');
 
-// Middleware để inject socketManager vào req
-app.use((req, res, next) => {
-  req.socketManager = app.get('socketManager');
-  next();
-});
+// // Middleware để inject socketManager vào req
+// app.use((req, res, next) => {
+//   req.socketManager = app.get('socketManager');
+//   next();
+// });
 
 // Kết nối database
 connectDB();

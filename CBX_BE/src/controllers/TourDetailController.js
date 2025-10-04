@@ -201,7 +201,13 @@ exports.updateTourDetail = async (req, res) => {
       }
     );
 
-    await logAdminAction(req.user._id, req.user.username, "Cập nhật chi tiết tour", updatedTourDetail);
+    // ✅ GHI LOG VỚI TÊN TOUR THAY VÌ SLUG HAY TOÀN BỘ DATA
+    await logAdminAction(
+      req.user._id, 
+      req.user.username, 
+      "Cập nhật chi tiết tour", 
+      domesticTour.title 
+    );  
 
     res.status(200).json({
       success: true,
@@ -277,7 +283,7 @@ exports.updateTourDetailByTourId = async (req, res) => {
       });
     }
 
-    await logAdminAction(req.user._id, req.user.username, "Cập nhật chi tiết tour", updatedTourDetail);
+    await logAdminAction(req.user._id, req.user.username, "Cập nhật chi tiết tour", updatedTourDetail.tourData.title);
 
     res.status(200).json({
       success: true,

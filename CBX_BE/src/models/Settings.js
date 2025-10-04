@@ -23,6 +23,22 @@ const settingsSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  // Thêm trường videoUrl để lưu YouTube URL
+  videoUrls: {
+  type: [String],
+  default: [],
+  validate: {
+    validator: function(v) {
+      // Kiểm tra từng URL trong mảng
+      return v.every(url => {
+        if (!url || url === '') return true;
+        const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/)|youtu\.be\/)[a-zA-Z0-9_-]{11}$/;
+        return youtubeRegex.test(url);
+      });
+    },
+    message: 'Có URL YouTube không hợp lệ trong danh sách'
+  }
+},
   hotline: {
     type: String,
     required: true,
@@ -58,6 +74,7 @@ settingsSchema.statics.getSingleSettings = async function() {
       bannerImages: ['', '', ''],
       footerImage: '',
       logoImage: '',
+      videoUrl: '',
       hotline: '',
       email: '',
       address: '',

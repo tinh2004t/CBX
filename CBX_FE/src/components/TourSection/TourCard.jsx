@@ -11,7 +11,6 @@ const TourCard = ({ tour, type }) => {
       <div className="card">
         <div className="card-image">
           <img src={tour.image} alt={tour.title} />
-          <div className="tag">{tour.departure}</div>
         </div>
         <div className="card-content">
           <h3 className="card-title">{tour.title}</h3>

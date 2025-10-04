@@ -1,65 +1,131 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../../hooks/useLanguage.jsx';
 import NewsCard from './NewsCard';
+import blogAPI from '../../api/blogApi';
 
 const NewsSection = () => {
   const { t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [newsItems, setNewsItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const newsItems = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
-      title: "ẨM THỰC HÀN QUỐC - TỰ LỊCH SỰ TẠO NÊN BẢN SẮC",
-      excerpt: "Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những món ăn truyền thống..."
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=400&h=300&fit=crop",
-      title: "HƯỚNG DẪN CHI TIẾT CÁCH XIN VISA DU LỊCH TỰ TÚC HÀN QUỐC",
-      excerpt: "Quy trình xin visa du lịch Hàn Quốc từ A-Z, những giấy tờ cần thiết và lưu ý..."
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop",
-      title: "10 QUY TẮC TRÊN BÀN ĂN CỦA NGƯỜI HÀN",
-      excerpt: "Tìm hiểu về những quy tắc ăn uống và văn hóa bàn ăn độc đáo của người Hàn Quốc..."
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
-      title: "ẨM THỰC HÀN QUỐC - TỰ LỊCH SỰ TẠO NÊN BẢN SẮC",
-      excerpt: "Khám phá những món ăn đặc trưng và văn hóa ẩm thực phong phú của xứ sở kim chi..."
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
-      title: "ẨM THỰC HÀN QUỐC SỰ TẠO NÊN BẢN SẮC",
-      excerpt: "Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những món ăn truyền thống..."
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?w=400&h=300&fit=crop",
-      title: "ẨM TH",
-      excerpt: "Khám phá văn hóa ẩm thực đặc sắc của Hàn Quốc với những món ăn truyền thống..."
-    },
-  ];
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const response = await blogAPI.getPosts({
+          limit: 8,
+          sort: '-createdAt'
+        });
+
+        console.log('Full API Response:', response);
+
+        if (response.success && response.data) {
+          // Data nằm trong response.data.blogPosts
+          const posts = Array.isArray(response.data.blogPosts) 
+            ? response.data.blogPosts 
+            : [];
+          
+          console.log('Posts to set:', posts);
+          console.log('Number of posts:', posts.length);
+          
+          setNewsItems(posts);
+        } else {
+          console.warn('No data in response');
+          setNewsItems([]);
+        }
+      } catch (err) {
+        console.error('Error fetching news:', err);
+        setError(err.message);
+        setNewsItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNews();
+  }, []);
 
   const itemsPerSlide = 4;
   const maxSlides = Math.ceil(newsItems.length / itemsPerSlide);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % maxSlides);
+    if (maxSlides > 0) {
+      setCurrentSlide((prev) => (prev + 1) % maxSlides);
+    }
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
+    if (maxSlides > 0) {
+      setCurrentSlide((prev) => (prev - 1 + maxSlides) % maxSlides);
+    }
   };
 
   const getCurrentItems = () => {
+    if (!Array.isArray(newsItems) || newsItems.length === 0) {
+      return [];
+    }
     const startIndex = currentSlide * itemsPerSlide;
     return newsItems.slice(startIndex, startIndex + itemsPerSlide);
   };
+
+  if (loading) {
+    return (
+      <section className="news-section">
+        <div className="container">
+          <h2 className="section-title">
+            {t('tin_tuc_du_lich') || 'TIN TỨC DU LỊCH'}
+          </h2>
+          <div className="news-grid">
+            {[...Array(4)].map((_, index) => (
+              <div key={index} className="news-card skeleton">
+                <div className="skeleton-image"></div>
+                <div className="skeleton-content">
+                  <div className="skeleton-title"></div>
+                  <div className="skeleton-text"></div>
+                  <div className="skeleton-text"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="news-section">
+        <div className="container">
+          <h2 className="section-title">
+            {t('tin_tuc_du_lich') || 'TIN TỨC DU LỊCH'}
+          </h2>
+          <div className="error-message">
+            <p>Không thể tải tin tức. Vui lòng thử lại sau.</p>
+            <p style={{ fontSize: '12px', color: '#999' }}>{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!newsItems || newsItems.length === 0) {
+    return (
+      <section className="news-section">
+        <div className="container">
+          <h2 className="section-title">
+            {t('tin_tuc_du_lich') || 'TIN TỨC DU LỊCH'}
+          </h2>
+          <div className="empty-message">
+            <p>Chưa có tin tức nào.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const currentItems = getCurrentItems();
 
   return (
     <section className="news-section">
@@ -69,36 +135,56 @@ const NewsSection = () => {
         </h2>
         
         <div className="news-grid">
-          {getCurrentItems().map(item => (
-            <NewsCard key={item.id} news={item} />
-          ))}
+          {currentItems.map((item, index) => {
+            if (!item || !item.slug) {
+              console.warn('Invalid item at index', index, item);
+              return null;
+            }
+            return (
+              <NewsCard 
+                key={item._id?.$oid || item._id || item.slug || index} 
+                news={item} 
+              />
+            );
+          })}
         </div>
 
-        {/* Navigation Arrows */}
-        <div className="navigation-arrows">
-          <button className="nav-arrow prev-arrow" onClick={prevSlide}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path 
-                d="M15 18L9 12L15 6" 
-                stroke="currentColor" 
-                strokeWidth="2"
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-              />
-            </svg>
-          </button>
-          <button className="nav-arrow next-arrow" onClick={nextSlide}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path 
-                d="M9 18L15 12L9 6" 
-                stroke="currentColor" 
-                strokeWidth="2"
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-              />
-            </svg>
-          </button>
-        </div>
+        {newsItems.length > itemsPerSlide && maxSlides > 1 && (
+          <div className="navigation-arrows">
+            <button 
+              className="nav-arrow prev-arrow" 
+              onClick={prevSlide}
+              disabled={currentSlide === 0}
+              aria-label="Previous slide"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path 
+                  d="M15 18L9 12L15 6" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+              </svg>
+            </button>
+            <button 
+              className="nav-arrow next-arrow" 
+              onClick={nextSlide}
+              disabled={currentSlide === maxSlides - 1}
+              aria-label="Next slide"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path 
+                  d="M9 18L15 12L9 6" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

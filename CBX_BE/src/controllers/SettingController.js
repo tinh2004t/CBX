@@ -29,6 +29,7 @@ const updateSettings = async (req, res) => {
       bannerImages, // Nhận mảng 3 hình từ client
       footerImage,
       logoImage,
+      videoUrls,
       hotline,
       email,
       address,
@@ -64,6 +65,7 @@ const updateSettings = async (req, res) => {
     if (bannerImages !== undefined) updateData.bannerImages = bannerImages;
     if (footerImage !== undefined) updateData.footerImage = footerImage;
     if (logoImage !== undefined) updateData.logoImage = logoImage;
+    if (videoUrls !== undefined) updateData.videoUrls = videoUrls;
     if (hotline !== undefined) updateData.hotline = hotline;
     if (email !== undefined) updateData.email = email;
     if (address !== undefined) updateData.address = address;
